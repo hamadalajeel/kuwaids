@@ -235,6 +235,15 @@ button {
   box-shadow: var(--shadow-pop);
 }
 
+/* صف أزرار الصوت: عادي + بطيء 🐢 + إعادة 🔁 */
+.audio-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
 /* زر الصوت */
 .btn-audio {
   background: var(--accent-soft);
@@ -689,9 +698,26 @@ button {
 }
 
 .word-image {
+  /* حجم الخط احتياطي لإيموجي الطوارئ فقط — الأصل صورة SVG محلية */
   font-size: clamp(4.5rem, 18vw, 7rem);
   line-height: 1.25;
   filter: drop-shadow(0 6px 10px rgba(93, 74, 156, 0.18));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.word-image img {
+  width: clamp(130px, 38vw, 190px);
+  height: auto;
+}
+
+/* صور الكلمات عموماً: لا تكسر التخطيط أبداً */
+.word-img {
+  display: block;
+  max-width: 100%;
+  user-select: none;
+  -webkit-user-drag: none;
 }
 
 .word-kuwaiti {
@@ -776,8 +802,13 @@ button {
   background: var(--surface);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-card);
-  padding: clamp(16px, 5vw, 32px) clamp(32px, 9vw, 56px);
+  padding: clamp(14px, 4vw, 24px);
   animation: popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.stimulus-image img {
+  width: clamp(130px, 38vw, 190px);
+  height: auto;
 }
 
 /* زر صوت كبير كمحفّز */
@@ -874,6 +905,14 @@ button {
 .quiz-option .option-image {
   font-size: clamp(2.6rem, 11vw, 4rem);
   line-height: 1.25;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.quiz-option .option-image img {
+  width: clamp(70px, 20vw, 100px);
+  height: auto;
 }
 
 /* خيار كلمة — الحجم واللون يتغيّران من app.js لتنويع العرض */

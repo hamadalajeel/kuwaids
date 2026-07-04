@@ -110,6 +110,51 @@
     return Math.floor(stars / STARS_PER_LEVEL) + 1;
   }
 
+  /* ═══════════════ صور الكلمات ═══════════════ */
+
+  // يختار عشوائياً بين الصورة الأساسية وبدائلها (ألوان/أحجام/زوايا
+  // مختلفة) حتى يتعلم الطفل معنى الكلمة لا شكل صورة واحدة.
+  function pickImageSrc(word) {
+    const list = [word.image, ...(word.imageVariations || [])].filter(Boolean);
+    return list.length ? pick(list) : null;
+  }
+
+  // ينشئ عنصر صورة مع سلسلة احتياط لا تكسر الدرس أبداً:
+  // البديل المختار ← الصورة الأساسية ← placeholder.svg ← إيموجي
+  function makeWordImg(word) {
+    const src = pickImageSrc(word);
+    if (!src) return emojiFallback(word);
+
+    const img = document.createElement("img");
+    img.className = "word-img";
+    img.alt = word.imageAlt || word.standardArabic;
+    img.decoding = "async";
+    img.draggable = false;
+
+    let step = 0;
+    img.onerror = () => {
+      step++;
+      if (step === 1 && src !== word.image && word.image) {
+        img.src = word.image;
+      } else if (step <= 2 && window.IMAGE_FALLBACK && img.src.indexOf(window.IMAGE_FALLBACK) === -1) {
+        img.src = window.IMAGE_FALLBACK;
+      } else {
+        img.onerror = null;
+        img.replaceWith(emojiFallback(word));
+      }
+    };
+    img.src = src;
+    return img;
+  }
+
+  function emojiFallback(word) {
+    const span = document.createElement("span");
+    span.textContent = word.emoji || "🖼️";
+    span.setAttribute("role", "img");
+    span.setAttribute("aria-label", word.standardArabic);
+    return span;
+  }
+
   /* ═══════════════ الحالة و Local Storage ═══════════════ */
 
   function defaultState() {
@@ -183,68 +228,110 @@
       .map(([id]) => Number(id));
   }
 
-  /* ═══════════════ الصوت: النطق + المؤثرات ═══════════════ */
+  /* ═══════════════ الصوت: نطق عربي تلقائي (Web Speech API) ═══════════════ */
 
   /*
-    طبقة الصوت قابلة للاستبدال بتسجيلات كويتية حقيقية لاحقاً:
-    أضف للحقل audio في كائن الكلمة مسارات ملفات، مثال:
+    نظام الصوت معياري ومعزول عن نظام الدروس بالكامل:
+    الدروس تستدعي AudioPlayer.playWord / playExample / replay فقط.
+    لاستبداله لاحقاً بتسجيلات كويتية حقيقية أو صوت مولّد بالذكاء
+    الاصطناعي: أضف للكلمة حقل audio بمسارات ملفات، مثال:
       audio: { word: "audio/dresha.mp3", example: "audio/dresha-ex.mp3" }
-    وسيشغّلها المشغّل تلقائياً بدل نطق المتصفح.
+    فيشغّل المشغّل الملف تلقائياً بدل نطق المتصفح — دون أي تغيير
+    في نظام الدروس. (لا توجد حالياً أي مسارات ملفات في البيانات.)
   */
-  const AudioPlayer = {
-    voice: null,
 
-    init() {
-      if (!("speechSynthesis" in window)) return;
-      const load = () => {
-        const voices = speechSynthesis.getVoices();
-        this.voice =
-          voices.find((v) => /^ar[-_]KW/i.test(v.lang)) ||
-          voices.find((v) => /^ar/i.test(v.lang)) ||
-          null;
-      };
-      load();
-      speechSynthesis.onvoiceschanged = load;
-    },
+  const SPEED = { normal: 0.85, slow: 0.55 };
 
-    speak(text, btn) {
-      if (!("speechSynthesis" in window)) return;
-      speechSynthesis.cancel();
+  let arabicVoice = null;
+
+  // يكتشف تلقائياً أفضل صوت عربي متاح على جهاز المستخدم:
+  // ar-KW أولاً، ثم ar-SA، ثم أي صوت عربي. لا نستخدم صوتاً إنجليزياً أبداً.
+  function detectArabicVoice() {
+    if (!("speechSynthesis" in window)) return;
+    const voices = speechSynthesis.getVoices();
+    arabicVoice =
+      voices.find((v) => /^ar[-_]KW/i.test(v.lang)) ||
+      voices.find((v) => /^ar[-_]SA/i.test(v.lang)) ||
+      voices.find((v) => /^ar/i.test(v.lang)) ||
+      null;
+  }
+
+  /**
+   * ينطق نصاً عربياً بالسرعة المطلوبة.
+   * @param {string} text  النص العربي
+   * @param {"normal"|"slow"} speed  سرعة النطق
+   * @param {HTMLElement} [btn]  زر يُضاء أثناء التشغيل
+   */
+  function speakArabic(text, speed = "normal", btn) {
+    try {
+      if (!("speechSynthesis" in window) || !text) return;
+      speechSynthesis.cancel(); // أوقف أي نطق جارٍ
+
       const u = new SpeechSynthesisUtterance(text);
-      u.lang = this.voice ? this.voice.lang : "ar-SA";
-      if (this.voice) u.voice = this.voice;
-      u.rate = 0.85;
+      // صوت عربي فقط — إن لم يوجد أي صوت عربي نكتفي بتحديد اللغة
+      // ونترك المتصفح يختار، ولا نُسند صوتاً غير عربي إطلاقاً.
+      if (arabicVoice) {
+        u.voice = arabicVoice;
+        u.lang = arabicVoice.lang;
+      } else {
+        u.lang = "ar-KW";
+      }
+      u.rate = SPEED[speed] || SPEED.normal;
       u.pitch = 1.05;
+
       if (btn) {
         btn.classList.add("playing");
         u.onend = u.onerror = () => btn.classList.remove("playing");
       }
       speechSynthesis.speak(u);
+    } catch {
+      // أي خطأ في النطق لا يكسر الدرس أبداً
+      if (btn) btn.classList.remove("playing");
+    }
+  }
+
+  const AudioPlayer = {
+    last: null, // آخر تشغيل — لزر الإعادة 🔁
+
+    init() {
+      if (!("speechSynthesis" in window)) return;
+      detectArabicVoice();
+      speechSynthesis.onvoiceschanged = detectArabicVoice;
     },
 
-    playWord(word, btn) {
-      if (word.audio && word.audio.word) {
-        this._playFile(word.audio.word, btn);
-      } else {
-        this.speak(word.kuwaitiWord, btn);
-      }
+    playWord(word, speed = "normal", btn) {
+      this.last = { text: word.kuwaitiWord, speed, file: word.audio && word.audio.word };
+      this._play(this.last, btn);
     },
 
-    playExample(word, btn) {
-      if (word.audio && word.audio.example) {
-        this._playFile(word.audio.example, btn);
+    playExample(word, speed = "normal", btn) {
+      this.last = { text: word.example, speed, file: word.audio && word.audio.example };
+      this._play(this.last, btn);
+    },
+
+    replay(btn) {
+      if (this.last) this._play(this.last, btn);
+    },
+
+    _play(item, btn) {
+      if (item.file) {
+        this._playFile(item.file, btn);
       } else {
-        this.speak(word.example, btn);
+        speakArabic(item.text, item.speed, btn);
       }
     },
 
     _playFile(src, btn) {
-      const a = new Audio(src);
-      if (btn) {
-        btn.classList.add("playing");
-        a.onended = a.onerror = () => btn.classList.remove("playing");
+      try {
+        const a = new Audio(src);
+        if (btn) {
+          btn.classList.add("playing");
+          a.onended = a.onerror = () => btn.classList.remove("playing");
+        }
+        a.play().catch(() => btn && btn.classList.remove("playing"));
+      } catch {
+        if (btn) btn.classList.remove("playing");
       }
-      a.play();
     },
   };
 
@@ -543,10 +630,11 @@
     tag.textContent = isNew ? "كلمة جديدة ✨" : "مراجعة 🔁";
     tag.classList.toggle("review", !isNew);
 
-    // تنويع العرض: لون وحجم مختلفان كل مرة + ميلان بسيط للصورة
+    // تنويع العرض: صورة مختلفة (لون/حجم/زاوية) كل مرة + ميلان بسيط
     const img = $("lesson-word-image");
-    img.textContent = w.image;
-    img.style.transform = `rotate(${(Math.random() * 10 - 5).toFixed(1)}deg) scale(${(0.9 + Math.random() * 0.25).toFixed(2)})`;
+    img.innerHTML = "";
+    img.appendChild(makeWordImg(w));
+    img.style.transform = `rotate(${(Math.random() * 8 - 4).toFixed(1)}deg) scale(${(0.94 + Math.random() * 0.12).toFixed(2)})`;
 
     const kw = $("lesson-word-kuwaiti");
     kw.textContent = w.kuwaitiWord;
@@ -568,7 +656,7 @@
     $("btn-lesson-next").textContent =
       session.lessonIdx + 1 >= total ? "يلّا نلعب! 🎮" : "التالي ⬅";
 
-    AudioPlayer.playWord(w, $("btn-lesson-audio"));
+    AudioPlayer.playWord(w, "normal", $("btn-lesson-audio"));
   }
 
   function lessonNext() {
@@ -649,41 +737,47 @@
     const btn = document.createElement("button");
     btn.type = "button";
     btn.className = "stimulus-audio-btn";
-    btn.setAttribute("aria-label", "اسمع الكلمة");
+    btn.setAttribute("aria-label", "اسمع الكلمة بسرعة عادية");
     btn.textContent = "🔊";
-    btn.addEventListener("click", () => AudioPlayer.playWord(w, btn));
+    btn.addEventListener("click", () => AudioPlayer.playWord(w, "normal", btn));
     stimulus.appendChild(btn);
 
-    const choices = shuffle([w, ...distractorsFor(w, 3, (x) => x.image)]);
+    const slow = document.createElement("button");
+    slow.type = "button";
+    slow.className = "btn btn-audio btn-audio-small";
+    slow.setAttribute("aria-label", "اسمع الكلمة ببطء");
+    slow.textContent = "🐢";
+    slow.addEventListener("click", () => AudioPlayer.playWord(w, "slow", slow));
+    stimulus.appendChild(slow);
+
+    const choices = shuffle([w, ...distractorsFor(w, 3, (x) => x.image || x.emoji)]);
     choices.forEach((c) => {
       const b = document.createElement("button");
       b.type = "button";
       b.className = "quiz-option";
       b.setAttribute("aria-label", c.standardArabic);
-      const img = document.createElement("span");
-      img.className = "option-image";
-      img.textContent = c.image;
+      const holder = document.createElement("span");
+      holder.className = "option-image";
+      holder.appendChild(makeWordImg(c));
       // تنويع بسيط في عرض الصورة
-      img.style.transform = `scale(${(0.9 + Math.random() * 0.3).toFixed(2)}) rotate(${(Math.random() * 8 - 4).toFixed(1)}deg)`;
-      b.appendChild(img);
+      holder.style.transform = `scale(${(0.92 + Math.random() * 0.16).toFixed(2)}) rotate(${(Math.random() * 8 - 4).toFixed(1)}deg)`;
+      b.appendChild(holder);
       b.addEventListener("click", () => handleAnswer(b, c.id === w.id, w));
       options.appendChild(b);
     });
 
-    AudioPlayer.playWord(w, btn);
+    AudioPlayer.playWord(w, "normal", btn);
   }
 
   /* النشاط ٣: شوف الصورة واختر الكلمة الكويتية */
   function buildImageChooseWord(w, stimulus, options) {
     $("quiz-question").textContent = "شوف الصورة واختر الكلمة الكويتية 👀";
 
-    const img = document.createElement("div");
-    img.className = "stimulus-image";
-    img.setAttribute("role", "img");
-    img.setAttribute("aria-label", w.standardArabic);
-    img.textContent = w.image;
-    img.style.transform = `rotate(${(Math.random() * 8 - 4).toFixed(1)}deg)`;
-    stimulus.appendChild(img);
+    const holder = document.createElement("div");
+    holder.className = "stimulus-image";
+    holder.appendChild(makeWordImg(w));
+    holder.style.transform = `rotate(${(Math.random() * 8 - 4).toFixed(1)}deg)`;
+    stimulus.appendChild(holder);
 
     buildWordOptions(w, options);
   }
@@ -715,7 +809,7 @@
     hint.className = "btn btn-audio btn-audio-small";
     hint.setAttribute("aria-label", "اسمع الجملة كاملة");
     hint.textContent = "🔊";
-    hint.addEventListener("click", () => AudioPlayer.playExample(w, hint));
+    hint.addEventListener("click", () => AudioPlayer.playExample(w, "normal", hint));
     stimulus.appendChild(hint);
 
     buildWordOptions(w, options, () => {
@@ -773,8 +867,8 @@
         btn.classList.add("dimmed");
         btn.disabled = true;
       }, 1500);
-      // نعيد سماع الكلمة لمساعدته
-      AudioPlayer.playWord(word);
+      // نعيد سماع الكلمة ببطء لمساعدته
+      AudioPlayer.playWord(word, "slow");
       return;
     }
 
@@ -1055,15 +1149,18 @@
     $("btn-rewards").addEventListener("click", () => { SFX.click(); renderRewards(); showScreen("screen-rewards"); });
     $("btn-parents").addEventListener("click", () => { SFX.click(); renderParents(); showScreen("screen-parents"); });
 
-    // الدرس
-    $("btn-lesson-audio").addEventListener("click", () => {
-      const w = wordById(session.lessonQueue[session.lessonIdx]);
-      AudioPlayer.playWord(w, $("btn-lesson-audio"));
-    });
-    $("btn-example-audio").addEventListener("click", () => {
-      const w = wordById(session.lessonQueue[session.lessonIdx]);
-      AudioPlayer.playExample(w, $("btn-example-audio"));
-    });
+    // الدرس — أزرار الصوت: عادي 🔊، بطيء 🐢، إعادة 🔁
+    const lessonWord = () => wordById(session.lessonQueue[session.lessonIdx]);
+    $("btn-lesson-audio").addEventListener("click", () =>
+      AudioPlayer.playWord(lessonWord(), "normal", $("btn-lesson-audio")));
+    $("btn-lesson-audio-slow").addEventListener("click", () =>
+      AudioPlayer.playWord(lessonWord(), "slow", $("btn-lesson-audio-slow")));
+    $("btn-audio-replay").addEventListener("click", () =>
+      AudioPlayer.replay($("btn-audio-replay")));
+    $("btn-example-audio").addEventListener("click", () =>
+      AudioPlayer.playExample(lessonWord(), "normal", $("btn-example-audio")));
+    $("btn-example-audio-slow").addEventListener("click", () =>
+      AudioPlayer.playExample(lessonWord(), "slow", $("btn-example-audio-slow")));
     $("btn-lesson-next").addEventListener("click", lessonNext);
     $("btn-lesson-back").addEventListener("click", () => { endSessionTime(); goHome(); });
 

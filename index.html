@@ -148,15 +148,26 @@
         <p class="word-meaning" id="lesson-word-meaning" lang="ar">نافذة</p>
         <p class="word-english" id="lesson-word-english" lang="en" dir="ltr">Window</p>
 
-        <button type="button" class="btn btn-audio" id="btn-lesson-audio" aria-label="اسمع الكلمة">
-          🔊 اسمع الكلمة
-        </button>
+        <div class="audio-controls" role="group" aria-label="أزرار الصوت">
+          <button type="button" class="btn btn-audio" id="btn-lesson-audio" aria-label="اسمع الكلمة بسرعة عادية">
+            🔊 اسمع الكلمة
+          </button>
+          <button type="button" class="btn btn-audio btn-audio-small" id="btn-lesson-audio-slow" aria-label="اسمع الكلمة ببطء" title="ببطء">
+            🐢
+          </button>
+          <button type="button" class="btn btn-audio btn-audio-small" id="btn-audio-replay" aria-label="أعد آخر صوت" title="إعادة">
+            🔁
+          </button>
+        </div>
 
         <div class="word-example card-inner">
           <span class="example-label">جملة كويتية 💬</span>
           <p class="example-text" id="lesson-word-example" lang="ar">بطّل الدريشة، الجو حلو!</p>
-          <button type="button" class="btn btn-audio btn-audio-small" id="btn-example-audio" aria-label="اسمع الجملة">
+          <button type="button" class="btn btn-audio btn-audio-small" id="btn-example-audio" aria-label="اسمع الجملة بسرعة عادية">
             🔊
+          </button>
+          <button type="button" class="btn btn-audio btn-audio-small" id="btn-example-audio-slow" aria-label="اسمع الجملة ببطء" title="ببطء">
+            🐢
           </button>
         </div>
 
@@ -374,7 +385,8 @@
     </div>
   </div>
 
-  <!-- ملف البيانات ثم منطق التطبيق -->
+  <!-- فهرس الصور ثم ملف البيانات ثم منطق التطبيق -->
+  <script src="images.js"></script>
   <script src="words.js"></script>
   <script src="app.js"></script>
 </body>
