@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="description" content="كلماتي الكويتية — موقع تعليمي ممتع يعلّم الأطفال المفردات الكويتية">
+  <title>كلماتي الكويتية 🇰🇼 — تعلّم اللهجة الكويتية للأطفال</title>
+
+  <!-- خط عربي واضح ومناسب للأطفال -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+Bhaijaan+2:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="styles.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌟</text></svg>">
+</head>
+<body>
+
+  <!-- ═══════════════════════ 1) شاشة إنشاء الحساب (اسم المستخدم + الصورة الرمزية + اللون المفضل) ═══════════════════════ -->
+  <section id="screen-setup" class="screen" hidden>
+    <div class="setup-card card">
+      <div class="setup-mascot bounce" aria-hidden="true">🦊</div>
+      <h1 class="setup-title">هلا والله! 👋</h1>
+      <p class="setup-subtitle">خلّنا نسوي لك حساب حق تتعلم كلمات كويتية!</p>
+
+      <form id="setup-form" autocomplete="off">
+        <!-- اسم المستخدم -->
+        <div class="form-group">
+          <label for="input-username" class="form-label">شنو اسمك المستعار؟ ✏️</label>
+          <input
+            type="text"
+            id="input-username"
+            class="form-input"
+            maxlength="20"
+            placeholder="مثال: نجمة الكويت"
+            required
+            aria-describedby="username-hint">
+          <small id="username-hint" class="form-hint">لا تكتب اسمك الحقيقي — اختر اسم لعب ممتع!</small>
+        </div>
+
+        <!-- اختيار الصورة الرمزية -->
+        <div class="form-group">
+          <span class="form-label" id="avatar-label">اختر شخصيتك 🎭</span>
+          <div class="avatar-grid" id="avatar-grid" role="radiogroup" aria-labelledby="avatar-label">
+            <!-- تُعبّأ من app.js: أزرار role="radio" لكل رمز -->
+          </div>
+        </div>
+
+        <!-- اختيار اللون المفضل -->
+        <div class="form-group">
+          <span class="form-label" id="color-label">شنو لونك المفضل؟ 🎨</span>
+          <div class="color-grid" id="color-grid" role="radiogroup" aria-labelledby="color-label">
+            <!-- تُعبّأ من app.js: أزرار ألوان -->
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-big" id="btn-create-profile">
+          يلّا نبدأ! 🚀
+        </button>
+      </form>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════ 2) لوحة الطفل الرئيسية ═══════════════════════ -->
+  <section id="screen-dashboard" class="screen" hidden>
+    <header class="dash-header">
+      <div class="dash-profile">
+        <span class="dash-avatar" id="dash-avatar" aria-hidden="true">🦊</span>
+        <div class="dash-profile-text">
+          <h1 class="dash-username" id="dash-username">—</h1>
+          <span class="dash-level-chip" id="dash-level">المستوى ١</span>
+        </div>
+      </div>
+      <button type="button" class="btn btn-icon" id="btn-parents" aria-label="لوحة الأهل" title="لوحة الأهل">
+        👨‍👩‍👧
+      </button>
+    </header>
+
+    <!-- إحصائيات سريعة -->
+    <div class="stats-row">
+      <div class="stat-card card">
+        <span class="stat-emoji" aria-hidden="true">⭐</span>
+        <span class="stat-value" id="stat-stars">0</span>
+        <span class="stat-label">النجوم</span>
+      </div>
+      <div class="stat-card card">
+        <span class="stat-emoji" aria-hidden="true">🔥</span>
+        <span class="stat-value" id="stat-streak">0</span>
+        <span class="stat-label">أيام متتالية</span>
+      </div>
+      <div class="stat-card card">
+        <span class="stat-emoji" aria-hidden="true">📚</span>
+        <span class="stat-value" id="stat-words">0</span>
+        <span class="stat-label">كلمات تعلمتها</span>
+      </div>
+    </div>
+
+    <!-- تقدم المستوى -->
+    <div class="card level-card">
+      <div class="level-card-head">
+        <span id="level-progress-text">التقدم للمستوى الجاي</span>
+        <span id="level-progress-stars">⭐ 0 / 20</span>
+      </div>
+      <div class="progress-track" role="progressbar" aria-label="التقدم للمستوى التالي"
+           aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="level-progressbar">
+        <div class="progress-fill" id="level-progress-fill" style="width:0%"></div>
+      </div>
+    </div>
+
+    <!-- تقدم اليوم -->
+    <div class="card today-card">
+      <h2 class="card-title">درس اليوم 📅</h2>
+      <div class="today-dots" id="today-dots" aria-label="تقدم درس اليوم">
+        <!-- 10 نقاط تُعبّأ من app.js -->
+      </div>
+      <p class="today-status" id="today-status">جاهز حق درس اليوم؟</p>
+
+      <button type="button" class="btn btn-primary btn-big" id="btn-start-lesson">
+        ابدأ درس اليوم 🚀
+      </button>
+      <button type="button" class="btn btn-secondary btn-big" id="btn-review-words">
+        راجع كلماتي السابقة 🔁
+      </button>
+      <button type="button" class="btn btn-ghost" id="btn-rewards">
+        جوائزي وأوسمتي 🏆
+      </button>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════ 3) شاشة الدرس اليومي (عرض وسماع الكلمة) ═══════════════════════ -->
+  <section id="screen-lesson" class="screen" hidden>
+    <header class="lesson-header">
+      <button type="button" class="btn btn-icon" id="btn-lesson-back" aria-label="رجوع للوحة الرئيسية">➜</button>
+      <div class="progress-track lesson-progress" role="progressbar" aria-label="تقدم الدرس"
+           aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="lesson-progressbar">
+        <div class="progress-fill" id="lesson-progress-fill" style="width:0%"></div>
+      </div>
+      <span class="lesson-counter" id="lesson-counter">١ / ١٠</span>
+    </header>
+
+    <div class="lesson-body">
+      <span class="word-tag" id="lesson-word-tag">كلمة جديدة ✨</span>
+
+      <!-- بطاقة الكلمة -->
+      <div class="card word-card" id="lesson-word-card">
+        <div class="word-image" id="lesson-word-image" aria-hidden="true">🪟</div>
+        <h2 class="word-kuwaiti" id="lesson-word-kuwaiti" lang="ar">دريشة</h2>
+        <p class="word-meaning" id="lesson-word-meaning" lang="ar">نافذة</p>
+        <p class="word-english" id="lesson-word-english" lang="en" dir="ltr">Window</p>
+
+        <button type="button" class="btn btn-audio" id="btn-lesson-audio" aria-label="اسمع الكلمة">
+          🔊 اسمع الكلمة
+        </button>
+
+        <div class="word-example card-inner">
+          <span class="example-label">جملة كويتية 💬</span>
+          <p class="example-text" id="lesson-word-example" lang="ar">بطّل الدريشة، الجو حلو!</p>
+          <button type="button" class="btn btn-audio btn-audio-small" id="btn-example-audio" aria-label="اسمع الجملة">
+            🔊
+          </button>
+        </div>
+
+        <div class="word-meta">
+          <span class="meta-chip" id="lesson-word-category">🏠 البيت</span>
+          <span class="meta-chip" id="lesson-word-difficulty">⭐ سهلة</span>
+        </div>
+      </div>
+
+      <button type="button" class="btn btn-primary btn-big" id="btn-lesson-next">
+        التالي ⬅
+      </button>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════ 4) شاشة الاختبار (٤ أنواع أنشطة) ═══════════════════════ -->
+  <section id="screen-quiz" class="screen" hidden>
+    <header class="lesson-header">
+      <button type="button" class="btn btn-icon" id="btn-quiz-back" aria-label="رجوع للوحة الرئيسية">➜</button>
+      <div class="progress-track lesson-progress" role="progressbar" aria-label="تقدم الاختبار"
+           aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="quiz-progressbar">
+        <div class="progress-fill" id="quiz-progress-fill" style="width:0%"></div>
+      </div>
+      <span class="lesson-counter" id="quiz-counter">١ / ١٠</span>
+    </header>
+
+    <div class="lesson-body">
+      <!-- سؤال النشاط -->
+      <h2 class="quiz-question" id="quiz-question">اسمع الكلمة واختر الصورة الصحيحة 👂</h2>
+
+      <!-- منطقة المحفّز: صورة أو زر صوت أو جملة ناقصة -->
+      <div class="quiz-stimulus" id="quiz-stimulus">
+        <!-- تُعبّأ من app.js حسب نوع النشاط -->
+      </div>
+
+      <!-- خيارات الإجابة -->
+      <div class="quiz-options" id="quiz-options">
+        <!-- تُعبّأ من app.js: أزرار خيارات (صور أو كلمات) -->
+      </div>
+
+      <!-- رسالة تشجيعية بعد الإجابة -->
+      <div class="quiz-feedback" id="quiz-feedback" role="status" aria-live="polite" hidden>
+        <span class="feedback-emoji" id="feedback-emoji">🎉</span>
+        <p class="feedback-text" id="feedback-text">ممتاز! برافو عليك!</p>
+        <button type="button" class="btn btn-primary btn-big" id="btn-quiz-next">كمّل ⬅</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════ 5) شاشة نتائج الدرس ═══════════════════════ -->
+  <section id="screen-results" class="screen" hidden>
+    <div class="results-card card">
+      <div class="results-trophy bounce" id="results-trophy" aria-hidden="true">🏆</div>
+      <h1 class="results-title" id="results-title">يا سلام عليك! 🎉</h1>
+      <p class="results-subtitle" id="results-subtitle">خلّصت درس اليوم!</p>
+
+      <div class="results-stars" id="results-stars" aria-label="النجوم المكتسبة">
+        <!-- نجوم متحركة تُعبّأ من app.js -->
+      </div>
+
+      <div class="results-stats">
+        <div class="results-stat">
+          <span class="results-stat-value" id="results-correct">0</span>
+          <span class="results-stat-label">إجابات صحيحة ✅</span>
+        </div>
+        <div class="results-stat">
+          <span class="results-stat-value" id="results-stars-earned">0</span>
+          <span class="results-stat-label">نجوم جديدة ⭐</span>
+        </div>
+        <div class="results-stat">
+          <span class="results-stat-value" id="results-streak">0</span>
+          <span class="results-stat-label">أيام متتالية 🔥</span>
+        </div>
+      </div>
+
+      <!-- وسام جديد (يظهر عند استحقاقه) -->
+      <div class="new-badge card-inner" id="results-new-badge" hidden>
+        <span class="new-badge-emoji" id="new-badge-emoji">🥇</span>
+        <p class="new-badge-text" id="new-badge-text">وسام جديد!</p>
+      </div>
+
+      <button type="button" class="btn btn-primary btn-big" id="btn-results-home">
+        ارجع للوحتي 🏠
+      </button>
+      <button type="button" class="btn btn-ghost" id="btn-results-rewards">
+        شوف جوائزي 🏆
+      </button>
+    </div>
+
+    <!-- حاوية قصاصات الاحتفال -->
+    <div class="confetti-container" id="confetti-container" aria-hidden="true"></div>
+  </section>
+
+  <!-- ═══════════════════════ 6) شاشة الجوائز والأوسمة ═══════════════════════ -->
+  <section id="screen-rewards" class="screen" hidden>
+    <header class="lesson-header">
+      <button type="button" class="btn btn-icon" id="btn-rewards-back" aria-label="رجوع للوحة الرئيسية">➜</button>
+      <h1 class="screen-title">جوائزي 🏆</h1>
+      <span class="header-spacer" aria-hidden="true"></span>
+    </header>
+
+    <div class="rewards-body">
+      <!-- ملخص -->
+      <div class="stats-row">
+        <div class="stat-card card">
+          <span class="stat-emoji" aria-hidden="true">⭐</span>
+          <span class="stat-value" id="rewards-stars">0</span>
+          <span class="stat-label">النجوم</span>
+        </div>
+        <div class="stat-card card">
+          <span class="stat-emoji" aria-hidden="true">🎖️</span>
+          <span class="stat-value" id="rewards-level">1</span>
+          <span class="stat-label">المستوى</span>
+        </div>
+        <div class="stat-card card">
+          <span class="stat-emoji" aria-hidden="true">🔥</span>
+          <span class="stat-value" id="rewards-streak">0</span>
+          <span class="stat-label">أيام متتالية</span>
+        </div>
+      </div>
+
+      <!-- تقدم المستوى -->
+      <div class="card level-card">
+        <div class="level-card-head">
+          <span id="rewards-level-text">التقدم للمستوى الجاي</span>
+          <span id="rewards-level-stars">⭐ 0 / 20</span>
+        </div>
+        <div class="progress-track" role="progressbar" aria-label="التقدم للمستوى التالي"
+             aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="rewards-progressbar">
+          <div class="progress-fill" id="rewards-progress-fill" style="width:0%"></div>
+        </div>
+      </div>
+
+      <!-- الأوسمة -->
+      <h2 class="card-title rewards-badges-title">أوسمتي 🎖️</h2>
+      <div class="badges-grid" id="badges-grid">
+        <!-- تُعبّأ من app.js: بطاقات أوسمة (مقفلة/مفتوحة) -->
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════ 7) لوحة الأهل ═══════════════════════ -->
+  <section id="screen-parents" class="screen" hidden>
+    <header class="lesson-header">
+      <button type="button" class="btn btn-icon" id="btn-parents-back" aria-label="رجوع للوحة الرئيسية">➜</button>
+      <h1 class="screen-title">لوحة الأهل 👨‍👩‍👧</h1>
+      <span class="header-spacer" aria-hidden="true"></span>
+    </header>
+
+    <div class="parents-body">
+      <!-- إحصائيات التعلم -->
+      <div class="parents-stats-grid">
+        <div class="card parent-stat">
+          <span class="parent-stat-value" id="parent-days">0</span>
+          <span class="parent-stat-label">إجمالي أيام التعلم 📅</span>
+        </div>
+        <div class="card parent-stat">
+          <span class="parent-stat-value" id="parent-mastered">0</span>
+          <span class="parent-stat-label">كلمات متقنة ✅</span>
+        </div>
+        <div class="card parent-stat">
+          <span class="parent-stat-value" id="parent-review">0</span>
+          <span class="parent-stat-label">كلمات تحتاج مراجعة 🔁</span>
+        </div>
+        <div class="card parent-stat">
+          <span class="parent-stat-value" id="parent-accuracy">0%</span>
+          <span class="parent-stat-label">نسبة الدقة 🎯</span>
+        </div>
+        <div class="card parent-stat">
+          <span class="parent-stat-value" id="parent-time">0 د</span>
+          <span class="parent-stat-label">وقت التعلم ⏱️</span>
+        </div>
+        <div class="card parent-stat">
+          <span class="parent-stat-value" id="parent-categories">0</span>
+          <span class="parent-stat-label">فئات مكتملة 📂</span>
+        </div>
+      </div>
+
+      <!-- الفئات المكتملة -->
+      <div class="card">
+        <h2 class="card-title">تقدم الفئات 📂</h2>
+        <div class="categories-list" id="parent-categories-list">
+          <!-- تُعبّأ من app.js: صف لكل فئة مع شريط تقدم -->
+        </div>
+      </div>
+
+      <!-- الإعدادات -->
+      <div class="card">
+        <h2 class="card-title">الإعدادات ⚙️</h2>
+
+        <div class="setting-row">
+          <label for="toggle-sound" class="setting-label">المؤثرات الصوتية 🔔</label>
+          <button type="button" class="toggle" id="toggle-sound" role="switch" aria-checked="true" aria-label="تفعيل المؤثرات الصوتية">
+            <span class="toggle-knob"></span>
+          </button>
+        </div>
+
+        <div class="setting-row setting-danger">
+          <span class="setting-label">إعادة تعيين كل التقدم 🗑️</span>
+          <button type="button" class="btn btn-danger" id="btn-reset-progress">إعادة تعيين</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- نافذة تأكيد إعادة التعيين -->
+  <div class="modal-overlay" id="modal-reset" hidden>
+    <div class="modal card" role="alertdialog" aria-modal="true" aria-labelledby="modal-reset-title">
+      <h2 id="modal-reset-title" class="modal-title">متأكد؟ 🤔</h2>
+      <p class="modal-text">راح ينمسح كل التقدم والنجوم والأوسمة. ما نقدر نرجّعها!</p>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" id="btn-reset-cancel">لا، رجعني</button>
+        <button type="button" class="btn btn-danger" id="btn-reset-confirm">نعم، امسح كل شي</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ملف البيانات ثم منطق التطبيق -->
+  <script src="words.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
