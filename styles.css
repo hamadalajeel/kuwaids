@@ -5,48 +5,47 @@
 
 /* ── متغيرات التصميم ─────────────────────────────────────────── */
 :root {
-  /* نظام ألوان بأسلوب github.com (Primer، الوضع الفاتح):
-     أسطح بيضاء بحدود رمادية رفيعة، زر رئيسي أخضر، تفاعلات زرقاء،
-     زوايا صغيرة وظلال شبه معدومة.
+  /* تصميم مودرن نظيف: أسطح بيضاء بحدود بنفسجية-رمادية ناعمة،
+     لون أساسي إنديجو بتدرج خفيف وظلال ملونة ناعمة، وزوايا وسطية.
      --accent يتغيّر من app.js حسب اللون المفضل للطفل */
-  --accent: #0969da;
+  --accent: #6366f1;
   --accent-soft: color-mix(in srgb, var(--accent) 12%, white);
 
-  --bg: #f6f8fa;
+  --bg: #f7f7fc;
   --bg-gradient: none;
   --surface: #ffffff;
-  --surface-soft: #f6f8fa;
-  --border: #d0d7de;
+  --surface-soft: #f4f4fa;
+  --border: #e7e7f2;
 
-  --ink: #1f2328;          /* نص أساسي — تباين عالٍ */
-  --ink-soft: #59636e;     /* نص ثانوي */
+  --ink: #1d1f2c;          /* نص أساسي — تباين عالٍ */
+  --ink-soft: #6f7284;     /* نص ثانوي */
 
-  --primary: #1f883d;      /* أخضر GitHub للزر الرئيسي */
-  --primary-dark: #1a7f37;
-  --link: #0969da;         /* أزرق GitHub للتفاعلات والروابط */
-  --link-dark: #0550ae;
-  --secondary: #0969da;
-  --secondary-dark: #0550ae;
-  --success: #1a7f37;
-  --success-bg: #dafbe1;
-  --attention: #d4a72c;
-  --attention-bg: #fff8c5;
-  --gold: #d4a72c;
-  --danger: #cf222e;
+  --primary: #6366f1;      /* إنديجو مودرن للزر الرئيسي */
+  --primary-dark: #4f46e5;
+  --link: #6366f1;
+  --link-dark: #4f46e5;
+  --secondary: #6366f1;
+  --secondary-dark: #4f46e5;
+  --success: #16a34a;
+  --success-bg: #e9f9ef;
+  --attention: #f59e0b;
+  --attention-bg: #fdf3df;
+  --gold: #f5b301;
+  --danger: #e11d48;
 
-  --radius-lg: 12px;
-  --radius-md: 8px;
-  --radius-sm: 6px;
+  --radius-lg: 20px;
+  --radius-md: 13px;
+  --radius-sm: 9px;
 
-  --shadow-card: 0 1px 0 rgba(31, 35, 40, 0.04);
-  --shadow-pop: 0 3px 6px rgba(140, 149, 159, 0.2);
+  --shadow-card: 0 1px 2px rgba(29, 31, 44, 0.04), 0 6px 18px rgba(99, 102, 241, 0.06);
+  --shadow-pop: 0 8px 24px rgba(99, 102, 241, 0.16);
 
-  /* واجهة بخط النظام مثل GitHub، والكلمة التعليمية بخط عربي مميز */
+  /* واجهة بخط النظام، والعناوين والأزرار والكلمات بخط عربي مستدير */
   --font: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans Arabic", Tahoma, sans-serif;
   --font-display: "Baloo Bhaijaan 2", "Segoe UI", Tahoma, sans-serif;
 
-  /* أهداف لمس مريحة للأطفال مع كثافة GitHub */
-  --touch: 48px;
+  /* أهداف لمس مريحة للأطفال */
+  --touch: 50px;
 }
 
 /* ── إعادة ضبط أساسية ────────────────────────────────────────── */
@@ -151,6 +150,7 @@ button {
 }
 
 .card-title {
+  font-family: var(--font-display);
   font-size: 1.25rem;
   font-weight: 700;
   margin-bottom: 12px;
@@ -161,12 +161,13 @@ button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 10px;
   min-height: var(--touch);
-  padding: 10px 20px;
+  padding: 10px 22px;
   border-radius: var(--radius-md);
+  font-family: var(--font-display);
   font-size: 1.05rem;
-  font-weight: 600;
+  font-weight: 700;
   transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
   user-select: none;
   touch-action: manipulation;
@@ -184,14 +185,14 @@ button {
 }
 
 .btn-primary {
-  background: var(--primary);
+  background: linear-gradient(180deg, #6d70f6 0%, #5558ef 100%);
   color: #fff;
-  border: 1px solid rgba(31, 35, 40, 0.15);
-  box-shadow: var(--shadow-card);
+  box-shadow: 0 6px 16px rgba(99, 102, 241, 0.35);
 }
 
 .btn-primary:hover {
-  background: var(--primary-dark);
+  filter: brightness(1.06);
+  transform: translateY(-1px);
 }
 
 /* زر ثانوي: زر GitHub الافتراضي (أبيض بحد رمادي) */
@@ -203,7 +204,8 @@ button {
 }
 
 .btn-secondary:hover {
-  background: #f3f4f6;
+  background: var(--surface-soft);
+  border-color: #d5d5e8;
 }
 
 .btn-ghost {
@@ -287,6 +289,49 @@ button {
   50%      { box-shadow: 0 0 0 12px transparent; }
 }
 
+/* مقاسات الأيقونات الخطية داخل الأزرار */
+.btn svg {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.btn-audio-small svg {
+  width: 22px;
+  height: 22px;
+}
+
+.btn-icon svg {
+  width: 24px;
+  height: 24px;
+}
+
+/* عناصر ناطقة: مرور الماوس يسمع النطق ويعرض تلميح التشكيل */
+.speakable {
+  cursor: pointer;
+  position: relative;
+}
+
+.speakable[data-tts]:hover::after {
+  content: attr(data-tts);
+  position: absolute;
+  bottom: calc(100% + 8px);
+  inset-inline-start: 50%;
+  transform: translateX(50%);
+  background: var(--ink);
+  color: #fff;
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.8;
+  padding: 4px 16px;
+  border-radius: 10px;
+  white-space: nowrap;
+  z-index: 30;
+  pointer-events: none;
+  animation: fadeIn 0.15s ease;
+}
+
 /* حالة تشغيل الصوت */
 .btn-audio.playing {
   background: var(--link);
@@ -327,6 +372,7 @@ button {
 }
 
 .setup-title {
+  font-family: var(--font-display);
   font-size: clamp(1.8rem, 6vw, 2.4rem);
   font-weight: 800;
 }
@@ -461,6 +507,11 @@ button {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 14%, white) 0%, var(--surface) 70%);
+  border: 1px solid color-mix(in srgb, var(--accent) 20%, var(--border));
+  border-radius: var(--radius-lg);
+  padding: 16px 20px;
+  box-shadow: var(--shadow-card);
 }
 
 .dash-profile {
@@ -492,6 +543,7 @@ button {
 }
 
 .dash-username {
+  font-family: var(--font-display);
   font-size: clamp(1.3rem, 5vw, 1.7rem);
   font-weight: 800;
   overflow: hidden;
@@ -501,11 +553,11 @@ button {
 
 .dash-level-chip {
   align-self: flex-start;
-  background: #ddf4ff;
-  color: var(--link);
-  border: 1px solid #54aeff66;
+  background: var(--accent-soft);
+  color: var(--primary-dark);
+  border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
   font-size: 0.85rem;
-  font-weight: 600;
+  font-weight: 700;
   padding: 1px 12px;
   border-radius: 999px;
 }
@@ -570,9 +622,8 @@ button {
 /* شريط التقدم العام */
 .progress-track {
   width: 100%;
-  height: 10px;
-  background: #eff2f5;
-  border: 1px solid rgba(31, 35, 40, 0.06);
+  height: 12px;
+  background: #ececf6;
   border-radius: 999px;
   overflow: hidden;
 }
@@ -580,7 +631,7 @@ button {
 .progress-fill {
   height: 100%;
   border-radius: 999px;
-  background: var(--primary);
+  background: linear-gradient(90deg, #818cf8, #6366f1);
   transition: width 0.6s cubic-bezier(0.22, 1, 0.36, 1);
   min-width: 0;
 }
@@ -604,7 +655,7 @@ button {
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  background: #eff2f5;
+  background: #ececf6;
   border: 1px solid var(--border);
   display: flex;
   align-items: center;
@@ -655,12 +706,12 @@ button {
 }
 
 .btn-back:hover {
-  background: #f3f4f6;
+  background: var(--surface-soft);
 }
 
 .lesson-progress {
   flex: 1;
-  height: 10px;
+  height: 12px;
 }
 
 .lesson-counter {
@@ -703,9 +754,9 @@ button {
 }
 
 .word-tag.review {
-  background: #ddf4ff;
-  color: var(--link);
-  border: 1px solid #54aeff66;
+  background: var(--accent-soft);
+  color: var(--primary-dark);
+  border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
 }
 
 /* بطاقة الكلمة */
@@ -815,6 +866,7 @@ button {
 
 /* ═══════════════ 4) شاشة الاختبار ═══════════════ */
 .quiz-question {
+  font-family: var(--font-display);
   font-size: clamp(1.25rem, 5vw, 1.6rem);
   font-weight: 800;
   text-align: center;
@@ -850,16 +902,22 @@ button {
   width: clamp(104px, 28vw, 140px);
   height: clamp(104px, 28vw, 140px);
   border-radius: 50%;
-  font-size: clamp(2.8rem, 9vw, 3.6rem);
-  background: var(--link);
+  background: linear-gradient(180deg, #6d70f6, #5558ef);
   color: #fff;
-  border: 1px solid rgba(31, 35, 40, 0.15);
-  box-shadow: var(--shadow-pop);
-  transition: transform 0.15s ease, background 0.15s ease;
+  box-shadow: 0 10px 26px rgba(99, 102, 241, 0.4);
+  transition: transform 0.15s ease, filter 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .stimulus-audio-btn:hover {
-  background: var(--link-dark);
+  filter: brightness(1.07);
+}
+
+.stimulus-audio-btn svg {
+  width: clamp(44px, 12vw, 60px);
+  height: clamp(44px, 12vw, 60px);
 }
 
 .stimulus-audio-btn:active {
@@ -1071,6 +1129,7 @@ button {
 }
 
 .results-title {
+  font-family: var(--font-display);
   font-size: clamp(1.7rem, 6.5vw, 2.3rem);
   font-weight: 800;
 }

@@ -66,6 +66,61 @@
   const WORDS = window.KUWAITI_WORDS || [];
   const CATEGORIES = window.WORD_CATEGORIES || {};
 
+  /* ═══════════════ أيقونات SVG خطية مودرن (بدل الإيموجي في الأزرار) ═══════════════ */
+
+  const svgIcon = (paths) =>
+    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" ` +
+    `stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths}</svg>`;
+
+  const ICONS = {
+    speaker: svgIcon('<path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.2 6a9 9 0 0 1 0 12"/>'),
+    slow: svgIcon('<path d="M4.5 14.5a7.5 6 0 0 1 14.6-2"/><path d="M2.5 16h17"/><circle cx="20.2" cy="14" r="1.7"/><path d="M7.5 16v2.2M14.5 16v2.2"/>'),
+    replay: svgIcon('<path d="M3.5 12a8.5 8.5 0 1 0 2.9-6.4"/><path d="M3.5 4.5v5.2h5.2"/>'),
+    back: svgIcon('<path d="M9.5 5.5 16 12l-6.5 6.5"/>'),
+    user: svgIcon('<circle cx="12" cy="8" r="3.6"/><path d="M4.8 20c.9-3.6 3.9-5.4 7.2-5.4s6.3 1.8 7.2 5.4"/>'),
+    trophy: svgIcon('<path d="M8 4h8v5a4 4 0 0 1-8 0z"/><path d="M8 5.5H4.8A3.2 3.2 0 0 0 8 9M16 5.5h3.2A3.2 3.2 0 0 1 16 9"/><path d="M12 13v3.5"/><path d="M8.5 20.5h7M9.5 16.5h5v4h-5z"/>'),
+    bulb: svgIcon('<path d="M9.5 18h5M10.5 21h3"/><path d="M12 3a6 6 0 0 0-3.5 10.9c.7.5 1.1 1.2 1.3 2.1h4.4c.2-.9.6-1.6 1.3-2.1A6 6 0 0 0 12 3z"/>'),
+  };
+
+  // حقن الأيقونات في الأزرار الثابتة (الإيموجي في HTML يبقى احتياطاً بلا JS)
+  function injectIcons() {
+    const set = (id, html) => { const el = $(id); if (el) el.innerHTML = html; };
+    set("btn-lesson-audio", ICONS.speaker + "<span>اسمع الكلمة</span>");
+    set("btn-lesson-audio-slow", ICONS.slow);
+    set("btn-audio-replay", ICONS.replay);
+    set("btn-example-audio", ICONS.speaker);
+    set("btn-example-audio-slow", ICONS.slow);
+    set("btn-parents", ICONS.user);
+    set("btn-quiz-help", ICONS.bulb + "<span>علّمني الجواب</span>");
+    set("btn-rewards", ICONS.trophy + "<span>جوائزي وأوسمتي</span>");
+    set("btn-review-words", ICONS.replay + "<span>راجع كلماتي السابقة</span>");
+    ["btn-lesson-back", "btn-quiz-back", "btn-rewards-back", "btn-parents-back"].forEach((id) =>
+      set(id, "<span>رجوع</span>" + ICONS.back));
+  }
+
+  /* ═══════════════ النطق عند مرور الماوس (لطفل لا يقرأ بعد) ═══════════════ */
+
+  let hoverKey = "";
+  let hoverAt = 0;
+
+  // ينطق مرة واحدة لكل عنصر خلال ثانية ونصف حتى لا يتكرر الصوت بإزعاج
+  function hoverSpeak(key, play) {
+    const now = Date.now();
+    if (key === hoverKey && now - hoverAt < 1500) return;
+    hoverKey = key;
+    hoverAt = now;
+    play();
+  }
+
+  // يجعل العنصر ناطقاً: مرور الماوس يسمع النطق، وتلميح نصي يعرض التشكيل
+  function makeSpeakable(el, getPlay, opts = {}) {
+    el.classList.add("speakable");
+    el.addEventListener("mouseenter", () => hoverSpeak(opts.key || el.textContent, getPlay()));
+    if (opts.clickToo) {
+      el.addEventListener("click", () => getPlay()());
+    }
+  }
+
   /* ═══════════════ أدوات مساعدة ═══════════════ */
 
   const $ = (id) => document.getElementById(id);
@@ -545,13 +600,13 @@
     const startBtn = $("btn-start-lesson");
     if (daily.completed) {
       $("today-status").textContent = "خلّصت درس اليوم! 🎉 تقدر تراجع كلماتك";
-      startBtn.textContent = "مراجعة إضافية 🔁";
+      startBtn.textContent = "مراجعة إضافية";
     } else if (daily.answeredIds.length > 0) {
       $("today-status").textContent = `كمّلت ${toArabicDigits(daily.answeredIds.length)} من ${toArabicDigits(total)} — كمّل!`;
-      startBtn.textContent = "كمّل درس اليوم 💪";
+      startBtn.textContent = "كمّل درس اليوم";
     } else {
       $("today-status").textContent = "جاهز حق درس اليوم؟";
-      startBtn.textContent = "ابدأ درس اليوم 🚀";
+      startBtn.textContent = "ابدأ درس اليوم";
     }
   }
 
@@ -655,6 +710,7 @@
 
     const kw = $("lesson-word-kuwaiti");
     kw.textContent = w.kuwaitiWord;
+    kw.setAttribute("data-tts", w.tts || w.kuwaitiWord);
     kw.style.color = pick(WORD_COLORS);
     kw.style.fontSize = `clamp(2.2rem, ${(8 + Math.random() * 3).toFixed(1)}vw, ${(2.8 + Math.random() * 0.8).toFixed(2)}rem)`;
 
@@ -671,7 +727,7 @@
     card.style.animation = "";
 
     $("btn-lesson-next").textContent =
-      session.lessonIdx + 1 >= total ? "يلّا نلعب! 🎮" : "التالي ⬅";
+      session.lessonIdx + 1 >= total ? "يلّا نلعب!" : "التالي";
 
     AudioPlayer.playWord(w, "normal", $("btn-lesson-audio"));
   }
@@ -756,7 +812,7 @@
     btn.type = "button";
     btn.className = "stimulus-audio-btn";
     btn.setAttribute("aria-label", "اسمع الكلمة بسرعة عادية");
-    btn.textContent = "🔊";
+    btn.innerHTML = ICONS.speaker;
     btn.addEventListener("click", () => AudioPlayer.playWord(w, "normal", btn));
     stimulus.appendChild(btn);
 
@@ -769,7 +825,7 @@
     slow.type = "button";
     slow.className = "btn btn-audio btn-audio-small";
     slow.setAttribute("aria-label", "اسمع الكلمة ببطء");
-    slow.textContent = "🐢";
+    slow.innerHTML = ICONS.slow;
     slow.addEventListener("click", () => AudioPlayer.playWord(w, "slow", slow));
     stimulus.appendChild(slow);
 
@@ -826,13 +882,14 @@
       }
       if (i < arr.length - 1) sentence.appendChild(document.createTextNode(" "));
     });
+    makeSpeakable(sentence, () => () => AudioPlayer.playExample(w), { key: w.example });
     stimulus.appendChild(sentence);
 
     const hint = document.createElement("button");
     hint.type = "button";
     hint.className = "btn btn-audio btn-audio-small";
     hint.setAttribute("aria-label", "اسمع الجملة كاملة");
-    hint.textContent = "🔊";
+    hint.innerHTML = ICONS.speaker;
     hint.addEventListener("click", () => AudioPlayer.playExample(w, "normal", hint));
     stimulus.appendChild(hint);
 
@@ -858,6 +915,8 @@
       span.style.fontSize = (1.15 + Math.random() * 0.45).toFixed(2) + "rem";
       b.appendChild(span);
       b.dataset.correct = c.id === w.id ? "1" : "";
+      b.setAttribute("data-tts", c.tts || c.kuwaitiWord);
+      makeSpeakable(b, () => () => AudioPlayer.playWord(c), { key: c.kuwaitiWord });
       b.addEventListener("click", () => {
         const ok = c.id === w.id;
         if (ok && onCorrectExtra) onCorrectExtra();
@@ -940,7 +999,7 @@
     $("btn-quiz-next").hidden = !withNext;
     if (withNext) {
       $("btn-quiz-next").textContent =
-        session.quizIdx + 1 >= session.quizQueue.length ? "شوف نتيجتك! 🏆" : "كمّل ⬅";
+        session.quizIdx + 1 >= session.quizQueue.length ? "شوف نتيجتك!" : "كمّل";
     }
   }
 
@@ -1217,6 +1276,10 @@
       AudioPlayer.playExample(lessonWord(), "normal", $("btn-example-audio")));
     $("btn-example-audio-slow").addEventListener("click", () =>
       AudioPlayer.playExample(lessonWord(), "slow", $("btn-example-audio-slow")));
+
+    // النطق عند مرور الماوس أو لمس الكلمة/الجملة — لطفل لا يقرأ بعد
+    makeSpeakable($("lesson-word-kuwaiti"), () => () => AudioPlayer.playWord(lessonWord()), { clickToo: true });
+    makeSpeakable($("lesson-word-example"), () => () => AudioPlayer.playExample(lessonWord()), { clickToo: true });
     $("btn-lesson-next").addEventListener("click", lessonNext);
     $("btn-lesson-back").addEventListener("click", () => { endSessionTime(); goHome(); });
 
@@ -1267,6 +1330,7 @@
       return;
     }
     AudioPlayer.init();
+    injectIcons();
     buildSetupScreen();
     bindEvents();
 
