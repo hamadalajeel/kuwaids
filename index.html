@@ -26,7 +26,9 @@
       <form id="setup-form" autocomplete="off">
         <!-- اسم المستخدم -->
         <div class="form-group">
-          <label for="input-username" class="form-label">شنو اسمك المستعار؟ ✏️</label>
+          <label for="input-username" class="form-label">شنو اسمك المستعار؟ ✏️
+            <span class="label-speak" id="speak-name" role="button" tabindex="0" aria-label="اسمع السؤال">🔊</span>
+          </label>
           <input
             type="text"
             id="input-username"
@@ -40,7 +42,9 @@
 
         <!-- اختيار الصورة الرمزية -->
         <div class="form-group">
-          <span class="form-label" id="avatar-label">اختر شخصيتك 🎭</span>
+          <span class="form-label" id="avatar-label">اختر شخصيتك 🎭
+            <span class="label-speak" id="speak-avatar" role="button" tabindex="0" aria-label="اسمع السؤال">🔊</span>
+          </span>
           <div class="avatar-grid" id="avatar-grid" role="radiogroup" aria-labelledby="avatar-label">
             <!-- تُعبّأ من app.js: أزرار role="radio" لكل رمز -->
           </div>
@@ -48,7 +52,9 @@
 
         <!-- اختيار اللون المفضل -->
         <div class="form-group">
-          <span class="form-label" id="color-label">شنو لونك المفضل؟ 🎨</span>
+          <span class="form-label" id="color-label">شنو لونك المفضل؟ 🎨
+            <span class="label-speak" id="speak-color" role="button" tabindex="0" aria-label="اسمع السؤال">🔊</span>
+          </span>
           <div class="color-grid" id="color-grid" role="radiogroup" aria-labelledby="color-label">
             <!-- تُعبّأ من app.js: أزرار ألوان -->
           </div>
@@ -155,11 +161,11 @@
           <button type="button" class="btn btn-audio" id="btn-lesson-audio" aria-label="اسمع الكلمة بسرعة عادية">
             🔊 اسمع الكلمة
           </button>
-          <button type="button" class="btn btn-audio btn-audio-small" id="btn-lesson-audio-slow" aria-label="اسمع الكلمة ببطء" title="ببطء">
-            🐢
+          <button type="button" class="btn btn-audio" id="btn-lesson-audio-slow" aria-label="اسمع الكلمة ببطء">
+            🐢 بطيء
           </button>
-          <button type="button" class="btn btn-audio btn-audio-small" id="btn-audio-replay" aria-label="أعد آخر صوت" title="إعادة">
-            🔁
+          <button type="button" class="btn btn-audio" id="btn-audio-replay" aria-label="أعد آخر صوت">
+            🔁 إعادة
           </button>
         </div>
 

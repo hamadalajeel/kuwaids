@@ -86,8 +86,6 @@
   function injectIcons() {
     const set = (id, html) => { const el = $(id); if (el) el.innerHTML = html; };
     set("btn-lesson-audio", ICONS.speaker + "<span>اسمع الكلمة</span>");
-    set("btn-lesson-audio-slow", ICONS.slow);
-    set("btn-audio-replay", ICONS.replay);
     set("btn-example-audio", ICONS.speaker);
     set("btn-example-audio-slow", ICONS.slow);
     set("btn-parents", ICONS.user);
@@ -1386,7 +1384,25 @@
     // صقر ينطق تحيته عند الضغط (في اللوحة وشاشة الدخول)
     const saqerHi = () => speakArabic("هَلا! شِلُونَك؟", "normal");
     if ($("dash-mascot")) $("dash-mascot").addEventListener("click", saqerHi);
-    if ($("setup-mascot")) $("setup-mascot").addEventListener("click", saqerHi);
+
+    // شاشة الدخول مسموعة بالكامل — للطفل الذي لا يقرأ بعد:
+    // صقر يشرح الخطوات، وكل سؤال بجانبه سماعة تنطقه
+    const introText = "هَلا! أنا صَقِر. اكتب اسمك، واختَر شخصيتك ولونك المفضل، وبعدين اضغط يَلّا نبدأ!";
+    if ($("setup-mascot")) $("setup-mascot").addEventListener("click", () => speakArabic(introText, "normal"));
+    const bindLabelSpeak = (id, text) => {
+      const el = $(id);
+      if (!el) return;
+      const say = (e) => { e.stopPropagation(); e.preventDefault(); speakArabic(text, "normal"); };
+      el.addEventListener("click", say);
+      el.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") say(e); });
+    };
+    bindLabelSpeak("speak-name", "شنو اسمك المستعار؟ اكتب أي اسم لَعِب يعجبك");
+    bindLabelSpeak("speak-avatar", "اختَر شخصيتك! اضغط على الشكل اللي يعجبك");
+    bindLabelSpeak("speak-color", "شنو لونك المفضل؟ اضغط على اللون اللي تحبه");
+    // أول لمسة على شاشة الدخول تشغّل شرح صقر تلقائياً (مرة واحدة)
+    if (!state.profile) {
+      document.addEventListener("pointerdown", () => speakArabic(introText, "normal"), { once: true });
+    }
 
     // مفتاح المؤثرات الصوتية
     $("toggle-sound").addEventListener("click", () => {

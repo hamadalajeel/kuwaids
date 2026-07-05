@@ -315,6 +315,30 @@ button {
   flex-wrap: wrap;
 }
 
+/* الزر الرئيسي «اسمع الكلمة»: أزرق بارز لا يلتبس مع البقية */
+#btn-lesson-audio {
+  background: var(--primary);
+  color: #fff;
+  border-color: var(--primary-dark);
+}
+
+#btn-lesson-audio:hover {
+  color: #fff;
+  filter: brightness(1.06);
+}
+
+/* «بطيء»: أخضر ناعم بنص مقروء وإيموجي سلحفاة واضح */
+#btn-lesson-audio-slow {
+  background: var(--success-bg);
+  border-color: #b9e3c8;
+  color: #1e7c4b;
+}
+
+/* «إعادة»: رملي بنص واضح */
+#btn-audio-replay {
+  color: var(--ink-soft);
+}
+
 /* زر الصوت: رملي دافئ بأيقونة كحلية، ينضغط مثل البقية */
 .btn-audio {
   background: var(--surface-soft);
@@ -522,6 +546,33 @@ button {
 @keyframes saqerRunRtl {
   0%   { transform: translateX(0); }
   100% { transform: translateX(calc(100vw + 300px)); }
+}
+
+/* سماعة إرشادية بجانب أسئلة شاشة الدخول — للطفل الذي لا يقرأ */
+.label-speak {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: var(--primary);
+  border-bottom: 3px solid var(--primary-dark);
+  color: #fff;
+  font-size: 1.1rem;
+  cursor: pointer;
+  vertical-align: middle;
+  margin-inline-start: 8px;
+  flex-shrink: 0;
+}
+
+.label-speak:active {
+  transform: translateY(2px);
+}
+
+.form-label {
+  display: flex;
+  align-items: center;
 }
 
 /* ═══════════════ 1) شاشة الإعداد ═══════════════ */
@@ -1168,6 +1219,7 @@ button {
 }
 
 .quiz-option {
+  position: relative; /* مرجع تموضع سماعة الخيار */
   min-height: 96px;
   background: var(--surface);
   border: 2px solid var(--border);
@@ -1220,29 +1272,30 @@ button {
 
 /* زر السماعة داخل خيارات الكلمات — للطفل الذي لا يقرأ بعد */
 .quiz-option-word {
-  padding-top: 22px;
+  padding-top: 34px;
 }
 
 .option-speak {
   position: absolute;
   top: 8px;
   inset-inline-start: 8px;
-  width: 42px;
-  height: 42px;
+  width: 46px;
+  height: 46px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  background: var(--surface-soft);
-  border: 2px solid var(--border);
-  color: var(--ink);
+  background: var(--primary);
+  border-bottom: 3px solid var(--primary-dark);
+  color: #fff;
+  box-shadow: var(--shadow-card);
   cursor: pointer;
-  transition: background var(--t-fast) ease, color var(--t-fast) ease;
+  transition: transform var(--t-fast) ease, filter var(--t-fast) ease;
 }
 
 .option-speak:hover {
-  background: var(--primary);
-  color: #fff;
+  filter: brightness(1.08);
+  transform: scale(1.06);
 }
 
 .option-speak svg {
