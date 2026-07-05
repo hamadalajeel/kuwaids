@@ -5,32 +5,34 @@
 
 /* ── متغيرات التصميم ─────────────────────────────────────────── */
 :root {
-  /* --accent يتغيّر من app.js حسب اللون المفضل للطفل */
-  --accent: #ff6b6b;
-  --accent-soft: color-mix(in srgb, var(--accent) 18%, white);
+  /* لوحة هادئة: لون أساسي واحد (تركوازي)، محايدات دافئة،
+     والألوان الزاهية محصورة في النجوم ولون الطفل المفضل فقط.
+     --accent يتغيّر من app.js حسب اللون المفضل للطفل */
+  --accent: #2fa79e;
+  --accent-soft: color-mix(in srgb, var(--accent) 14%, white);
 
-  --bg: #fdf6ec;
-  --bg-gradient: linear-gradient(160deg, #fff7e6 0%, #fdeef4 55%, #eaf6ff 100%);
+  --bg: #faf7f1;
+  --bg-gradient: none;
   --surface: #ffffff;
-  --surface-soft: #fff9f0;
+  --surface-soft: #f6f1e8;
 
-  --ink: #3d3357;          /* نص أساسي — تباين عالٍ */
-  --ink-soft: #6f6690;     /* نص ثانوي */
+  --ink: #333a48;          /* نص أساسي — تباين عالٍ */
+  --ink-soft: #737a89;     /* نص ثانوي */
 
-  --primary: #ff8a3d;      /* برتقالي دافئ */
-  --primary-dark: #e96f1f;
-  --secondary: #4ecdc4;    /* تركوازي */
-  --secondary-dark: #35b0a7;
-  --success: #58c96b;
-  --gold: #ffc93c;
-  --danger: #e5484d;
+  --primary: #2fa79e;      /* التركوازي الأساسي الوحيد */
+  --primary-dark: #248079;
+  --secondary: #2fa79e;
+  --secondary-dark: #248079;
+  --success: #4fae63;
+  --gold: #f0b53d;
+  --danger: #d9534f;
 
   --radius-lg: 28px;
   --radius-md: 20px;
   --radius-sm: 14px;
 
-  --shadow-card: 0 8px 24px rgba(93, 74, 156, 0.10);
-  --shadow-pop: 0 12px 32px rgba(93, 74, 156, 0.16);
+  --shadow-card: 0 6px 18px rgba(58, 64, 78, 0.08);
+  --shadow-pop: 0 10px 26px rgba(58, 64, 78, 0.13);
 
   --font: "Baloo Bhaijaan 2", "Segoe UI", Tahoma, sans-serif;
 
@@ -55,7 +57,7 @@ html {
 body {
   font-family: var(--font);
   color: var(--ink);
-  background: var(--bg) var(--bg-gradient) fixed;
+  background: var(--bg);
   min-height: 100dvh;
   line-height: 1.6;
   direction: rtl;
@@ -172,10 +174,9 @@ button {
 }
 
 .btn-primary {
-  background: linear-gradient(180deg, var(--primary) 0%, var(--primary-dark) 100%);
+  background: var(--primary);
   color: #fff;
-  box-shadow: 0 6px 0 rgba(0, 0, 0, 0.12), var(--shadow-card);
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 5px 0 var(--primary-dark), var(--shadow-card);
 }
 
 .btn-primary:hover {
@@ -183,15 +184,16 @@ button {
   transform: translateY(-2px);
 }
 
+/* زر ثانوي: إطار هادئ بدل لون إضافي */
 .btn-secondary {
-  background: linear-gradient(180deg, var(--secondary) 0%, var(--secondary-dark) 100%);
-  color: #fff;
-  box-shadow: 0 6px 0 rgba(0, 0, 0, 0.10), var(--shadow-card);
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+  background: var(--surface);
+  color: var(--primary-dark);
+  border: 3px solid var(--primary);
+  box-shadow: var(--shadow-card);
 }
 
 .btn-secondary:hover {
-  filter: brightness(1.05);
+  background: var(--accent-soft);
   transform: translateY(-2px);
 }
 
@@ -246,9 +248,9 @@ button {
 
 /* زر الصوت */
 .btn-audio {
-  background: var(--accent-soft);
+  background: color-mix(in srgb, var(--primary) 10%, white);
   color: var(--ink);
-  border: 3px solid var(--accent);
+  border: 3px solid var(--primary);
   font-size: 1.2rem;
   min-height: var(--touch);
   padding-inline: 28px;
@@ -256,7 +258,7 @@ button {
 }
 
 .btn-audio:hover {
-  background: var(--accent);
+  background: var(--primary);
   color: #fff;
 }
 
@@ -270,13 +272,13 @@ button {
 }
 
 @keyframes audioPulse {
-  0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 45%, transparent); }
+  0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--primary) 40%, transparent); }
   50%      { box-shadow: 0 0 0 12px transparent; }
 }
 
 /* حالة تشغيل الصوت */
 .btn-audio.playing {
-  background: var(--accent);
+  background: var(--primary);
   color: #fff;
   animation: audioBounce 0.5s ease infinite alternate;
 }
@@ -557,7 +559,7 @@ button {
 .progress-fill {
   height: 100%;
   border-radius: 999px;
-  background: linear-gradient(90deg, var(--gold), var(--primary));
+  background: var(--primary);
   transition: width 0.6s cubic-bezier(0.22, 1, 0.36, 1);
   min-width: 0;
 }
@@ -617,12 +619,23 @@ button {
   gap: 14px;
 }
 
-/* سهم الرجوع يشير لليمين (بداية RTL) */
-#btn-lesson-back,
-#btn-quiz-back,
-#btn-rewards-back,
-#btn-parents-back {
-  transform: scaleX(1);
+/* زر رجوع واضح بنص مقروء بدل أيقونة فقط */
+.btn-back {
+  min-height: var(--touch);
+  padding: 8px 18px;
+  border-radius: 999px;
+  background: var(--surface);
+  box-shadow: var(--shadow-card);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--ink-soft);
+  flex-shrink: 0;
+}
+
+.btn-back:hover {
+  color: var(--ink);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-pop);
 }
 
 .lesson-progress {
@@ -660,19 +673,18 @@ button {
 }
 
 .word-tag {
-  background: var(--secondary);
+  background: var(--primary);
   color: #fff;
   font-weight: 700;
   font-size: 1rem;
   padding: 4px 20px;
   border-radius: 999px;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 .word-tag.review {
-  background: var(--gold);
+  background: var(--surface-soft);
   color: var(--ink);
-  text-shadow: none;
+  border: 2px solid #e4dccc;
 }
 
 /* بطاقة الكلمة */
@@ -723,7 +735,7 @@ button {
 .word-kuwaiti {
   font-size: clamp(2.2rem, 9vw, 3.2rem);
   font-weight: 800;
-  color: var(--accent);
+  color: var(--primary-dark);
   line-height: 1.3;
 }
 
@@ -817,15 +829,22 @@ button {
   height: clamp(110px, 30vw, 150px);
   border-radius: 50%;
   font-size: clamp(3rem, 10vw, 4rem);
-  background: linear-gradient(180deg, var(--secondary), var(--secondary-dark));
+  background: var(--primary);
   color: #fff;
-  box-shadow: 0 8px 0 rgba(0, 0, 0, 0.12), var(--shadow-pop);
+  box-shadow: 0 6px 0 var(--primary-dark), var(--shadow-pop);
   animation: audioPulse 2.4s ease-in-out infinite;
   transition: transform 0.15s ease;
 }
 
 .stimulus-audio-btn:active {
   transform: scale(0.93);
+}
+
+/* تعليمة صغيرة واضحة تحت زر السماعة */
+.stimulus-caption {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--ink-soft);
 }
 
 /* جملة ناقصة كمحفّز */
@@ -956,6 +975,19 @@ button {
   25%      { transform: translateX(6px); }
   50%      { transform: translateX(-6px); }
   75%      { transform: translateX(3px); }
+}
+
+/* زر المساعدة: يظهر في كل سؤال حتى لا يعلق الطفل أبداً */
+.quiz-help-row {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+#btn-quiz-help {
+  color: var(--ink-soft);
+  border-color: color-mix(in srgb, var(--ink-soft) 35%, transparent);
+  font-size: 1.05rem;
 }
 
 /* رسالة التشجيع */

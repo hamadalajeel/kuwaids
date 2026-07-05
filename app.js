@@ -33,8 +33,8 @@
     "#4ecdc4", "#4d96ff", "#9b5de5", "#f15bb5",
   ];
 
-  // ألوان آمنة التباين لتنويع عرض الكلمة (حتى لا يحفظ الطفل شكلاً واحداً)
-  const WORD_COLORS = ["#e05263", "#d97706", "#2f9e44", "#0e7490", "#3b5bdb", "#9d4edd", "#c2255c"];
+  // درجات هادئة قليلة لتنويع عرض الكلمة دون إغراق الشاشة بالألوان
+  const WORD_COLORS = ["#333a48", "#248079", "#a3622e"];
 
   const PRAISE_MESSAGES = [
     { emoji: "🎉", text: "ممتاز! برافو عليك!" },
@@ -242,6 +242,17 @@
 
   const SPEED = { normal: 0.85, slow: 0.55 };
 
+  // أصوات المتصفح فصيحة ولا تعرف بعض حروف اللهجة، فنقرّب النص لها:
+  // چ → تش، گ → ق، پ → ب، ڤ → ف، مع حذف التطويل
+  function normalizeForTTS(text) {
+    return String(text)
+      .replace(/چ/g, "تش")
+      .replace(/گ/g, "ق")
+      .replace(/پ/g, "ب")
+      .replace(/ڤ/g, "ف")
+      .replace(/ـ/g, "");
+  }
+
   let arabicVoice = null;
 
   // يكتشف تلقائياً أفضل صوت عربي متاح على جهاز المستخدم:
@@ -267,7 +278,7 @@
       if (!("speechSynthesis" in window) || !text) return;
       speechSynthesis.cancel(); // أوقف أي نطق جارٍ
 
-      const u = new SpeechSynthesisUtterance(text);
+      const u = new SpeechSynthesisUtterance(normalizeForTTS(text));
       // صوت عربي فقط — إن لم يوجد أي صوت عربي نكتفي بتحديد اللغة
       // ونترك المتصفح يختار، ولا نُسند صوتاً غير عربي إطلاقاً.
       if (arabicVoice) {
@@ -300,12 +311,13 @@
     },
 
     playWord(word, speed = "normal", btn) {
-      this.last = { text: word.kuwaitiWord, speed, file: word.audio && word.audio.word };
+      // tts: نص منطوق مُشكَّل بالحركات لتحسين نطق أصوات المتصفح
+      this.last = { text: word.tts || word.kuwaitiWord, speed, file: word.audio && word.audio.word };
       this._play(this.last, btn);
     },
 
     playExample(word, speed = "normal", btn) {
-      this.last = { text: word.example, speed, file: word.audio && word.audio.example };
+      this.last = { text: word.ttsExample || word.example, speed, file: word.audio && word.audio.example };
       this._play(this.last, btn);
     },
 
@@ -720,6 +732,7 @@
     $("quiz-counter").textContent = `${toArabicDigits(session.quizIdx + 1)} / ${toArabicDigits(total)}`;
 
     $("quiz-feedback").hidden = true;
+    $("btn-quiz-help").hidden = false;
     const stimulus = $("quiz-stimulus");
     const options = $("quiz-options");
     stimulus.innerHTML = "";
@@ -742,6 +755,11 @@
     btn.addEventListener("click", () => AudioPlayer.playWord(w, "normal", btn));
     stimulus.appendChild(btn);
 
+    const caption = document.createElement("span");
+    caption.className = "stimulus-caption";
+    caption.textContent = "اضغط السماعة واسمع الكلمة 👆";
+    stimulus.appendChild(caption);
+
     const slow = document.createElement("button");
     slow.type = "button";
     slow.className = "btn btn-audio btn-audio-small";
@@ -762,6 +780,7 @@
       // تنويع بسيط في عرض الصورة
       holder.style.transform = `scale(${(0.92 + Math.random() * 0.16).toFixed(2)}) rotate(${(Math.random() * 8 - 4).toFixed(1)}deg)`;
       b.appendChild(holder);
+      b.dataset.correct = c.id === w.id ? "1" : "";
       b.addEventListener("click", () => handleAnswer(b, c.id === w.id, w));
       options.appendChild(b);
     });
@@ -833,6 +852,7 @@
       span.style.color = pick(WORD_COLORS);
       span.style.fontSize = (1.15 + Math.random() * 0.45).toFixed(2) + "rem";
       b.appendChild(span);
+      b.dataset.correct = c.id === w.id ? "1" : "";
       b.addEventListener("click", () => {
         const ok = c.id === w.id;
         if (ok && onCorrectExtra) onCorrectExtra();
@@ -874,6 +894,7 @@
 
     // إجابة صحيحة
     const firstTry = !session.wrongThisQuestion;
+    $("btn-quiz-help").hidden = true;
     btn.classList.add("correct");
     $("quiz-options").querySelectorAll(".quiz-option").forEach((el) => {
       el.disabled = true;
@@ -916,6 +937,36 @@
       $("btn-quiz-next").textContent =
         session.quizIdx + 1 >= session.quizQueue.length ? "شوف نتيجتك! 🏆" : "كمّل ⬅";
     }
+  }
+
+  /* زر "علّمني الجواب": يكشف الإجابة الصحيحة بلطف ويجدول الكلمة
+     للمراجعة، حتى لا يعلق الطفل في أي سؤال */
+  function quizHelp() {
+    const word = currentQuizWord();
+    if (!word || !$("quiz-feedback").hidden) return;
+
+    state.attemptsTotal++;
+    const prog = progressFor(word.id);
+    prog.wrongAnswers++;
+    session.wrongThisQuestion = true;
+    session.allFirstTry = false;
+    applySRS(word.id, false);
+
+    $("btn-quiz-help").hidden = true;
+    $("quiz-options").querySelectorAll(".quiz-option").forEach((el) => {
+      el.disabled = true;
+      if (el.dataset.correct === "1") el.classList.add("correct");
+      else el.classList.add("dimmed");
+    });
+
+    if (session.mode === "daily") {
+      const daily = state.daily;
+      if (!daily.answeredIds.includes(word.id)) daily.answeredIds.push(word.id);
+    }
+    saveState();
+
+    AudioPlayer.playWord(word, "slow");
+    showFeedback("🌟", `ولا يهمك! الجواب هو: ${word.kuwaitiWord}`, true);
   }
 
   function quizNext() {
@@ -1166,6 +1217,7 @@
 
     // الاختبار
     $("btn-quiz-next").addEventListener("click", quizNext);
+    $("btn-quiz-help").addEventListener("click", quizHelp);
     $("btn-quiz-back").addEventListener("click", () => { endSessionTime(); goHome(); });
 
     // النتائج

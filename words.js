@@ -34,6 +34,7 @@ const KUWAITI_WORDS = [
   {
     id: 1,
     kuwaitiWord: "دريشة",
+    tts: "دِرِيشَة",
     standardArabic: "نافذة",
     english: "Window",
     emoji: "🪟",
@@ -47,6 +48,7 @@ const KUWAITI_WORDS = [
   {
     id: 2,
     kuwaitiWord: "حوش",
+    tts: "حُوش",
     standardArabic: "فناء البيت",
     english: "Yard",
     emoji: "🏡",
@@ -60,6 +62,7 @@ const KUWAITI_WORDS = [
   {
     id: 3,
     kuwaitiWord: "مخدة",
+    tts: "مِخَدَّة",
     standardArabic: "وسادة",
     english: "Pillow",
     emoji: "🛏️",
@@ -73,6 +76,7 @@ const KUWAITI_WORDS = [
   {
     id: 4,
     kuwaitiWord: "دولاب",
+    tts: "دُولاب",
     standardArabic: "خزانة",
     english: "Closet",
     emoji: "🗄️",
@@ -88,6 +92,7 @@ const KUWAITI_WORDS = [
   {
     id: 5,
     kuwaitiWord: "قوطي",
+    tts: "قُوطِي",
     standardArabic: "علبة",
     english: "Can",
     emoji: "🥫",
@@ -101,6 +106,7 @@ const KUWAITI_WORDS = [
   {
     id: 6,
     kuwaitiWord: "استكانة",
+    tts: "اِسْتِكانَة",
     standardArabic: "كوب شاي صغير",
     english: "Tea glass",
     emoji: "🍵",
@@ -114,6 +120,7 @@ const KUWAITI_WORDS = [
   {
     id: 7,
     kuwaitiWord: "ملاس",
+    tts: "مَلاس",
     standardArabic: "ملعقة",
     english: "Spoon",
     emoji: "🥄",
@@ -127,6 +134,7 @@ const KUWAITI_WORDS = [
   {
     id: 8,
     kuwaitiWord: "جدر",
+    tts: "جِدِر",
     standardArabic: "قِدر",
     english: "Cooking pot",
     emoji: "🍲",
@@ -142,6 +150,7 @@ const KUWAITI_WORDS = [
   {
     id: 9,
     kuwaitiWord: "جنطة",
+    tts: "جَنْطَة",
     standardArabic: "حقيبة",
     english: "Bag",
     emoji: "🎒",
@@ -155,6 +164,7 @@ const KUWAITI_WORDS = [
   {
     id: 10,
     kuwaitiWord: "براية",
+    tts: "بَرّايَة",
     standardArabic: "مبراة",
     english: "Sharpener",
     emoji: "✏️",
@@ -168,6 +178,7 @@ const KUWAITI_WORDS = [
   {
     id: 11,
     kuwaitiWord: "دفتر",
+    tts: "دَفْتَر",
     standardArabic: "كراسة",
     english: "Notebook",
     emoji: "📓",
@@ -183,6 +194,7 @@ const KUWAITI_WORDS = [
   {
     id: 12,
     kuwaitiWord: "دشداشة",
+    tts: "دِشْداشَة",
     standardArabic: "ثوب رجالي",
     english: "Dishdasha",
     emoji: "👕",
@@ -196,6 +208,7 @@ const KUWAITI_WORDS = [
   {
     id: 13,
     kuwaitiWord: "جوتي",
+    tts: "جُوتِي",
     standardArabic: "حذاء",
     english: "Shoes",
     emoji: "👟",
@@ -209,6 +222,7 @@ const KUWAITI_WORDS = [
   {
     id: 14,
     kuwaitiWord: "غترة",
+    tts: "غِتْرَة",
     standardArabic: "غطاء رأس للرجال",
     english: "Ghutra",
     emoji: "🧣",
@@ -222,6 +236,7 @@ const KUWAITI_WORDS = [
   {
     id: 15,
     kuwaitiWord: "نعال",
+    tts: "نِعال",
     standardArabic: "حذاء خفيف",
     english: "Slippers",
     emoji: "🩴",
@@ -237,6 +252,7 @@ const KUWAITI_WORDS = [
   {
     id: 16,
     kuwaitiWord: "قطو",
+    tts: "قَطُو",
     standardArabic: "قطة",
     english: "Cat",
     emoji: "🐱",
@@ -250,6 +266,7 @@ const KUWAITI_WORDS = [
   {
     id: 17,
     kuwaitiWord: "دياية",
+    tts: "دِيايَة",
     standardArabic: "دجاجة",
     english: "Chicken",
     emoji: "🐔",
@@ -263,6 +280,7 @@ const KUWAITI_WORDS = [
   {
     id: 18,
     kuwaitiWord: "بعير",
+    tts: "بِعِير",
     standardArabic: "جمل",
     english: "Camel",
     emoji: "🐪",
@@ -276,6 +294,7 @@ const KUWAITI_WORDS = [
   {
     id: 19,
     kuwaitiWord: "سمچة",
+    tts: "سِمْچَة",
     standardArabic: "سمكة",
     english: "Fish",
     emoji: "🐟",
@@ -291,6 +310,7 @@ const KUWAITI_WORDS = [
   {
     id: 20,
     kuwaitiWord: "صمونة",
+    tts: "صَمُّونَة",
     standardArabic: "خبز صغير",
     english: "Bread roll",
     emoji: "🍞",
@@ -304,6 +324,7 @@ const KUWAITI_WORDS = [
   {
     id: 21,
     kuwaitiWord: "عيش",
+    tts: "عَيْش",
     standardArabic: "أرز",
     english: "Rice",
     emoji: "🍚",
@@ -317,6 +338,7 @@ const KUWAITI_WORDS = [
   {
     id: 22,
     kuwaitiWord: "ماي",
+    tts: "ماي",
     standardArabic: "ماء",
     english: "Water",
     emoji: "💧",
@@ -330,6 +352,7 @@ const KUWAITI_WORDS = [
   {
     id: 23,
     kuwaitiWord: "ريوق",
+    tts: "رَيُوق",
     standardArabic: "فطور",
     english: "Breakfast",
     emoji: "🍳",
@@ -345,6 +368,7 @@ const KUWAITI_WORDS = [
   {
     id: 24,
     kuwaitiWord: "موتر",
+    tts: "مُوتَر",
     standardArabic: "سيارة",
     english: "Car",
     emoji: "🚗",
@@ -358,6 +382,7 @@ const KUWAITI_WORDS = [
   {
     id: 25,
     kuwaitiWord: "سيكل",
+    tts: "سَيْكَل",
     standardArabic: "دراجة",
     english: "Bicycle",
     emoji: "🚲",
@@ -371,6 +396,7 @@ const KUWAITI_WORDS = [
   {
     id: 26,
     kuwaitiWord: "فريج",
+    tts: "فِرِيج",
     standardArabic: "حي سكني",
     english: "Neighborhood",
     emoji: "🏘️",
@@ -384,6 +410,7 @@ const KUWAITI_WORDS = [
   {
     id: 27,
     kuwaitiWord: "درب",
+    tts: "دَرْب",
     standardArabic: "طريق",
     english: "Road",
     emoji: "🛣️",
@@ -399,6 +426,7 @@ const KUWAITI_WORDS = [
   {
     id: 28,
     kuwaitiWord: "يدّة",
+    tts: "يَدَّة",
     standardArabic: "جدة",
     english: "Grandma",
     emoji: "👵",
@@ -412,6 +440,7 @@ const KUWAITI_WORDS = [
   {
     id: 29,
     kuwaitiWord: "يمّه",
+    tts: "يُمَّه",
     standardArabic: "أمي",
     english: "Mom",
     emoji: "👩",
@@ -425,6 +454,7 @@ const KUWAITI_WORDS = [
   {
     id: 30,
     kuwaitiWord: "عيال",
+    tts: "عِيال",
     standardArabic: "أطفال",
     english: "Kids",
     emoji: "🧒",
@@ -438,6 +468,7 @@ const KUWAITI_WORDS = [
   {
     id: 31,
     kuwaitiWord: "بيبي",
+    tts: "بِيبِي",
     standardArabic: "طفل رضيع",
     english: "Baby",
     emoji: "👶",
@@ -453,6 +484,7 @@ const KUWAITI_WORDS = [
   {
     id: 32,
     kuwaitiWord: "رصاصي",
+    tts: "رَصاصِي",
     standardArabic: "رمادي",
     english: "Gray",
     emoji: "🩶",
@@ -466,6 +498,7 @@ const KUWAITI_WORDS = [
   {
     id: 33,
     kuwaitiWord: "سماوي",
+    tts: "سَماوِي",
     standardArabic: "أزرق فاتح",
     english: "Sky blue",
     emoji: "🩵",
@@ -479,6 +512,7 @@ const KUWAITI_WORDS = [
   {
     id: 34,
     kuwaitiWord: "وردي",
+    tts: "وَرْدِي",
     standardArabic: "زهري",
     english: "Pink",
     emoji: "🌸",
@@ -494,6 +528,7 @@ const KUWAITI_WORDS = [
   {
     id: 35,
     kuwaitiWord: "شلونك؟",
+    tts: "شِلُونَك؟",
     standardArabic: "كيف حالك؟",
     english: "How are you?",
     emoji: "👋",
@@ -507,6 +542,7 @@ const KUWAITI_WORDS = [
   {
     id: 36,
     kuwaitiWord: "وايد",
+    tts: "وايِد",
     standardArabic: "كثير",
     english: "A lot",
     emoji: "✨",
@@ -520,6 +556,7 @@ const KUWAITI_WORDS = [
   {
     id: 37,
     kuwaitiWord: "زين",
+    tts: "زَيْن",
     standardArabic: "جيد",
     english: "Good",
     emoji: "👍",
@@ -533,6 +570,7 @@ const KUWAITI_WORDS = [
   {
     id: 38,
     kuwaitiWord: "يلّا",
+    tts: "يَلّا",
     standardArabic: "هيا بنا",
     english: "Let's go",
     emoji: "🏃",
@@ -546,6 +584,7 @@ const KUWAITI_WORDS = [
   {
     id: 39,
     kuwaitiWord: "چذي",
+    tts: "چِذِي",
     standardArabic: "هكذا",
     english: "Like this",
     emoji: "☝️",
@@ -559,6 +598,7 @@ const KUWAITI_WORDS = [
   {
     id: 40,
     kuwaitiWord: "مشكور",
+    tts: "مَشْكُور",
     standardArabic: "شكراً",
     english: "Thank you",
     emoji: "🙏",

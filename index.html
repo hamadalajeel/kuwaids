@@ -130,7 +130,7 @@
   <!-- ═══════════════════════ 3) شاشة الدرس اليومي (عرض وسماع الكلمة) ═══════════════════════ -->
   <section id="screen-lesson" class="screen" hidden>
     <header class="lesson-header">
-      <button type="button" class="btn btn-icon" id="btn-lesson-back" aria-label="رجوع للوحة الرئيسية">➜</button>
+      <button type="button" class="btn btn-back" id="btn-lesson-back" aria-label="رجوع للوحة الرئيسية">رجوع ➜</button>
       <div class="progress-track lesson-progress" role="progressbar" aria-label="تقدم الدرس"
            aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="lesson-progressbar">
         <div class="progress-fill" id="lesson-progress-fill" style="width:0%"></div>
@@ -186,7 +186,7 @@
   <!-- ═══════════════════════ 4) شاشة الاختبار (٤ أنواع أنشطة) ═══════════════════════ -->
   <section id="screen-quiz" class="screen" hidden>
     <header class="lesson-header">
-      <button type="button" class="btn btn-icon" id="btn-quiz-back" aria-label="رجوع للوحة الرئيسية">➜</button>
+      <button type="button" class="btn btn-back" id="btn-quiz-back" aria-label="رجوع للوحة الرئيسية">رجوع ➜</button>
       <div class="progress-track lesson-progress" role="progressbar" aria-label="تقدم الاختبار"
            aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="quiz-progressbar">
         <div class="progress-fill" id="quiz-progress-fill" style="width:0%"></div>
@@ -206,6 +206,13 @@
       <!-- خيارات الإجابة -->
       <div class="quiz-options" id="quiz-options">
         <!-- تُعبّأ من app.js: أزرار خيارات (صور أو كلمات) -->
+      </div>
+
+      <!-- زر مساعدة دائم حتى لا يعلق الطفل -->
+      <div class="quiz-help-row">
+        <button type="button" class="btn btn-ghost" id="btn-quiz-help">
+          علّمني الجواب 💡
+        </button>
       </div>
 
       <!-- رسالة تشجيعية بعد الإجابة -->
@@ -264,7 +271,7 @@
   <!-- ═══════════════════════ 6) شاشة الجوائز والأوسمة ═══════════════════════ -->
   <section id="screen-rewards" class="screen" hidden>
     <header class="lesson-header">
-      <button type="button" class="btn btn-icon" id="btn-rewards-back" aria-label="رجوع للوحة الرئيسية">➜</button>
+      <button type="button" class="btn btn-back" id="btn-rewards-back" aria-label="رجوع للوحة الرئيسية">رجوع ➜</button>
       <h1 class="screen-title">جوائزي 🏆</h1>
       <span class="header-spacer" aria-hidden="true"></span>
     </header>
@@ -312,7 +319,7 @@
   <!-- ═══════════════════════ 7) لوحة الأهل ═══════════════════════ -->
   <section id="screen-parents" class="screen" hidden>
     <header class="lesson-header">
-      <button type="button" class="btn btn-icon" id="btn-parents-back" aria-label="رجوع للوحة الرئيسية">➜</button>
+      <button type="button" class="btn btn-back" id="btn-parents-back" aria-label="رجوع للوحة الرئيسية">رجوع ➜</button>
       <h1 class="screen-title">لوحة الأهل 👨‍👩‍👧</h1>
       <span class="header-spacer" aria-hidden="true"></span>
     </header>
