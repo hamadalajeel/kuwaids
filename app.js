@@ -947,7 +947,6 @@
       b.appendChild(span);
       b.dataset.correct = c.id === w.id ? "1" : "";
       b.setAttribute("data-tts", c.tts || c.kuwaitiWord);
-      makeSpeakable(b, () => () => AudioPlayer.playWord(c), { key: c.kuwaitiWord });
       b.addEventListener("click", () => {
         const ok = c.id === w.id;
         if (ok && onCorrectExtra) onCorrectExtra();
