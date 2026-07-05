@@ -15,8 +15,8 @@
   const STORAGE_KEY = "kuwaids_state_v1";
 
   // عدد كلمات الدرس اليومي — غيّر هذين الرقمين لتغيير حجم الدرس
-  const NEW_WORDS_PER_DAY = 6;
-  const REVIEW_WORDS_PER_DAY = 4;
+  const NEW_WORDS_PER_DAY = 3;
+  const REVIEW_WORDS_PER_DAY = 2;
   const DAILY_TOTAL = NEW_WORDS_PER_DAY + REVIEW_WORDS_PER_DAY;
 
   // فواصل التكرار المتباعد (بالأيام): غداً، بعد ٣، بعد ٧، بعد ١٤
@@ -463,7 +463,12 @@
 
   function ensureDaily() {
     const today = todayStr();
-    if (state.daily && state.daily.date === today) return state.daily;
+    if (state.daily && state.daily.date === today) {
+      // إذا تغيّر حجم الدرس في تحديث ولم يكتمل درس اليوم، نولّده من جديد
+      if (state.daily.completed || state.daily.wordIds.length === DAILY_TOTAL) {
+        return state.daily;
+      }
+    }
 
     const introduced = new Set(
       Object.entries(state.wordsProgress)
