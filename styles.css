@@ -5,47 +5,47 @@
 
 /* ── متغيرات التصميم ─────────────────────────────────────────── */
 :root {
-  /* تصميم مودرن نظيف: أسطح بيضاء بحدود بنفسجية-رمادية ناعمة،
-     لون أساسي إنديجو بتدرج خفيف وظلال ملونة ناعمة، وزوايا وسطية.
+  /* لغة تصميم apple.com الرسمية: خلفية #f5f5f7، أسطح بيضاء بلا حدود
+     ولا ظلال تقريباً، أسود #1d1d1f، أزرق واحد #0071e3 بأزرار حبّة
+     دواء، خط النظام (SF على أجهزة آبل)، ومساحات واسعة.
      --accent يتغيّر من app.js حسب اللون المفضل للطفل */
-  --accent: #6366f1;
-  --accent-soft: color-mix(in srgb, var(--accent) 12%, white);
+  --accent: #0071e3;
+  --accent-soft: color-mix(in srgb, var(--accent) 10%, white);
 
-  --bg: #f7f7fc;
+  --bg: #f5f5f7;
   --bg-gradient: none;
   --surface: #ffffff;
-  --surface-soft: #f4f4fa;
-  --border: #e7e7f2;
+  --surface-soft: #f5f5f7;
+  --border: #e8e8ed;
 
-  --ink: #1d1f2c;          /* نص أساسي — تباين عالٍ */
-  --ink-soft: #6f7284;     /* نص ثانوي */
+  --ink: #1d1d1f;          /* أسود آبل */
+  --ink-soft: #6e6e73;     /* رمادي آبل الثانوي */
 
-  --primary: #6366f1;      /* إنديجو مودرن للزر الرئيسي */
-  --primary-dark: #4f46e5;
-  --link: #6366f1;
-  --link-dark: #4f46e5;
-  --secondary: #6366f1;
-  --secondary-dark: #4f46e5;
-  --success: #16a34a;
-  --success-bg: #e9f9ef;
-  --attention: #f59e0b;
-  --attention-bg: #fdf3df;
-  --gold: #f5b301;
-  --danger: #e11d48;
+  --primary: #0071e3;      /* أزرق آبل الوحيد */
+  --primary-dark: #0077ed;
+  --link: #0066cc;
+  --link-dark: #0071e3;
+  --secondary: #0071e3;
+  --secondary-dark: #0077ed;
+  --success: #34c759;
+  --success-bg: #eafaef;
+  --attention: #ff9500;
+  --attention-bg: #fff4e5;
+  --gold: #ffcc00;
+  --danger: #ff3b30;
 
-  --radius-lg: 20px;
-  --radius-md: 13px;
-  --radius-sm: 9px;
+  --radius-lg: 18px;
+  --radius-md: 12px;
+  --radius-sm: 8px;
 
-  --shadow-card: 0 1px 2px rgba(29, 31, 44, 0.04), 0 6px 18px rgba(99, 102, 241, 0.06);
-  --shadow-pop: 0 8px 24px rgba(99, 102, 241, 0.16);
+  --shadow-card: none;
+  --shadow-pop: 0 4px 20px rgba(0, 0, 0, 0.08);
 
-  /* واجهة بخط النظام، والعناوين والأزرار والكلمات بخط عربي مستدير */
-  --font: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans Arabic", Tahoma, sans-serif;
+  /* خط النظام مثل آبل تماماً؛ الكلمة التعليمية فقط بخط عربي مستدير */
+  --font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", "Noto Sans Arabic", Tahoma, sans-serif;
   --font-display: "Baloo Bhaijaan 2", "Segoe UI", Tahoma, sans-serif;
 
-  /* أهداف لمس مريحة للأطفال */
-  --touch: 50px;
+  --touch: 48px;
 }
 
 /* ── إعادة ضبط أساسية ────────────────────────────────────────── */
@@ -137,10 +137,9 @@ button {
 /* ── البطاقات ────────────────────────────────────────────────── */
 .card {
   background: var(--surface);
-  border: 1px solid var(--border);
+  border: none;
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-card);
-  padding: clamp(18px, 4vw, 28px);
+  padding: clamp(20px, 4.5vw, 30px);
 }
 
 .card-inner {
@@ -150,7 +149,8 @@ button {
 }
 
 .card-title {
-  font-family: var(--font-display);
+  font-family: var(--font);
+  letter-spacing: -0.02em;
   font-size: 1.25rem;
   font-weight: 700;
   margin-bottom: 12px;
@@ -164,10 +164,10 @@ button {
   gap: 10px;
   min-height: var(--touch);
   padding: 10px 22px;
-  border-radius: var(--radius-md);
-  font-family: var(--font-display);
-  font-size: 1.05rem;
-  font-weight: 700;
+  border-radius: 980px;
+  font-family: var(--font);
+  font-size: 1.02rem;
+  font-weight: 600;
   transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
   user-select: none;
   touch-action: manipulation;
@@ -185,27 +185,24 @@ button {
 }
 
 .btn-primary {
-  background: linear-gradient(180deg, #6d70f6 0%, #5558ef 100%);
+  background: var(--primary);
   color: #fff;
-  box-shadow: 0 6px 16px rgba(99, 102, 241, 0.35);
+  box-shadow: none;
 }
 
 .btn-primary:hover {
-  filter: brightness(1.06);
-  transform: translateY(-1px);
+  background: var(--primary-dark);
 }
 
-/* زر ثانوي: زر GitHub الافتراضي (أبيض بحد رمادي) */
+/* زر ثانوي بأسلوب آبل: أبيض بنص أزرق وحد رمادي رقيق */
 .btn-secondary {
   background: var(--surface);
-  color: var(--ink);
-  border: 1px solid var(--border);
-  box-shadow: var(--shadow-card);
+  color: var(--primary);
+  border: 1px solid #d2d2d7;
 }
 
 .btn-secondary:hover {
-  background: var(--surface-soft);
-  border-color: #d5d5e8;
+  border-color: var(--primary);
 }
 
 .btn-ghost {
@@ -259,20 +256,18 @@ button {
   flex-wrap: wrap;
 }
 
-/* زر الصوت: زر GitHub افتراضي بأيقونة */
+/* زر الصوت: رمادي آبل الفاتح بأيقونة داكنة */
 .btn-audio {
-  background: var(--surface-soft);
+  background: #e8e8ed;
   color: var(--ink);
-  border: 1px solid var(--border);
-  font-size: 1.05rem;
+  border: none;
+  font-size: 1rem;
   min-height: var(--touch);
-  padding-inline: 20px;
+  padding-inline: 22px;
 }
 
 .btn-audio:hover {
-  background: var(--accent-soft);
-  border-color: var(--link);
-  color: var(--link-dark);
+  background: #dededf;
 }
 
 .btn-audio-small {
@@ -372,7 +367,8 @@ button {
 }
 
 .setup-title {
-  font-family: var(--font-display);
+  font-family: var(--font);
+  letter-spacing: -0.02em;
   font-size: clamp(1.8rem, 6vw, 2.4rem);
   font-weight: 800;
 }
@@ -507,11 +503,9 @@ button {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 14%, white) 0%, var(--surface) 70%);
-  border: 1px solid color-mix(in srgb, var(--accent) 20%, var(--border));
+  background: var(--surface);
   border-radius: var(--radius-lg);
-  padding: 16px 20px;
-  box-shadow: var(--shadow-card);
+  padding: 18px 22px;
 }
 
 .dash-profile {
@@ -543,7 +537,8 @@ button {
 }
 
 .dash-username {
-  font-family: var(--font-display);
+  font-family: var(--font);
+  letter-spacing: -0.02em;
   font-size: clamp(1.3rem, 5vw, 1.7rem);
   font-weight: 800;
   overflow: hidden;
@@ -554,12 +549,12 @@ button {
 .dash-level-chip {
   align-self: flex-start;
   background: var(--accent-soft);
-  color: var(--primary-dark);
-  border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+  color: var(--primary);
+  border: none;
   font-size: 0.85rem;
-  font-weight: 700;
-  padding: 1px 12px;
-  border-radius: 999px;
+  font-weight: 600;
+  padding: 2px 12px;
+  border-radius: 980px;
 }
 
 /* صف الإحصائيات */
@@ -622,16 +617,16 @@ button {
 /* شريط التقدم العام */
 .progress-track {
   width: 100%;
-  height: 12px;
-  background: #ececf6;
-  border-radius: 999px;
+  height: 8px;
+  background: #d2d2d7;
+  border-radius: 980px;
   overflow: hidden;
 }
 
 .progress-fill {
   height: 100%;
-  border-radius: 999px;
-  background: linear-gradient(90deg, #818cf8, #6366f1);
+  border-radius: 980px;
+  background: var(--primary);
   transition: width 0.6s cubic-bezier(0.22, 1, 0.36, 1);
   min-width: 0;
 }
@@ -655,8 +650,8 @@ button {
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  background: #ececf6;
-  border: 1px solid var(--border);
+  background: #e8e8ed;
+  border: none;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -694,14 +689,13 @@ button {
 /* زر رجوع واضح بنص مقروء بدل أيقونة فقط */
 .btn-back {
   min-height: var(--touch);
-  padding: 8px 16px;
-  border-radius: var(--radius-md);
-  background: var(--surface);
-  border: 1px solid var(--border);
-  box-shadow: var(--shadow-card);
+  padding: 8px 18px;
+  border-radius: 980px;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
   font-size: 0.95rem;
-  font-weight: 600;
-  color: var(--ink);
+  font-weight: 500;
+  color: var(--primary);
   flex-shrink: 0;
 }
 
@@ -711,7 +705,7 @@ button {
 
 .lesson-progress {
   flex: 1;
-  height: 12px;
+  height: 8px;
 }
 
 .lesson-counter {
@@ -745,18 +739,18 @@ button {
 
 .word-tag {
   background: var(--success-bg);
-  color: var(--success);
-  border: 1px solid #4ac26b66;
+  color: #248a3d;
+  border: none;
   font-weight: 600;
   font-size: 0.9rem;
   padding: 3px 14px;
-  border-radius: 999px;
+  border-radius: 980px;
 }
 
 .word-tag.review {
   background: var(--accent-soft);
-  color: var(--primary-dark);
-  border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+  color: var(--primary);
+  border: none;
 }
 
 /* بطاقة الكلمة */
@@ -807,7 +801,7 @@ button {
 
 .word-kuwaiti {
   font-family: var(--font-display);
-  font-size: clamp(2.2rem, 9vw, 3.2rem);
+  font-size: clamp(2.4rem, 10vw, 3.4rem);
   font-weight: 800;
   color: var(--ink);
   line-height: 1.3;
@@ -858,16 +852,17 @@ button {
 .meta-chip {
   background: var(--surface-soft);
   color: var(--ink-soft);
-  border: 1px solid var(--border);
+  border: none;
   font-size: 0.85rem;
-  font-weight: 600;
-  padding: 3px 14px;
-  border-radius: 999px;
+  font-weight: 500;
+  padding: 4px 14px;
+  border-radius: 980px;
 }
 
 /* ═══════════════ 4) شاشة الاختبار ═══════════════ */
 .quiz-question {
-  font-family: var(--font-display);
+  font-family: var(--font);
+  letter-spacing: -0.02em;
   font-size: clamp(1.25rem, 5vw, 1.6rem);
   font-weight: 800;
   text-align: center;
@@ -903,17 +898,17 @@ button {
   width: clamp(104px, 28vw, 140px);
   height: clamp(104px, 28vw, 140px);
   border-radius: 50%;
-  background: linear-gradient(180deg, #6d70f6, #5558ef);
+  background: var(--primary);
   color: #fff;
-  box-shadow: 0 10px 26px rgba(99, 102, 241, 0.4);
-  transition: transform 0.15s ease, filter 0.15s ease;
+  box-shadow: none;
+  transition: transform 0.15s ease, background 0.15s ease;
   display: inline-flex;
   align-items: center;
   justify-content: center;
 }
 
 .stimulus-audio-btn:hover {
-  filter: brightness(1.07);
+  background: var(--primary-dark);
 }
 
 .stimulus-audio-btn svg {
@@ -975,11 +970,10 @@ button {
 }
 
 .quiz-option {
-  min-height: 90px;
+  min-height: 92px;
   background: var(--surface);
-  border: 1px solid var(--border);
+  border: 2px solid transparent;
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-card);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -997,8 +991,7 @@ button {
 .quiz-option:nth-child(4) { animation-delay: 0.26s; }
 
 .quiz-option:hover {
-  border-color: var(--link);
-  box-shadow: var(--shadow-pop);
+  border-color: var(--primary);
 }
 
 .quiz-option:active {
@@ -1034,16 +1027,15 @@ button {
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  background: var(--accent-soft);
-  color: var(--link-dark);
+  background: #e8e8ed;
+  color: var(--ink);
   cursor: pointer;
-  transition: background 0.15s ease, transform 0.15s ease;
+  transition: background 0.15s ease;
 }
 
 .option-speak:hover {
-  background: var(--link);
+  background: var(--primary);
   color: #fff;
-  transform: scale(1.08);
 }
 
 .option-speak svg {
@@ -1162,7 +1154,8 @@ button {
 }
 
 .results-title {
-  font-family: var(--font-display);
+  font-family: var(--font);
+  letter-spacing: -0.02em;
   font-size: clamp(1.7rem, 6.5vw, 2.3rem);
   font-weight: 800;
 }
@@ -1305,7 +1298,7 @@ button {
   align-items: center;
   gap: 6px;
   text-align: center;
-  border: 1px solid var(--attention);
+  border: none;
   transition: transform 0.2s ease;
 }
 
