@@ -33,3 +33,8 @@
 - **wayed.jpg** — المؤلف: Ricardo Costa — الرخصة: CC BY 3.0 — المصدر: https://commons.wikimedia.org/wiki/File:Marbles_(97619023).jpeg
 - **mashkoor.jpg** — المؤلف: Leon Brocard — الرخصة: CC BY 2.0 — المصدر: https://commons.wikimedia.org/wiki/File:Two_left_hands_forming_a_heart_shape.jpg
 - **freej.jpg** — المؤلف: Mostafameraji — الرخصة: CC BY-SA 4.0 — المصدر: https://commons.wikimedia.org/wiki/File:Architecture_of_Shiraz_06.jpg
+- **dishdasha.jpg** — المؤلف: Mary Paulose from Muscat, Oman — الرخصة: CC BY 2.0 — المصدر: https://commons.wikimedia.org/wiki/File:Dishdasha.jpg
+- **ghitra.jpg** — المؤلف: Maya-Anaïs Yataghène from Paris, France — الرخصة: CC BY 2.0 — المصدر: https://commons.wikimedia.org/wiki/File:Amman_(Jordan)_(8501084861).jpg
+- **gooti.jpg** — المؤلف: Sun Ladder — الرخصة: CC BY-SA 3.0 — المصدر: https://commons.wikimedia.org/wiki/File:Empty_tin_can2009-01-19.jpg
+- **shlonak.jpg** — المؤلف: Flowrymz — الرخصة: CC BY-SA 4.0 — المصدر: https://commons.wikimedia.org/wiki/File:Hon._Uche_Nwosu.jpg
+- **chithee.jpg** — المؤلف: Poniatowicz1224 at English Wikipedia — الرخصة: Public domain — المصدر: https://commons.wikimedia.org/wiki/File:0416071543.jpg

@@ -47,13 +47,9 @@ const WORD_IMAGES = {
   },
   "5": {
     "alt": "علبة",
-    "main": "assets/images/words/gooti.svg",
-    "variations": [
-      "assets/images/words/gooti-alt1.svg",
-      "assets/images/words/gooti-alt2.svg",
-      "assets/images/words/gooti-small.svg",
-      "assets/images/words/gooti-tilt.svg"
-    ],
+    "main": "assets/images/photos/gooti.jpg",
+    "variations": [],
+    "isPhoto": true,
     "needsCustomIllustration": false
   },
   "6": {
@@ -100,14 +96,10 @@ const WORD_IMAGES = {
   },
   "12": {
     "alt": "دشداشة كويتية",
-    "main": "assets/images/words/dishdasha.svg",
-    "variations": [
-      "assets/images/words/dishdasha-alt1.svg",
-      "assets/images/words/dishdasha-alt2.svg",
-      "assets/images/words/dishdasha-small.svg",
-      "assets/images/words/dishdasha-tilt.svg"
-    ],
-    "needsCustomIllustration": true
+    "main": "assets/images/photos/dishdasha.jpg",
+    "variations": [],
+    "isPhoto": true,
+    "needsCustomIllustration": false
   },
   "13": {
     "alt": "حذاء رياضي",
@@ -118,14 +110,10 @@ const WORD_IMAGES = {
   },
   "14": {
     "alt": "غترة وعقال",
-    "main": "assets/images/words/ghitra.svg",
-    "variations": [
-      "assets/images/words/ghitra-alt1.svg",
-      "assets/images/words/ghitra-alt2.svg",
-      "assets/images/words/ghitra-small.svg",
-      "assets/images/words/ghitra-tilt.svg"
-    ],
-    "needsCustomIllustration": true
+    "main": "assets/images/photos/ghitra.jpg",
+    "variations": [],
+    "isPhoto": true,
+    "needsCustomIllustration": false
   },
   "15": {
     "alt": "نعال",
@@ -285,13 +273,9 @@ const WORD_IMAGES = {
   },
   "35": {
     "alt": "تحية — يد تلوّح",
-    "main": "assets/images/words/shlonak.svg",
-    "variations": [
-      "assets/images/words/shlonak-alt1.svg",
-      "assets/images/words/shlonak-alt2.svg",
-      "assets/images/words/shlonak-small.svg",
-      "assets/images/words/shlonak-tilt.svg"
-    ],
+    "main": "assets/images/photos/shlonak.jpg",
+    "variations": [],
+    "isPhoto": true,
     "needsCustomIllustration": false
   },
   "36": {
@@ -317,13 +301,9 @@ const WORD_IMAGES = {
   },
   "39": {
     "alt": "إصبع يشير",
-    "main": "assets/images/words/chithee.svg",
-    "variations": [
-      "assets/images/words/chithee-alt1.svg",
-      "assets/images/words/chithee-alt2.svg",
-      "assets/images/words/chithee-small.svg",
-      "assets/images/words/chithee-tilt.svg"
-    ],
+    "main": "assets/images/photos/chithee.jpg",
+    "variations": [],
+    "isPhoto": true,
     "needsCustomIllustration": false
   },
   "40": {
