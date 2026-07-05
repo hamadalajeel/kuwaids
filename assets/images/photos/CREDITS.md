@@ -2,12 +2,6 @@
 
 كل الصور من Wikimedia Commons، محفوظة محلياً في `assets/images/photos/`.
 
-- **zain.jpg** — المؤلف: No machine-readable author provided. Dbenbenn assumed (based on copyright claims). — الرخصة: CC BY-SA 3.0 — المصدر: https://commons.wikimedia.org/wiki/File:Thumbs_up.jpg
-- **yalla.jpg** — المؤلف: Krolliami — الرخصة: CC BY-SA 3.0 — المصدر: https://commons.wikimedia.org/wiki/File:Children_running_in_the_rain_2008.jpg
-- **wayed.jpg** — المؤلف: Ricardo Costa — الرخصة: CC BY 3.0 — المصدر: https://commons.wikimedia.org/wiki/File:Marbles_(97619023).jpeg
-- **mashkoor.jpg** — المؤلف: Leon Brocard — الرخصة: CC BY 2.0 — المصدر: https://commons.wikimedia.org/wiki/File:Two_left_hands_forming_a_heart_shape.jpg
-- **shlonak.jpg** — المؤلف: Flowrymz — الرخصة: CC BY-SA 4.0 — المصدر: https://commons.wikimedia.org/wiki/File:Hon._Uche_Nwosu.jpg
-- **chithee.jpg** — المؤلف: Poniatowicz1224 at English Wikipedia — الرخصة: Public domain — المصدر: https://commons.wikimedia.org/wiki/File:0416071543.jpg
 - **yadda.jpg** — شخصية مولّدة بالذكاء الاصطناعي (ChatGPT) بواسطة صاحب المشروع — لا تمثل شخصاً حقيقياً
 - **yumma.jpg** — شخصية مولّدة بالذكاء الاصطناعي (ChatGPT) بواسطة صاحب المشروع — لا تمثل شخصاً حقيقياً
 - **iyal.jpg** — شخصية مولّدة بالذكاء الاصطناعي (ChatGPT) بواسطة صاحب المشروع — لا تمثل شخصاً حقيقياً
@@ -42,3 +36,9 @@
 - **rassasi.jpg** — صورة مولّدة بالذكاء الاصطناعي (ChatGPT) بواسطة صاحب المشروع
 - **samawi.jpg** — صورة مولّدة بالذكاء الاصطناعي (ChatGPT) بواسطة صاحب المشروع
 - **wardi.jpg** — صورة مولّدة بالذكاء الاصطناعي (ChatGPT) بواسطة صاحب المشروع
+- **chithee.jpg** — صورة مولّدة بالذكاء الاصطناعي (ChatGPT) بواسطة صاحب المشروع
+- **yalla.jpg** — صورة مولّدة بالذكاء الاصطناعي (ChatGPT) بواسطة صاحب المشروع
+- **mashkoor.jpg** — صورة مولّدة بالذكاء الاصطناعي (ChatGPT) بواسطة صاحب المشروع
+- **zain.jpg** — صورة مولّدة بالذكاء الاصطناعي (ChatGPT) بواسطة صاحب المشروع
+- **wayed.jpg** — صورة مولّدة بالذكاء الاصطناعي (ChatGPT) بواسطة صاحب المشروع
+- **shlonak.jpg** — صورة مولّدة بالذكاء الاصطناعي (ChatGPT) بواسطة صاحب المشروع
