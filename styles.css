@@ -1019,6 +1019,38 @@ button {
   height: auto;
 }
 
+/* زر السماعة داخل خيارات الكلمات — للطفل الذي لا يقرأ بعد */
+.quiz-option-word {
+  padding-top: 22px;
+}
+
+.option-speak {
+  position: absolute;
+  top: 8px;
+  inset-inline-start: 8px;
+  width: 42px;
+  height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--accent-soft);
+  color: var(--link-dark);
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.option-speak:hover {
+  background: var(--link);
+  color: #fff;
+  transform: scale(1.08);
+}
+
+.option-speak svg {
+  width: 22px;
+  height: 22px;
+}
+
 /* خيار كلمة — الحجم واللون يتغيّران من app.js لتنويع العرض */
 .quiz-option .option-word {
   font-family: var(--font-display);

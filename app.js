@@ -849,6 +849,14 @@
     AudioPlayer.playWord(w, "normal", btn);
   }
 
+  // تلميح صغير يظهر في أنشطة اختيار الكلمة: كل خيار له سماعة
+  function addSpeakHint(stimulus) {
+    const hint = document.createElement("span");
+    hint.className = "stimulus-caption";
+    hint.textContent = "اضغط السماعة في كل خيار واسمعه 🔊";
+    stimulus.appendChild(hint);
+  }
+
   /* النشاط ٣: شوف الصورة واختر الكلمة الكويتية */
   function buildImageChooseWord(w, stimulus, options) {
     $("quiz-question").textContent = "شوف الصورة واختر الكلمة الكويتية 👀";
@@ -858,6 +866,7 @@
     holder.appendChild(makeWordImg(w));
     holder.style.transform = `rotate(${(Math.random() * 8 - 4).toFixed(1)}deg)`;
     stimulus.appendChild(holder);
+    addSpeakHint(stimulus);
 
     buildWordOptions(w, options);
   }
@@ -892,6 +901,7 @@
     hint.innerHTML = ICONS.speaker;
     hint.addEventListener("click", () => AudioPlayer.playExample(w, "normal", hint));
     stimulus.appendChild(hint);
+    addSpeakHint(stimulus);
 
     buildWordOptions(w, options, () => {
       // عند الإجابة الصحيحة نظهر الكلمة في الفراغ
@@ -905,7 +915,28 @@
     choices.forEach((c) => {
       const b = document.createElement("button");
       b.type = "button";
-      b.className = "quiz-option";
+      b.className = "quiz-option quiz-option-word";
+
+      // زر سماعة داخل كل خيار: الطفل الذي لا يقرأ يسمع الخيار
+      // أولاً ثم يختار — الضغط عليه لا يُحسب إجابة أبداً
+      const sp = document.createElement("span");
+      sp.className = "option-speak";
+      sp.setAttribute("role", "button");
+      sp.setAttribute("tabindex", "0");
+      sp.setAttribute("aria-label", "اسمع هذا الخيار");
+      sp.innerHTML = ICONS.speaker;
+      sp.addEventListener("click", (e) => {
+        e.stopPropagation();
+        AudioPlayer.playWord(c, "normal");
+      });
+      sp.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          e.stopPropagation();
+          AudioPlayer.playWord(c, "normal");
+        }
+      });
+      b.appendChild(sp);
       const span = document.createElement("span");
       span.className = "option-word";
       span.setAttribute("lang", "ar");
