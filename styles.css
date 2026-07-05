@@ -1181,8 +1181,8 @@ button {
   background: var(--surface);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-card);
-  padding: 20px 24px;
-  font-size: clamp(1.3rem, 5.5vw, 1.7rem);
+  padding: 16px 20px;
+  font-size: clamp(1.15rem, 4.8vw, 1.5rem);
   font-weight: 700;
   text-align: center;
   line-height: 2;

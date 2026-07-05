@@ -293,7 +293,8 @@
     في نظام الدروس. (لا توجد حالياً أي مسارات ملفات في البيانات.)
   */
 
-  const SPEED = { normal: 0.85, slow: 0.55 };
+  // البطيء أبطأ بوضوح ملموس — للطفل الذي يتهجى الكلمة
+  const SPEED = { normal: 0.85, slow: 0.4 };
 
   // أصوات المتصفح فصيحة ولا تعرف بعض حروف اللهجة، فنقرّب النص لها:
   // چ → تش، گ → ق، پ → ب، ڤ → ف، مع حذف التطويل
@@ -355,8 +356,6 @@
   }
 
   const AudioPlayer = {
-    last: null, // آخر تشغيل — لزر الإعادة 🔁
-
     init() {
       if (!("speechSynthesis" in window)) return;
       detectArabicVoice();
@@ -365,17 +364,11 @@
 
     playWord(word, speed = "normal", btn) {
       // tts: نص منطوق مُشكَّل بالحركات لتحسين نطق أصوات المتصفح
-      this.last = { text: word.tts || word.kuwaitiWord, speed, file: word.audio && word.audio.word };
-      this._play(this.last, btn);
+      this._play({ text: word.tts || word.kuwaitiWord, speed, file: word.audio && word.audio.word }, btn);
     },
 
     playExample(word, speed = "normal", btn) {
-      this.last = { text: word.ttsExample || word.example, speed, file: word.audio && word.audio.example };
-      this._play(this.last, btn);
-    },
-
-    replay(btn) {
-      if (this.last) this._play(this.last, btn);
+      this._play({ text: word.ttsExample || word.example, speed, file: word.audio && word.audio.example }, btn);
     },
 
     _play(item, btn) {
@@ -874,11 +867,14 @@
     buildWordOptions(w, options);
   }
 
-  /* النشاط ٤: أكمل الجملة الكويتية */
+  /* النشاط ٤: اسمع الجملة الناقصة وكمّلها — سمعي أولاً لغير القارئين */
   function buildCompleteSentence(w, stimulus, options) {
-    $("quiz-question").textContent = "أكمل الجملة الكويتية ✍️";
+    $("quiz-question").textContent = "اسمع الجملة وكمّلها 👂";
 
     const token = exampleTokenFor(w);
+    // نص النطق: الجملة مع «ممم؟» مكان الكلمة الناقصة
+    const gapText = (w.ttsExample || w.example).split(/\s+/)
+      .map((t) => (t === token ? "ممم؟" : t)).join(" ");
     const sentence = document.createElement("div");
     sentence.className = "stimulus-sentence";
     sentence.setAttribute("lang", "ar");
@@ -899,18 +895,22 @@
 
     const hint = document.createElement("button");
     hint.type = "button";
-    hint.className = "btn btn-audio btn-audio-small";
-    hint.setAttribute("aria-label", "اسمع الجملة كاملة");
+    hint.className = "stimulus-audio-btn";
+    hint.setAttribute("aria-label", "اسمع الجملة الناقصة");
     hint.innerHTML = ICONS.speaker;
-    hint.addEventListener("click", () => AudioPlayer.playExample(w, "normal", hint));
+    hint.addEventListener("click", () => speakArabic(gapText, "normal", hint));
     stimulus.appendChild(hint);
     addSpeakHint(stimulus);
 
     buildWordOptions(w, options, () => {
-      // عند الإجابة الصحيحة نظهر الكلمة في الفراغ
+      // عند الإجابة الصحيحة: تظهر الكلمة في الفراغ وتُنطق الجملة كاملة
       const blank = sentence.querySelector(".blank");
       if (blank) blank.textContent = token;
+      setTimeout(() => AudioPlayer.playExample(w, "normal"), 350);
     });
+
+    // ينطق الجملة الناقصة تلقائياً عند ظهور السؤال
+    speakArabic(gapText, "normal", hint);
   }
 
   function buildWordOptions(w, options, onCorrectExtra) {
@@ -1355,8 +1355,6 @@
       AudioPlayer.playWord(lessonWord(), "normal", $("btn-lesson-audio")));
     $("btn-lesson-audio-slow").addEventListener("click", () =>
       AudioPlayer.playWord(lessonWord(), "slow", $("btn-lesson-audio-slow")));
-    $("btn-audio-replay").addEventListener("click", () =>
-      AudioPlayer.replay($("btn-audio-replay")));
     $("btn-example-audio").addEventListener("click", () =>
       AudioPlayer.playExample(lessonWord(), "normal", $("btn-example-audio")));
     $("btn-example-audio-slow").addEventListener("click", () =>
