@@ -5,39 +5,48 @@
 
 /* ── متغيرات التصميم ─────────────────────────────────────────── */
 :root {
-  /* لوحة هادئة: لون أساسي واحد (تركوازي)، محايدات دافئة،
-     والألوان الزاهية محصورة في النجوم ولون الطفل المفضل فقط.
+  /* نظام ألوان بأسلوب github.com (Primer، الوضع الفاتح):
+     أسطح بيضاء بحدود رمادية رفيعة، زر رئيسي أخضر، تفاعلات زرقاء،
+     زوايا صغيرة وظلال شبه معدومة.
      --accent يتغيّر من app.js حسب اللون المفضل للطفل */
-  --accent: #2fa79e;
-  --accent-soft: color-mix(in srgb, var(--accent) 14%, white);
+  --accent: #0969da;
+  --accent-soft: color-mix(in srgb, var(--accent) 12%, white);
 
-  --bg: #faf7f1;
+  --bg: #f6f8fa;
   --bg-gradient: none;
   --surface: #ffffff;
-  --surface-soft: #f6f1e8;
+  --surface-soft: #f6f8fa;
+  --border: #d0d7de;
 
-  --ink: #333a48;          /* نص أساسي — تباين عالٍ */
-  --ink-soft: #737a89;     /* نص ثانوي */
+  --ink: #1f2328;          /* نص أساسي — تباين عالٍ */
+  --ink-soft: #59636e;     /* نص ثانوي */
 
-  --primary: #2fa79e;      /* التركوازي الأساسي الوحيد */
-  --primary-dark: #248079;
-  --secondary: #2fa79e;
-  --secondary-dark: #248079;
-  --success: #4fae63;
-  --gold: #f0b53d;
-  --danger: #d9534f;
+  --primary: #1f883d;      /* أخضر GitHub للزر الرئيسي */
+  --primary-dark: #1a7f37;
+  --link: #0969da;         /* أزرق GitHub للتفاعلات والروابط */
+  --link-dark: #0550ae;
+  --secondary: #0969da;
+  --secondary-dark: #0550ae;
+  --success: #1a7f37;
+  --success-bg: #dafbe1;
+  --attention: #d4a72c;
+  --attention-bg: #fff8c5;
+  --gold: #d4a72c;
+  --danger: #cf222e;
 
-  --radius-lg: 28px;
-  --radius-md: 20px;
-  --radius-sm: 14px;
+  --radius-lg: 12px;
+  --radius-md: 8px;
+  --radius-sm: 6px;
 
-  --shadow-card: 0 6px 18px rgba(58, 64, 78, 0.08);
-  --shadow-pop: 0 10px 26px rgba(58, 64, 78, 0.13);
+  --shadow-card: 0 1px 0 rgba(31, 35, 40, 0.04);
+  --shadow-pop: 0 3px 6px rgba(140, 149, 159, 0.2);
 
-  --font: "Baloo Bhaijaan 2", "Segoe UI", Tahoma, sans-serif;
+  /* واجهة بخط النظام مثل GitHub، والكلمة التعليمية بخط عربي مميز */
+  --font: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans Arabic", Tahoma, sans-serif;
+  --font-display: "Baloo Bhaijaan 2", "Segoe UI", Tahoma, sans-serif;
 
-  /* أهداف لمس كبيرة للأصابع الصغيرة */
-  --touch: 56px;
+  /* أهداف لمس مريحة للأطفال مع كثافة GitHub */
+  --touch: 48px;
 }
 
 /* ── إعادة ضبط أساسية ────────────────────────────────────────── */
@@ -86,8 +95,8 @@ button {
 
 /* تركيز واضح للوصولية — بالكيبورد فقط */
 :focus-visible {
-  outline: 4px solid var(--primary);
-  outline-offset: 3px;
+  outline: 2px solid var(--link);
+  outline-offset: 2px;
   border-radius: var(--radius-sm);
 }
 
@@ -129,7 +138,7 @@ button {
 /* ── البطاقات ────────────────────────────────────────────────── */
 .card {
   background: var(--surface);
-  border: 1px solid #ece4d4;
+  border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-card);
   padding: clamp(18px, 4vw, 28px);
@@ -154,10 +163,10 @@ button {
   justify-content: center;
   gap: 8px;
   min-height: var(--touch);
-  padding: 12px 24px;
-  border-radius: 999px;
-  font-size: 1.15rem;
-  font-weight: 700;
+  padding: 10px 20px;
+  border-radius: var(--radius-md);
+  font-size: 1.05rem;
+  font-weight: 600;
   transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
   user-select: none;
   touch-action: manipulation;
@@ -169,55 +178,57 @@ button {
 
 .btn-big {
   width: 100%;
-  min-height: 64px;
-  font-size: 1.3rem;
+  min-height: 54px;
+  font-size: 1.15rem;
   margin-top: 12px;
 }
 
 .btn-primary {
   background: var(--primary);
   color: #fff;
-  box-shadow: 0 5px 0 var(--primary-dark), var(--shadow-card);
+  border: 1px solid rgba(31, 35, 40, 0.15);
+  box-shadow: var(--shadow-card);
 }
 
 .btn-primary:hover {
-  filter: brightness(1.05);
-  transform: translateY(-2px);
+  background: var(--primary-dark);
 }
 
-/* زر ثانوي: إطار هادئ بدل لون إضافي */
+/* زر ثانوي: زر GitHub الافتراضي (أبيض بحد رمادي) */
 .btn-secondary {
   background: var(--surface);
-  color: var(--primary-dark);
-  border: 3px solid var(--primary);
+  color: var(--ink);
+  border: 1px solid var(--border);
   box-shadow: var(--shadow-card);
 }
 
 .btn-secondary:hover {
-  background: var(--accent-soft);
-  transform: translateY(-2px);
+  background: #f3f4f6;
 }
 
 .btn-ghost {
-  background: var(--surface-soft);
-  color: var(--ink-soft);
-  border: 1px solid #ece4d4;
+  background: transparent;
+  color: var(--link);
+  border: none;
 }
 
 .btn-ghost:hover {
-  color: var(--ink);
-  background: #efe8da;
+  background: var(--accent-soft);
+  text-decoration: underline;
 }
 
 .btn-danger {
-  background: var(--danger);
-  color: #fff;
-  font-size: 1rem;
-  min-height: 48px;
+  background: var(--surface);
+  color: var(--danger);
+  border: 1px solid var(--border);
+  font-size: 0.95rem;
+  min-height: 40px;
 }
 
 .btn-danger:hover {
-  filter: brightness(1.08);
+  background: var(--danger);
+  color: #fff;
+  border-color: var(--danger);
 }
 
 .btn-icon {
@@ -246,20 +257,20 @@ button {
   flex-wrap: wrap;
 }
 
-/* زر الصوت */
+/* زر الصوت: زر GitHub افتراضي بأيقونة */
 .btn-audio {
-  background: color-mix(in srgb, var(--primary) 10%, white);
+  background: var(--surface-soft);
   color: var(--ink);
-  border: 3px solid var(--primary);
-  font-size: 1.2rem;
+  border: 1px solid var(--border);
+  font-size: 1.05rem;
   min-height: var(--touch);
-  padding-inline: 28px;
-  animation: audioPulse 2.4s ease-in-out infinite;
+  padding-inline: 20px;
 }
 
 .btn-audio:hover {
-  background: var(--primary);
-  color: #fff;
+  background: var(--accent-soft);
+  border-color: var(--link);
+  color: var(--link-dark);
 }
 
 .btn-audio-small {
@@ -278,7 +289,8 @@ button {
 
 /* حالة تشغيل الصوت */
 .btn-audio.playing {
-  background: var(--primary);
+  background: var(--link);
+  border-color: var(--link);
   color: #fff;
   animation: audioBounce 0.5s ease infinite alternate;
 }
@@ -459,14 +471,14 @@ button {
 }
 
 .dash-avatar {
-  font-size: 3rem;
-  width: 76px;
-  height: 76px;
+  font-size: 2.6rem;
+  width: 72px;
+  height: 72px;
   display: flex;
   align-items: center;
   justify-content: center;
   background: var(--surface);
-  border: 4px solid var(--accent);
+  border: 3px solid var(--accent);
   border-radius: 50%;
   box-shadow: var(--shadow-card);
   flex-shrink: 0;
@@ -489,13 +501,13 @@ button {
 
 .dash-level-chip {
   align-self: flex-start;
-  background: var(--accent);
-  color: #fff;
-  font-size: 0.95rem;
-  font-weight: 700;
-  padding: 2px 14px;
+  background: #ddf4ff;
+  color: var(--link);
+  border: 1px solid #54aeff66;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 1px 12px;
   border-radius: 999px;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 /* صف الإحصائيات */
@@ -558,8 +570,9 @@ button {
 /* شريط التقدم العام */
 .progress-track {
   width: 100%;
-  height: 22px;
-  background: #f0e8da;
+  height: 10px;
+  background: #eff2f5;
+  border: 1px solid rgba(31, 35, 40, 0.06);
   border-radius: 999px;
   overflow: hidden;
 }
@@ -588,11 +601,11 @@ button {
 }
 
 .today-dot {
-  width: 26px;
-  height: 26px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
-  background: #f0e8da;
-  border: 3px solid #e5d9c4;
+  background: #eff2f5;
+  border: 1px solid var(--border);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -602,8 +615,8 @@ button {
 
 .today-dot.done {
   background: var(--success);
-  border-color: color-mix(in srgb, var(--success) 70%, black);
-  transform: scale(1.1);
+  border-color: var(--success);
+  transform: scale(1.05);
 }
 
 .today-dot.done::after {
@@ -630,25 +643,24 @@ button {
 /* زر رجوع واضح بنص مقروء بدل أيقونة فقط */
 .btn-back {
   min-height: var(--touch);
-  padding: 8px 18px;
-  border-radius: 999px;
+  padding: 8px 16px;
+  border-radius: var(--radius-md);
   background: var(--surface);
+  border: 1px solid var(--border);
   box-shadow: var(--shadow-card);
-  font-size: 1.05rem;
-  font-weight: 700;
-  color: var(--ink-soft);
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--ink);
   flex-shrink: 0;
 }
 
 .btn-back:hover {
-  color: var(--ink);
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-pop);
+  background: #f3f4f6;
 }
 
 .lesson-progress {
   flex: 1;
-  height: 18px;
+  height: 10px;
 }
 
 .lesson-counter {
@@ -681,18 +693,19 @@ button {
 }
 
 .word-tag {
-  background: var(--primary);
-  color: #fff;
-  font-weight: 700;
-  font-size: 1rem;
-  padding: 4px 20px;
+  background: var(--success-bg);
+  color: var(--success);
+  border: 1px solid #4ac26b66;
+  font-weight: 600;
+  font-size: 0.9rem;
+  padding: 3px 14px;
   border-radius: 999px;
 }
 
 .word-tag.review {
-  background: var(--surface-soft);
-  color: var(--ink);
-  border: 2px solid #e4dccc;
+  background: #ddf4ff;
+  color: var(--link);
+  border: 1px solid #54aeff66;
 }
 
 /* بطاقة الكلمة */
@@ -741,9 +754,10 @@ button {
 }
 
 .word-kuwaiti {
+  font-family: var(--font-display);
   font-size: clamp(2.2rem, 9vw, 3.2rem);
   font-weight: 800;
-  color: var(--primary-dark);
+  color: var(--ink);
   line-height: 1.3;
 }
 
@@ -792,9 +806,10 @@ button {
 .meta-chip {
   background: var(--surface-soft);
   color: var(--ink-soft);
-  font-size: 0.95rem;
-  font-weight: 700;
-  padding: 5px 16px;
+  border: 1px solid var(--border);
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 3px 14px;
   border-radius: 999px;
 }
 
@@ -832,15 +847,19 @@ button {
 
 /* زر صوت كبير كمحفّز */
 .stimulus-audio-btn {
-  width: clamp(110px, 30vw, 150px);
-  height: clamp(110px, 30vw, 150px);
+  width: clamp(104px, 28vw, 140px);
+  height: clamp(104px, 28vw, 140px);
   border-radius: 50%;
-  font-size: clamp(3rem, 10vw, 4rem);
-  background: var(--primary);
+  font-size: clamp(2.8rem, 9vw, 3.6rem);
+  background: var(--link);
   color: #fff;
-  box-shadow: 0 6px 0 var(--primary-dark), var(--shadow-pop);
-  animation: audioPulse 2.4s ease-in-out infinite;
-  transition: transform 0.15s ease;
+  border: 1px solid rgba(31, 35, 40, 0.15);
+  box-shadow: var(--shadow-pop);
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.stimulus-audio-btn:hover {
+  background: var(--link-dark);
 }
 
 .stimulus-audio-btn:active {
@@ -870,8 +889,8 @@ button {
 .stimulus-sentence .blank {
   display: inline-block;
   min-width: 4.5em;
-  border-bottom: 4px dashed var(--accent);
-  color: var(--accent);
+  border-bottom: 3px dashed var(--link);
+  color: var(--link);
   font-weight: 800;
   margin-inline: 6px;
   text-align: center;
@@ -899,8 +918,8 @@ button {
 .quiz-option {
   min-height: 90px;
   background: var(--surface);
-  border: 4px solid transparent;
-  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
   box-shadow: var(--shadow-card);
   display: flex;
   flex-direction: column;
@@ -919,8 +938,8 @@ button {
 .quiz-option:nth-child(4) { animation-delay: 0.26s; }
 
 .quiz-option:hover {
-  transform: translateY(-4px);
-  border-color: var(--secondary);
+  border-color: var(--link);
+  box-shadow: var(--shadow-pop);
 }
 
 .quiz-option:active {
@@ -943,6 +962,7 @@ button {
 
 /* خيار كلمة — الحجم واللون يتغيّران من app.js لتنويع العرض */
 .quiz-option .option-word {
+  font-family: var(--font-display);
   font-weight: 800;
   line-height: 1.4;
   word-break: break-word;
@@ -951,13 +971,13 @@ button {
 /* حالات الإجابة */
 .quiz-option.correct {
   border-color: var(--success);
-  background: color-mix(in srgb, var(--success) 16%, white);
+  background: var(--success-bg);
   animation: correctWiggle 0.5s ease;
 }
 
 .quiz-option.wrong {
-  border-color: var(--gold);
-  background: color-mix(in srgb, var(--gold) 18%, white);
+  border-color: var(--attention);
+  background: var(--attention-bg);
   animation: gentleShake 0.45s ease;
 }
 
@@ -992,9 +1012,8 @@ button {
 }
 
 #btn-quiz-help {
-  color: var(--ink-soft);
-  border-color: color-mix(in srgb, var(--ink-soft) 35%, transparent);
-  font-size: 1.05rem;
+  color: var(--link);
+  font-size: 1rem;
 }
 
 /* رسالة التشجيع */
@@ -1125,8 +1144,8 @@ button {
   display: flex;
   align-items: center;
   gap: 14px;
-  border: 3px solid var(--gold);
-  background: color-mix(in srgb, var(--gold) 14%, white);
+  border: 1px solid var(--attention);
+  background: var(--attention-bg);
   animation: popIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 1.3s backwards;
 }
 
@@ -1186,7 +1205,7 @@ button {
 
 .badge-card {
   background: var(--surface);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
   box-shadow: var(--shadow-card);
   padding: 18px 12px;
   display: flex;
@@ -1194,7 +1213,7 @@ button {
   align-items: center;
   gap: 6px;
   text-align: center;
-  border: 3px solid var(--gold);
+  border: 1px solid var(--attention);
   transition: transform 0.2s ease;
 }
 
@@ -1220,7 +1239,7 @@ button {
 }
 
 .badge-card.locked {
-  border-color: #e8e2d8;
+  border-color: var(--border);
   background: var(--surface-soft);
 }
 
@@ -1316,7 +1335,7 @@ button {
 }
 
 .setting-row + .setting-row {
-  border-top: 2px dashed #f0e8da;
+  border-top: 1px solid var(--border);
 }
 
 .setting-label {
@@ -1330,10 +1349,10 @@ button {
 
 /* مفتاح تبديل الصوت */
 .toggle {
-  width: 68px;
-  height: 38px;
+  width: 64px;
+  height: 34px;
   border-radius: 999px;
-  background: #ddd4c4;
+  background: var(--border);
   position: relative;
   transition: background 0.25s ease;
   flex-shrink: 0;
@@ -1345,10 +1364,10 @@ button {
 
 .toggle-knob {
   position: absolute;
-  top: 4px;
-  inset-inline-start: 4px;
-  width: 30px;
-  height: 30px;
+  top: 3px;
+  inset-inline-start: 3px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
   background: #fff;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
@@ -1359,6 +1378,7 @@ button {
 .toggle[aria-checked="true"] .toggle-knob {
   transform: translateX(-30px);
 }
+/* ملاحظة: القيمة نفسها تعمل مع المقاس الجديد */
 
 [dir="ltr"] .toggle[aria-checked="true"] .toggle-knob {
   transform: translateX(30px);
