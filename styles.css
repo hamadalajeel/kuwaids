@@ -800,6 +800,7 @@ button {
 .word-img {
   display: block;
   max-width: 100%;
+  border-radius: 14px;
   user-select: none;
   -webkit-user-drag: none;
 }

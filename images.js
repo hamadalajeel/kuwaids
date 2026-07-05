@@ -19,46 +19,30 @@ const IMAGE_FALLBACK = "assets/images/words/placeholder.svg";
 const WORD_IMAGES = {
   "1": {
     "alt": "نافذة",
-    "main": "assets/images/words/dresha.svg",
-    "variations": [
-      "assets/images/words/dresha-alt1.svg",
-      "assets/images/words/dresha-alt2.svg",
-      "assets/images/words/dresha-small.svg",
-      "assets/images/words/dresha-tilt.svg"
-    ],
+    "main": "assets/images/photos/dresha.jpg",
+    "variations": [],
+    "isPhoto": true,
     "needsCustomIllustration": false
   },
   "2": {
     "alt": "فناء البيت",
-    "main": "assets/images/words/hoosh.svg",
-    "variations": [
-      "assets/images/words/hoosh-alt1.svg",
-      "assets/images/words/hoosh-alt2.svg",
-      "assets/images/words/hoosh-small.svg",
-      "assets/images/words/hoosh-tilt.svg"
-    ],
-    "needsCustomIllustration": true
+    "main": "assets/images/photos/hoosh.jpg",
+    "variations": [],
+    "isPhoto": true,
+    "needsCustomIllustration": false
   },
   "3": {
     "alt": "وسادة",
-    "main": "assets/images/words/mkhadda.svg",
-    "variations": [
-      "assets/images/words/mkhadda-alt1.svg",
-      "assets/images/words/mkhadda-alt2.svg",
-      "assets/images/words/mkhadda-small.svg",
-      "assets/images/words/mkhadda-tilt.svg"
-    ],
+    "main": "assets/images/photos/mkhadda.jpg",
+    "variations": [],
+    "isPhoto": true,
     "needsCustomIllustration": false
   },
   "4": {
     "alt": "خزانة",
-    "main": "assets/images/words/doolab.svg",
-    "variations": [
-      "assets/images/words/doolab-alt1.svg",
-      "assets/images/words/doolab-alt2.svg",
-      "assets/images/words/doolab-small.svg",
-      "assets/images/words/doolab-tilt.svg"
-    ],
+    "main": "assets/images/photos/doolab.jpg",
+    "variations": [],
+    "isPhoto": true,
     "needsCustomIllustration": false
   },
   "5": {
@@ -74,68 +58,44 @@ const WORD_IMAGES = {
   },
   "6": {
     "alt": "استكانة شاي",
-    "main": "assets/images/words/istikana.svg",
-    "variations": [
-      "assets/images/words/istikana-alt1.svg",
-      "assets/images/words/istikana-alt2.svg",
-      "assets/images/words/istikana-small.svg",
-      "assets/images/words/istikana-tilt.svg"
-    ],
-    "needsCustomIllustration": true
+    "main": "assets/images/photos/istikana.jpg",
+    "variations": [],
+    "isPhoto": true,
+    "needsCustomIllustration": false
   },
   "7": {
     "alt": "ملعقة",
-    "main": "assets/images/words/mallas.svg",
-    "variations": [
-      "assets/images/words/mallas-alt1.svg",
-      "assets/images/words/mallas-alt2.svg",
-      "assets/images/words/mallas-small.svg",
-      "assets/images/words/mallas-tilt.svg"
-    ],
+    "main": "assets/images/photos/mallas.jpg",
+    "variations": [],
+    "isPhoto": true,
     "needsCustomIllustration": false
   },
   "8": {
     "alt": "قِدر",
-    "main": "assets/images/words/jidir.svg",
-    "variations": [
-      "assets/images/words/jidir-alt1.svg",
-      "assets/images/words/jidir-alt2.svg",
-      "assets/images/words/jidir-small.svg",
-      "assets/images/words/jidir-tilt.svg"
-    ],
+    "main": "assets/images/photos/jidir.jpg",
+    "variations": [],
+    "isPhoto": true,
     "needsCustomIllustration": false
   },
   "9": {
     "alt": "حقيبة مدرسية",
-    "main": "assets/images/words/junta.svg",
-    "variations": [
-      "assets/images/words/junta-alt1.svg",
-      "assets/images/words/junta-alt2.svg",
-      "assets/images/words/junta-small.svg",
-      "assets/images/words/junta-tilt.svg"
-    ],
-    "needsCustomIllustration": true
+    "main": "assets/images/photos/junta.jpg",
+    "variations": [],
+    "isPhoto": true,
+    "needsCustomIllustration": false
   },
   "10": {
     "alt": "مبراة",
-    "main": "assets/images/words/barraya.svg",
-    "variations": [
-      "assets/images/words/barraya-alt1.svg",
-      "assets/images/words/barraya-alt2.svg",
-      "assets/images/words/barraya-small.svg",
-      "assets/images/words/barraya-tilt.svg"
-    ],
+    "main": "assets/images/photos/barraya.jpg",
+    "variations": [],
+    "isPhoto": true,
     "needsCustomIllustration": false
   },
   "11": {
     "alt": "دفتر",
-    "main": "assets/images/words/daftar.svg",
-    "variations": [
-      "assets/images/words/daftar-alt1.svg",
-      "assets/images/words/daftar-alt2.svg",
-      "assets/images/words/daftar-small.svg",
-      "assets/images/words/daftar-tilt.svg"
-    ],
+    "main": "assets/images/photos/daftar.jpg",
+    "variations": [],
+    "isPhoto": true,
     "needsCustomIllustration": false
   },
   "12": {
@@ -151,13 +111,9 @@ const WORD_IMAGES = {
   },
   "13": {
     "alt": "حذاء رياضي",
-    "main": "assets/images/words/jooti.svg",
-    "variations": [
-      "assets/images/words/jooti-alt1.svg",
-      "assets/images/words/jooti-alt2.svg",
-      "assets/images/words/jooti-small.svg",
-      "assets/images/words/jooti-tilt.svg"
-    ],
+    "main": "assets/images/photos/jooti.jpg",
+    "variations": [],
+    "isPhoto": true,
     "needsCustomIllustration": false
   },
   "14": {
@@ -173,145 +129,93 @@ const WORD_IMAGES = {
   },
   "15": {
     "alt": "نعال",
-    "main": "assets/images/words/naal.svg",
-    "variations": [
-      "assets/images/words/naal-alt1.svg",
-      "assets/images/words/naal-alt2.svg",
-      "assets/images/words/naal-small.svg",
-      "assets/images/words/naal-tilt.svg"
-    ],
-    "needsCustomIllustration": true
+    "main": "assets/images/photos/naal.jpg",
+    "variations": [],
+    "isPhoto": true,
+    "needsCustomIllustration": false
   },
   "16": {
     "alt": "قطة",
-    "main": "assets/images/words/gattu.svg",
-    "variations": [
-      "assets/images/words/gattu-alt1.svg",
-      "assets/images/words/gattu-alt2.svg",
-      "assets/images/words/gattu-small.svg",
-      "assets/images/words/gattu-tilt.svg"
-    ],
+    "main": "assets/images/photos/gattu.jpg",
+    "variations": [],
+    "isPhoto": true,
     "needsCustomIllustration": false
   },
   "17": {
     "alt": "دجاجة",
-    "main": "assets/images/words/diyaya.svg",
-    "variations": [
-      "assets/images/words/diyaya-alt1.svg",
-      "assets/images/words/diyaya-alt2.svg",
-      "assets/images/words/diyaya-small.svg",
-      "assets/images/words/diyaya-tilt.svg"
-    ],
+    "main": "assets/images/photos/diyaya.jpg",
+    "variations": [],
+    "isPhoto": true,
     "needsCustomIllustration": false
   },
   "18": {
     "alt": "جمل",
-    "main": "assets/images/words/baeer.svg",
-    "variations": [
-      "assets/images/words/baeer-alt1.svg",
-      "assets/images/words/baeer-alt2.svg",
-      "assets/images/words/baeer-small.svg",
-      "assets/images/words/baeer-tilt.svg"
-    ],
+    "main": "assets/images/photos/baeer.jpg",
+    "variations": [],
+    "isPhoto": true,
     "needsCustomIllustration": false
   },
   "19": {
     "alt": "سمكة",
-    "main": "assets/images/words/simcha.svg",
-    "variations": [
-      "assets/images/words/simcha-alt1.svg",
-      "assets/images/words/simcha-alt2.svg",
-      "assets/images/words/simcha-small.svg",
-      "assets/images/words/simcha-tilt.svg"
-    ],
+    "main": "assets/images/photos/simcha.jpg",
+    "variations": [],
+    "isPhoto": true,
     "needsCustomIllustration": false
   },
   "20": {
     "alt": "صمونة",
-    "main": "assets/images/words/samoon.svg",
-    "variations": [
-      "assets/images/words/samoon-alt1.svg",
-      "assets/images/words/samoon-alt2.svg",
-      "assets/images/words/samoon-small.svg",
-      "assets/images/words/samoon-tilt.svg"
-    ],
-    "needsCustomIllustration": true
+    "main": "assets/images/photos/samoon.jpg",
+    "variations": [],
+    "isPhoto": true,
+    "needsCustomIllustration": false
   },
   "21": {
     "alt": "صحن عيش",
-    "main": "assets/images/words/aish.svg",
-    "variations": [
-      "assets/images/words/aish-alt1.svg",
-      "assets/images/words/aish-alt2.svg",
-      "assets/images/words/aish-small.svg",
-      "assets/images/words/aish-tilt.svg"
-    ],
+    "main": "assets/images/photos/aish.jpg",
+    "variations": [],
+    "isPhoto": true,
     "needsCustomIllustration": false
   },
   "22": {
     "alt": "كوب ماء",
-    "main": "assets/images/words/mai.svg",
-    "variations": [
-      "assets/images/words/mai-alt1.svg",
-      "assets/images/words/mai-alt2.svg",
-      "assets/images/words/mai-small.svg",
-      "assets/images/words/mai-tilt.svg"
-    ],
+    "main": "assets/images/photos/mai.jpg",
+    "variations": [],
+    "isPhoto": true,
     "needsCustomIllustration": false
   },
   "23": {
     "alt": "ريوق — بيضة",
-    "main": "assets/images/words/rayoog.svg",
-    "variations": [
-      "assets/images/words/rayoog-alt1.svg",
-      "assets/images/words/rayoog-alt2.svg",
-      "assets/images/words/rayoog-small.svg",
-      "assets/images/words/rayoog-tilt.svg"
-    ],
+    "main": "assets/images/photos/rayoog.jpg",
+    "variations": [],
+    "isPhoto": true,
     "needsCustomIllustration": false
   },
   "24": {
     "alt": "سيارة",
-    "main": "assets/images/words/motar.svg",
-    "variations": [
-      "assets/images/words/motar-alt1.svg",
-      "assets/images/words/motar-alt2.svg",
-      "assets/images/words/motar-small.svg",
-      "assets/images/words/motar-tilt.svg"
-    ],
+    "main": "assets/images/photos/motar.jpg",
+    "variations": [],
+    "isPhoto": true,
     "needsCustomIllustration": false
   },
   "25": {
     "alt": "دراجة",
-    "main": "assets/images/words/seekal.svg",
-    "variations": [
-      "assets/images/words/seekal-alt1.svg",
-      "assets/images/words/seekal-alt2.svg",
-      "assets/images/words/seekal-small.svg",
-      "assets/images/words/seekal-tilt.svg"
-    ],
+    "main": "assets/images/photos/seekal.jpg",
+    "variations": [],
+    "isPhoto": true,
     "needsCustomIllustration": false
   },
   "26": {
     "alt": "فريج — بيوت",
-    "main": "assets/images/words/freej.svg",
-    "variations": [
-      "assets/images/words/freej-alt1.svg",
-      "assets/images/words/freej-alt2.svg",
-      "assets/images/words/freej-small.svg",
-      "assets/images/words/freej-tilt.svg"
-    ],
-    "needsCustomIllustration": true
+    "main": "assets/images/photos/freej.jpg",
+    "variations": [],
+    "isPhoto": true,
+    "needsCustomIllustration": false
   },
   "27": {
     "alt": "طريق",
-    "main": "assets/images/words/darb.svg",
-    "variations": [
-      "assets/images/words/darb-alt1.svg",
-      "assets/images/words/darb-alt2.svg",
-      "assets/images/words/darb-small.svg",
-      "assets/images/words/darb-tilt.svg"
-    ],
+    "main": "assets/images/photos/darb.jpg",
+    "variations": [],
+    "isPhoto": true,
     "needsCustomIllustration": false
   },
   "28": {
@@ -360,35 +264,23 @@ const WORD_IMAGES = {
   },
   "32": {
     "alt": "اللون الرصاصي",
-    "main": "assets/images/words/rassasi.svg",
-    "variations": [
-      "assets/images/words/rassasi-alt1.svg",
-      "assets/images/words/rassasi-alt2.svg",
-      "assets/images/words/rassasi-small.svg",
-      "assets/images/words/rassasi-tilt.svg"
-    ],
+    "main": "assets/images/photos/rassasi.jpg",
+    "variations": [],
+    "isPhoto": true,
     "needsCustomIllustration": false
   },
   "33": {
     "alt": "اللون السماوي",
-    "main": "assets/images/words/samawi.svg",
-    "variations": [
-      "assets/images/words/samawi-alt1.svg",
-      "assets/images/words/samawi-alt2.svg",
-      "assets/images/words/samawi-small.svg",
-      "assets/images/words/samawi-tilt.svg"
-    ],
+    "main": "assets/images/photos/samawi.jpg",
+    "variations": [],
+    "isPhoto": true,
     "needsCustomIllustration": false
   },
   "34": {
     "alt": "اللون الوردي",
-    "main": "assets/images/words/wardi.svg",
-    "variations": [
-      "assets/images/words/wardi-alt1.svg",
-      "assets/images/words/wardi-alt2.svg",
-      "assets/images/words/wardi-small.svg",
-      "assets/images/words/wardi-tilt.svg"
-    ],
+    "main": "assets/images/photos/wardi.jpg",
+    "variations": [],
+    "isPhoto": true,
     "needsCustomIllustration": false
   },
   "35": {
@@ -404,35 +296,23 @@ const WORD_IMAGES = {
   },
   "36": {
     "alt": "نجوم كثيرة",
-    "main": "assets/images/words/wayed.svg",
-    "variations": [
-      "assets/images/words/wayed-alt1.svg",
-      "assets/images/words/wayed-alt2.svg",
-      "assets/images/words/wayed-small.svg",
-      "assets/images/words/wayed-tilt.svg"
-    ],
+    "main": "assets/images/photos/wayed.jpg",
+    "variations": [],
+    "isPhoto": true,
     "needsCustomIllustration": false
   },
   "37": {
     "alt": "إبهام لأعلى",
-    "main": "assets/images/words/zain.svg",
-    "variations": [
-      "assets/images/words/zain-alt1.svg",
-      "assets/images/words/zain-alt2.svg",
-      "assets/images/words/zain-small.svg",
-      "assets/images/words/zain-tilt.svg"
-    ],
+    "main": "assets/images/photos/zain.jpg",
+    "variations": [],
+    "isPhoto": true,
     "needsCustomIllustration": false
   },
   "38": {
     "alt": "طفل يركض",
-    "main": "assets/images/words/yalla.svg",
-    "variations": [
-      "assets/images/words/yalla-alt1.svg",
-      "assets/images/words/yalla-alt2.svg",
-      "assets/images/words/yalla-small.svg",
-      "assets/images/words/yalla-tilt.svg"
-    ],
+    "main": "assets/images/photos/yalla.jpg",
+    "variations": [],
+    "isPhoto": true,
     "needsCustomIllustration": false
   },
   "39": {
@@ -448,13 +328,9 @@ const WORD_IMAGES = {
   },
   "40": {
     "alt": "قلب شكر",
-    "main": "assets/images/words/mashkoor.svg",
-    "variations": [
-      "assets/images/words/mashkoor-alt1.svg",
-      "assets/images/words/mashkoor-alt2.svg",
-      "assets/images/words/mashkoor-small.svg",
-      "assets/images/words/mashkoor-tilt.svg"
-    ],
+    "main": "assets/images/photos/mashkoor.jpg",
+    "variations": [],
+    "isPhoto": true,
     "needsCustomIllustration": false
   }
 };

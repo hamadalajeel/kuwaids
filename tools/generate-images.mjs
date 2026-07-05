@@ -12,7 +12,7 @@
   التشغيل:  node tools/generate-images.mjs
 */
 
-import { mkdirSync, writeFileSync } from "fs";
+import { mkdirSync, writeFileSync, existsSync } from "fs";
 import { dirname, join } from "path";
 import { fileURLToPath } from "url";
 
@@ -397,17 +397,32 @@ for (const w of WORDS) {
     writeFileSync(join(OUT, name), content);
   }
   const base = `assets/images/words/`;
-  manifest[w.id] = {
-    alt: w.alt,
-    main: base + `${w.slug}.svg`,
-    variations: [
-      base + `${w.slug}-alt1.svg`,
-      base + `${w.slug}-alt2.svg`,
-      base + `${w.slug}-small.svg`,
-      base + `${w.slug}-tilt.svg`,
-    ],
-    needsCustomIllustration: !!w.needsCustom,
-  };
+  const photo = `assets/images/photos/${w.slug}.jpg`;
+
+  // إن وُجدت صورة حقيقية (من tools/fetch-photos.mjs) تصبح هي الأساسية،
+  // والتنويع يتم بالتحويلات البصرية في app.js. الرسوم تبقى للكلمات
+  // بلا صورة (العائلة والتعابير اليدوية) وكاحتياط عام.
+  if (existsSync(join(ROOT, photo))) {
+    manifest[w.id] = {
+      alt: w.alt,
+      main: photo,
+      variations: [],
+      isPhoto: true,
+      needsCustomIllustration: false,
+    };
+  } else {
+    manifest[w.id] = {
+      alt: w.alt,
+      main: base + `${w.slug}.svg`,
+      variations: [
+        base + `${w.slug}-alt1.svg`,
+        base + `${w.slug}-alt2.svg`,
+        base + `${w.slug}-small.svg`,
+        base + `${w.slug}-tilt.svg`,
+      ],
+      needsCustomIllustration: !!w.needsCustom,
+    };
+  }
 }
 
 /* صورة احتياطية محايدة (إطار صورة بسيط) */
