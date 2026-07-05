@@ -598,13 +598,17 @@
     }
 
     const startBtn = $("btn-start-lesson");
+    const greet = $("dash-greeting");
     if (daily.completed) {
-      $("today-status").textContent = "خلّصت درس اليوم! 🎉 تقدر تراجع كلماتك";
+      greet.textContent = `ما شاء الله عليك يا ${p.username}! خلّصت درس اليوم 🌟`;
+      $("today-status").textContent = "تقدر تراجع كلماتك أو ترجع بكرة لدرس يديد";
       startBtn.textContent = "مراجعة إضافية";
     } else if (daily.answeredIds.length > 0) {
-      $("today-status").textContent = `كمّلت ${toArabicDigits(daily.answeredIds.length)} من ${toArabicDigits(total)} — كمّل!`;
+      greet.textContent = `يلّا يا ${p.username}، شوي وتخلّص! 💪`;
+      $("today-status").textContent = `كمّلت ${toArabicDigits(daily.answeredIds.length)} من ${toArabicDigits(total)}`;
       startBtn.textContent = "كمّل درس اليوم";
     } else {
+      greet.textContent = `هلا ${p.username}! شلونك؟ 👋`;
       $("today-status").textContent = "جاهز حق درس اليوم؟";
       startBtn.textContent = "ابدأ درس اليوم";
     }
@@ -794,6 +798,7 @@
 
     $("quiz-feedback").hidden = true;
     $("btn-quiz-help").hidden = false;
+    renderQuizStars();
     const stimulus = $("quiz-stimulus");
     const options = $("quiz-options");
     stimulus.innerHTML = "";
@@ -1003,6 +1008,7 @@
       session.starsEarned++;
       state.stars++;
       SFX.star();
+      flyStar(btn); // ✨ قطفة النجمة
     } else {
       SFX.correct();
     }
@@ -1017,6 +1023,44 @@
 
     const msg = pick(PRAISE_MESSAGES);
     showFeedback(msg.emoji, firstTry ? `${msg.text} ⭐ +١` : msg.text, true);
+  }
+
+  // عداد نجوم الجلسة في هيدر الاختبار
+  function renderQuizStars() {
+    const el = $("quiz-stars");
+    if (el) el.textContent = `⭐ ${toArabicDigits(session ? session.starsEarned : 0)}`;
+  }
+
+  // «قطفة النجمة»: نجمة ذهبية تطير من الخيار الصحيح لعداد النجوم
+  function flyStar(fromEl) {
+    const target = $("quiz-stars");
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (!target || !fromEl || reduced) {
+      renderQuizStars();
+      return;
+    }
+    const from = fromEl.getBoundingClientRect();
+    const to = target.getBoundingClientRect();
+    const star = document.createElement("span");
+    star.className = "star-fly";
+    star.textContent = "★";
+    star.style.left = from.left + from.width / 2 - 16 + "px";
+    star.style.top = from.top + from.height / 2 - 16 + "px";
+    document.body.appendChild(star);
+    // انطلاق بعد إطارين حتى يُحسب الموضع الابتدائي
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      const dx = to.left + to.width / 2 - (from.left + from.width / 2);
+      const dy = to.top + to.height / 2 - (from.top + from.height / 2);
+      star.style.transform = `translate(${dx}px, ${dy}px) scale(0.5) rotate(360deg)`;
+      star.style.opacity = "0.9";
+    }));
+    setTimeout(() => {
+      star.remove();
+      renderQuizStars();
+      target.classList.remove("bump");
+      void target.offsetWidth;
+      target.classList.add("bump");
+    }, 720);
   }
 
   function showFeedback(emoji, text, withNext) {
@@ -1172,6 +1216,19 @@
 
     showScreen("screen-results");
     launchConfetti();
+
+    // الـSignature Moment الكبير: عند إكمال درس اليوم يغرب الفريج
+    // ويتحول لليل كويتي مرصّع، وصقر يركض محتفلاً عبر الشاشة
+    if (session.mode === "daily" && state.daily.completed) {
+      document.body.classList.add("freej-night");
+      const saqer = $("saqer-run");
+      if (saqer && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        saqer.classList.remove("go");
+        void saqer.offsetWidth;
+        saqer.classList.add("go");
+      }
+    }
+
     if (levelAfter > levelBefore) SFX.levelUp();
     else SFX.star();
   }
@@ -1179,18 +1236,18 @@
   function launchConfetti() {
     const box = $("confetti-container");
     box.innerHTML = "";
-    const colors = FAVORITE_COLORS.concat(["#ffd166", "#fff"]);
-    for (let i = 0; i < 80; i++) {
+    for (let i = 0; i < 60; i++) {
       const c = document.createElement("span");
       c.className = "confetti";
+      c.textContent = "★";
       c.style.left = Math.random() * 100 + "vw";
-      c.style.background = pick(colors);
-      c.style.width = c.style.height = 8 + Math.random() * 8 + "px";
-      c.style.animationDuration = 2 + Math.random() * 2.5 + "s";
-      c.style.animationDelay = Math.random() * 0.8 + "s";
+      c.style.fontSize = 12 + Math.random() * 18 + "px";
+      c.style.opacity = 0.6 + Math.random() * 0.4;
+      c.style.animationDuration = 2.2 + Math.random() * 2.5 + "s";
+      c.style.animationDelay = Math.random() * 0.9 + "s";
       box.appendChild(c);
     }
-    setTimeout(() => (box.innerHTML = ""), 6000);
+    setTimeout(() => (box.innerHTML = ""), 6500);
   }
 
   /* ═══════════════ 6) شاشة الجوائز ═══════════════ */
@@ -1326,6 +1383,11 @@
     $("btn-rewards-back").addEventListener("click", goHome);
     $("btn-parents-back").addEventListener("click", goHome);
 
+    // صقر ينطق تحيته عند الضغط (في اللوحة وشاشة الدخول)
+    const saqerHi = () => speakArabic("هَلا! شِلُونَك؟", "normal");
+    if ($("dash-mascot")) $("dash-mascot").addEventListener("click", saqerHi);
+    if ($("setup-mascot")) $("setup-mascot").addEventListener("click", saqerHi);
+
     // مفتاح المؤثرات الصوتية
     $("toggle-sound").addEventListener("click", () => {
       state.settings.sound = !state.settings.sound;
@@ -1348,6 +1410,7 @@
 
   function goHome() {
     if ("speechSynthesis" in window) speechSynthesis.cancel();
+    document.body.classList.remove("freej-night");
     renderDashboard();
     showScreen("screen-dashboard");
   }

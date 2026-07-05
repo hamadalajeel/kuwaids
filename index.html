@@ -19,9 +19,9 @@
   <!-- ═══════════════════════ 1) شاشة إنشاء الحساب (اسم المستخدم + الصورة الرمزية + اللون المفضل) ═══════════════════════ -->
   <section id="screen-setup" class="screen" hidden>
     <div class="setup-card card">
-      <div class="setup-mascot bounce" aria-hidden="true">🦊</div>
-      <h1 class="setup-title">هلا والله! 👋</h1>
-      <p class="setup-subtitle">خلّنا نسوي لك حساب حق تتعلم كلمات كويتية!</p>
+      <img src="assets/images/photos/shlonak.jpg" alt="صقر يلوّح" class="mascot-img setup-saqer" id="setup-mascot">
+      <h1 class="setup-title">هلا والله! أنا صقر 👋</h1>
+      <p class="setup-subtitle">بعلّمك كلمات كويتية ونلعب سوا في الفريج!</p>
 
       <form id="setup-form" autocomplete="off">
         <!-- اسم المستخدم -->
@@ -109,7 +109,10 @@
 
     <!-- تقدم اليوم -->
     <div class="card today-card">
-      <h2 class="card-title">درس اليوم 📅</h2>
+      <div class="mascot-row">
+        <img src="assets/images/photos/shlonak.jpg" alt="صقر يلوّح" class="mascot-img" id="dash-mascot" title="اضغطني!">
+        <p class="mascot-bubble" id="dash-greeting">هلا! شلونك؟</p>
+      </div>
       <div class="today-dots" id="today-dots" aria-label="تقدم درس اليوم">
         <!-- 10 نقاط تُعبّأ من app.js -->
       </div>
@@ -192,6 +195,7 @@
         <div class="progress-fill" id="quiz-progress-fill" style="width:0%"></div>
       </div>
       <span class="lesson-counter" id="quiz-counter">١ / ١٠</span>
+      <span class="quiz-stars" id="quiz-stars">⭐ ٠</span>
     </header>
 
     <div class="lesson-body">
@@ -266,6 +270,8 @@
 
     <!-- حاوية قصاصات الاحتفال -->
     <div class="confetti-container" id="confetti-container" aria-hidden="true"></div>
+    <!-- صقر يركض محتفلاً -->
+    <img src="assets/images/photos/yalla.jpg" alt="" class="saqer-run" id="saqer-run" aria-hidden="true">
   </section>
 
   <!-- ═══════════════════════ 6) شاشة الجوائز والأوسمة ═══════════════════════ -->
