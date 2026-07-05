@@ -2,11 +2,6 @@
 
 كل الصور من Wikimedia Commons، محفوظة محلياً في `assets/images/photos/`.
 
-- **dresha.jpg** — المؤلف: Dietmar Rabich — الرخصة: CC BY-SA 4.0 — المصدر: https://commons.wikimedia.org/wiki/File:Kopenhagen_(DK),_Vester_Voldgade_--_2017_--_1677.jpg
-- **hoosh.jpg** — المؤلف: Mike Prince from Bangalore, India — الرخصة: CC BY 2.0 — المصدر: https://commons.wikimedia.org/wiki/File:Courtyard_with_Chandelier_and_Fountain_(5038922480).jpg
-- **mkhadda.jpg** — المؤلف: Amin — الرخصة: CC BY-SA 4.0 — المصدر: https://commons.wikimedia.org/wiki/File:Pillows_on_a_hotel_bed.jpg
-- **doolab.jpg** — المؤلف: Daderot — الرخصة: Public domain — المصدر: https://commons.wikimedia.org/wiki/File:Furniture_-_Tiroler_Volkskunstmuseum_-_DSC01472.JPG
-- **istikana.jpg** — المؤلف: Sandstein — الرخصة: CC BY 3.0 — المصدر: https://commons.wikimedia.org/wiki/File:Turkish_tea_with_sugar_and_spoon.jpg
 - **seekal.jpg** — المؤلف: João Pimentel Ferreira — الرخصة: CC BY-SA 4.0 — المصدر: https://commons.wikimedia.org/wiki/File:Bicycle_in_The_Hague_24.JPG
 - **darb.jpg** — المؤلف: Roger A Smith — الرخصة: CC BY-SA 2.0 — المصدر: https://commons.wikimedia.org/wiki/File:The_road_junction_known_as_Two_Pots_-_geograph.org.uk_-_1650951.jpg
 - **rassasi.jpg** — المؤلف: Dietmar Rabich — الرخصة: CC BY-SA 4.0 — المصدر: https://commons.wikimedia.org/wiki/File:Borkum,_Hauptstrand_--_2020_--_2691_(bw).jpg
@@ -17,7 +12,6 @@
 - **wayed.jpg** — المؤلف: Ricardo Costa — الرخصة: CC BY 3.0 — المصدر: https://commons.wikimedia.org/wiki/File:Marbles_(97619023).jpeg
 - **mashkoor.jpg** — المؤلف: Leon Brocard — الرخصة: CC BY 2.0 — المصدر: https://commons.wikimedia.org/wiki/File:Two_left_hands_forming_a_heart_shape.jpg
 - **freej.jpg** — المؤلف: Mostafameraji — الرخصة: CC BY-SA 4.0 — المصدر: https://commons.wikimedia.org/wiki/File:Architecture_of_Shiraz_06.jpg
-- **gooti.jpg** — المؤلف: Sun Ladder — الرخصة: CC BY-SA 3.0 — المصدر: https://commons.wikimedia.org/wiki/File:Empty_tin_can2009-01-19.jpg
 - **shlonak.jpg** — المؤلف: Flowrymz — الرخصة: CC BY-SA 4.0 — المصدر: https://commons.wikimedia.org/wiki/File:Hon._Uche_Nwosu.jpg
 - **chithee.jpg** — المؤلف: Poniatowicz1224 at English Wikipedia — الرخصة: Public domain — المصدر: https://commons.wikimedia.org/wiki/File:0416071543.jpg
 - **yadda.jpg** — شخصية مولّدة بالذكاء الاصطناعي (ChatGPT) بواسطة صاحب المشروع — لا تمثل شخصاً حقيقياً
@@ -42,3 +36,9 @@
 - **mallas.jpg** — صورة مولّدة بالذكاء الاصطناعي (ChatGPT) بواسطة صاحب المشروع
 - **jidir.jpg** — صورة مولّدة بالذكاء الاصطناعي (ChatGPT) بواسطة صاحب المشروع
 - **junta.jpg** — صورة مولّدة بالذكاء الاصطناعي (ChatGPT) بواسطة صاحب المشروع
+- **dresha.jpg** — صورة مولّدة بالذكاء الاصطناعي (ChatGPT) بواسطة صاحب المشروع
+- **hoosh.jpg** — صورة مولّدة بالذكاء الاصطناعي (ChatGPT) بواسطة صاحب المشروع
+- **mkhadda.jpg** — صورة مولّدة بالذكاء الاصطناعي (ChatGPT) بواسطة صاحب المشروع
+- **doolab.jpg** — صورة مولّدة بالذكاء الاصطناعي (ChatGPT) بواسطة صاحب المشروع
+- **gooti.jpg** — صورة مولّدة بالذكاء الاصطناعي (ChatGPT) بواسطة صاحب المشروع
+- **istikana.jpg** — صورة مولّدة بالذكاء الاصطناعي (ChatGPT) بواسطة صاحب المشروع
