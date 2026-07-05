@@ -2,16 +2,10 @@
 
 كل الصور من Wikimedia Commons، محفوظة محلياً في `assets/images/photos/`.
 
-- **seekal.jpg** — المؤلف: João Pimentel Ferreira — الرخصة: CC BY-SA 4.0 — المصدر: https://commons.wikimedia.org/wiki/File:Bicycle_in_The_Hague_24.JPG
-- **darb.jpg** — المؤلف: Roger A Smith — الرخصة: CC BY-SA 2.0 — المصدر: https://commons.wikimedia.org/wiki/File:The_road_junction_known_as_Two_Pots_-_geograph.org.uk_-_1650951.jpg
-- **rassasi.jpg** — المؤلف: Dietmar Rabich — الرخصة: CC BY-SA 4.0 — المصدر: https://commons.wikimedia.org/wiki/File:Borkum,_Hauptstrand_--_2020_--_2691_(bw).jpg
-- **samawi.jpg** — المؤلف: Mee2ch — الرخصة: CC BY 3.0 — المصدر: https://commons.wikimedia.org/wiki/File:Clear_sky_over_Riga,_2008.jpg
-- **wardi.jpg** — المؤلف: This photograph was taken with a Sony ILCE-7RM4 by Bengt Nyman from Vaxholm, Sweden. — الرخصة: CC BY-SA 2.0 — المصدر: https://commons.wikimedia.org/wiki/File:A_pink_rose_in_Sweden_(June,_2022).jpg
 - **zain.jpg** — المؤلف: No machine-readable author provided. Dbenbenn assumed (based on copyright claims). — الرخصة: CC BY-SA 3.0 — المصدر: https://commons.wikimedia.org/wiki/File:Thumbs_up.jpg
 - **yalla.jpg** — المؤلف: Krolliami — الرخصة: CC BY-SA 3.0 — المصدر: https://commons.wikimedia.org/wiki/File:Children_running_in_the_rain_2008.jpg
 - **wayed.jpg** — المؤلف: Ricardo Costa — الرخصة: CC BY 3.0 — المصدر: https://commons.wikimedia.org/wiki/File:Marbles_(97619023).jpeg
 - **mashkoor.jpg** — المؤلف: Leon Brocard — الرخصة: CC BY 2.0 — المصدر: https://commons.wikimedia.org/wiki/File:Two_left_hands_forming_a_heart_shape.jpg
-- **freej.jpg** — المؤلف: Mostafameraji — الرخصة: CC BY-SA 4.0 — المصدر: https://commons.wikimedia.org/wiki/File:Architecture_of_Shiraz_06.jpg
 - **shlonak.jpg** — المؤلف: Flowrymz — الرخصة: CC BY-SA 4.0 — المصدر: https://commons.wikimedia.org/wiki/File:Hon._Uche_Nwosu.jpg
 - **chithee.jpg** — المؤلف: Poniatowicz1224 at English Wikipedia — الرخصة: Public domain — المصدر: https://commons.wikimedia.org/wiki/File:0416071543.jpg
 - **yadda.jpg** — شخصية مولّدة بالذكاء الاصطناعي (ChatGPT) بواسطة صاحب المشروع — لا تمثل شخصاً حقيقياً
@@ -42,3 +36,9 @@
 - **doolab.jpg** — صورة مولّدة بالذكاء الاصطناعي (ChatGPT) بواسطة صاحب المشروع
 - **gooti.jpg** — صورة مولّدة بالذكاء الاصطناعي (ChatGPT) بواسطة صاحب المشروع
 - **istikana.jpg** — صورة مولّدة بالذكاء الاصطناعي (ChatGPT) بواسطة صاحب المشروع
+- **seekal.jpg** — صورة مولّدة بالذكاء الاصطناعي (ChatGPT) بواسطة صاحب المشروع
+- **freej.jpg** — صورة مولّدة بالذكاء الاصطناعي (ChatGPT) بواسطة صاحب المشروع
+- **darb.jpg** — صورة مولّدة بالذكاء الاصطناعي (ChatGPT) بواسطة صاحب المشروع
+- **rassasi.jpg** — صورة مولّدة بالذكاء الاصطناعي (ChatGPT) بواسطة صاحب المشروع
+- **samawi.jpg** — صورة مولّدة بالذكاء الاصطناعي (ChatGPT) بواسطة صاحب المشروع
+- **wardi.jpg** — صورة مولّدة بالذكاء الاصطناعي (ChatGPT) بواسطة صاحب المشروع
