@@ -208,46 +208,30 @@ const WORD_IMAGES = {
   },
   "28": {
     "alt": "جدة",
-    "main": "assets/images/words/yadda.svg",
-    "variations": [
-      "assets/images/words/yadda-alt1.svg",
-      "assets/images/words/yadda-alt2.svg",
-      "assets/images/words/yadda-small.svg",
-      "assets/images/words/yadda-tilt.svg"
-    ],
+    "main": "assets/images/photos/yadda.jpg",
+    "variations": [],
+    "isPhoto": true,
     "needsCustomIllustration": false
   },
   "29": {
     "alt": "أم",
-    "main": "assets/images/words/yumma.svg",
-    "variations": [
-      "assets/images/words/yumma-alt1.svg",
-      "assets/images/words/yumma-alt2.svg",
-      "assets/images/words/yumma-small.svg",
-      "assets/images/words/yumma-tilt.svg"
-    ],
+    "main": "assets/images/photos/yumma.jpg",
+    "variations": [],
+    "isPhoto": true,
     "needsCustomIllustration": false
   },
   "30": {
     "alt": "أطفال",
-    "main": "assets/images/words/iyal.svg",
-    "variations": [
-      "assets/images/words/iyal-alt1.svg",
-      "assets/images/words/iyal-alt2.svg",
-      "assets/images/words/iyal-small.svg",
-      "assets/images/words/iyal-tilt.svg"
-    ],
+    "main": "assets/images/photos/iyal.jpg",
+    "variations": [],
+    "isPhoto": true,
     "needsCustomIllustration": false
   },
   "31": {
     "alt": "طفل رضيع",
-    "main": "assets/images/words/baby.svg",
-    "variations": [
-      "assets/images/words/baby-alt1.svg",
-      "assets/images/words/baby-alt2.svg",
-      "assets/images/words/baby-small.svg",
-      "assets/images/words/baby-tilt.svg"
-    ],
+    "main": "assets/images/photos/baby.jpg",
+    "variations": [],
+    "isPhoto": true,
     "needsCustomIllustration": false
   },
   "32": {

@@ -38,3 +38,7 @@
 - **gooti.jpg** — المؤلف: Sun Ladder — الرخصة: CC BY-SA 3.0 — المصدر: https://commons.wikimedia.org/wiki/File:Empty_tin_can2009-01-19.jpg
 - **shlonak.jpg** — المؤلف: Flowrymz — الرخصة: CC BY-SA 4.0 — المصدر: https://commons.wikimedia.org/wiki/File:Hon._Uche_Nwosu.jpg
 - **chithee.jpg** — المؤلف: Poniatowicz1224 at English Wikipedia — الرخصة: Public domain — المصدر: https://commons.wikimedia.org/wiki/File:0416071543.jpg
+- **yadda.jpg** — شخصية مولّدة بالذكاء الاصطناعي (ChatGPT) بواسطة صاحب المشروع — لا تمثل شخصاً حقيقياً
+- **yumma.jpg** — شخصية مولّدة بالذكاء الاصطناعي (ChatGPT) بواسطة صاحب المشروع — لا تمثل شخصاً حقيقياً
+- **iyal.jpg** — شخصية مولّدة بالذكاء الاصطناعي (ChatGPT) بواسطة صاحب المشروع — لا تمثل شخصاً حقيقياً
+- **baby.jpg** — شخصية مولّدة بالذكاء الاصطناعي (ChatGPT) بواسطة صاحب المشروع — لا تمثل شخصاً حقيقياً
