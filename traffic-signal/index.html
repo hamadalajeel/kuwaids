@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ليش ننطلق واحد واحد؟ — فكرة الانطلاق المتزامن</title>
+<meta name="description" content="فكرة مرورية: إذا صارت الإشارة خضراء، كل السيارات تنطلق مع بعض بنفس اللحظة بدل ما كل واحد ينتظر اللي قدامه. جرّب المحاكاة وشوف الفرق بنفسك.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   Design System — «تقاطع حي»
+   ============================================================ */
+:root{
+  /* الألوان: أسفلت + ألوان الإشارة نفسها */
+  --bg:        #101418;   /* أسفلت ليلي */
+  --bg-soft:   #161c22;   /* لوحة أغمق شوي من الكروت */
+  --panel:     #1b232b;   /* كروت */
+  --line:      #2a333d;   /* حدود */
+  --ink:       #eef2ee;   /* نص أساسي */
+  --ink-soft:  #b7c2bd;   /* نص ثانوي */
+  --green:     #3ecf6d;   /* إشارة خضراء */
+  --green-ink: #0b1710;   /* نص فوق الأخضر */
+  --amber:     #f5b301;   /* برتقالي الإشارة */
+  --red:       #ef5350;   /* إشارة حمراء */
+  --road:      #232b33;   /* سطح الشارع */
+  --lane:      #46525e;   /* خطوط الحارات */
+
+  /* المسافات */
+  --s1:8px; --s2:16px; --s3:24px; --s4:32px; --s5:48px; --s6:64px; --s7:96px;
+
+  /* الحركة */
+  --fast:150ms; --mid:300ms; --story:600ms;
+  --ease:cubic-bezier(.2,.7,.2,1);
+
+  --radius:14px;
+  --radius-sm:8px;
+  --maxw:1060px;
+}
+
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion: reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation-duration:.01ms !important;transition-duration:.01ms !important}
+}
+
+body{
+  background:var(--bg);
+  color:var(--ink);
+  font-family:"IBM Plex Sans Arabic",-apple-system,"Segoe UI",Tahoma,sans-serif;
+  font-size:17px;
+  line-height:1.9;               /* العربية تحتاج ارتفاع سطر أعلى */
+  -webkit-font-smoothing:antialiased;
+}
+
+.wrap{max-width:var(--maxw);margin-inline:auto;padding-inline:var(--s3)}
+
+h1,h2,h3{line-height:1.5;font-weight:700}
+h1{font-size:clamp(30px,5.6vw,54px)}
+h2{font-size:clamp(23px,3.4vw,32px);margin-bottom:var(--s2)}
+h3{font-size:19px}
+p{color:var(--ink-soft)}
+strong{color:var(--ink);font-weight:600}
+
+section{padding-block:var(--s6)}
+@media(min-width:760px){section{padding-block:var(--s7)}}
+
+.kicker{
+  display:inline-flex;align-items:center;gap:10px;
+  font-size:14px;font-weight:600;color:var(--green);
+  border:1px solid var(--line);border-radius:999px;
+  padding:6px 14px;background:var(--bg-soft);
+  margin-bottom:var(--s2);
+}
+.kicker::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 10px var(--green)}
+
+/* ============================================================
+   Hero
+   ============================================================ */
+.hero{padding-block:var(--s6) var(--s5)}
+@media(min-width:760px){.hero{padding-block:var(--s7)}}
+.hero .wrap{display:grid;gap:var(--s5);align-items:center}
+@media(min-width:860px){.hero .wrap{grid-template-columns:1.4fr .6fr}}
+.hero p.lead{font-size:clamp(17px,2.2vw,20px);max-width:34em;margin-top:var(--s2)}
+.hero .cta-row{display:flex;flex-wrap:wrap;gap:var(--s2);margin-top:var(--s4)}
+
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  font:inherit;font-weight:700;font-size:16px;
+  padding:14px 28px;border-radius:var(--radius-sm);
+  border:1px solid transparent;cursor:pointer;text-decoration:none;
+  transition:transform var(--fast) var(--ease),box-shadow var(--fast) var(--ease),background var(--fast) var(--ease);
+  min-height:48px;
+}
+.btn:focus-visible{outline:3px solid var(--amber);outline-offset:3px}
+.btn-green{background:var(--green);color:var(--green-ink)}
+.btn-green:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(62,207,109,.28)}
+.btn-ghost{background:transparent;color:var(--ink);border-color:var(--line)}
+.btn-ghost:hover{background:var(--bg-soft)}
+.btn[disabled]{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
+
+/* إشارة الهيرو */
+.hero-signal{display:flex;justify-content:center}
+.signal{
+  background:#0b0e11;border:1px solid var(--line);border-radius:18px;
+  padding:18px 16px;display:flex;flex-direction:column;gap:14px;
+  box-shadow:0 20px 60px rgba(0,0,0,.5);
+}
+.signal .lamp{
+  width:56px;height:56px;border-radius:50%;
+  background:#20262c;transition:background var(--mid) var(--ease),box-shadow var(--mid) var(--ease);
+}
+.signal .lamp.red.on{background:var(--red);box-shadow:0 0 34px rgba(239,83,80,.55)}
+.signal .lamp.amber.on{background:var(--amber);box-shadow:0 0 34px rgba(245,179,1,.5)}
+.signal .lamp.green.on{background:var(--green);box-shadow:0 0 34px rgba(62,207,109,.6)}
+.signal-pole{width:10px;height:70px;background:#1a2026;margin-inline:auto;border-radius:0 0 6px 6px}
+@media(max-width:859px){.hero-signal{order:-1}.signal-pole{height:34px}.signal .lamp{width:44px;height:44px}}
+
+/* ============================================================
+   المشكلة — موجة الانطلاق
+   ============================================================ */
+.problem{background:var(--bg-soft);border-block:1px solid var(--line)}
+.problem .cols{display:grid;gap:var(--s4);margin-top:var(--s3)}
+@media(min-width:860px){.problem .cols{grid-template-columns:1fr 1fr;gap:var(--s6);align-items:center}}
+.problem p{max-width:36em}
+.problem p + p{margin-top:var(--s2)}
+
+.wave{
+  background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+  padding:var(--s3);display:flex;flex-direction:column;gap:10px;
+}
+.wave-row{display:flex;align-items:center;gap:12px}
+.wave-label{font-size:13px;color:var(--ink-soft);min-width:74px;font-weight:500}
+.wave-track{flex:1;height:14px;border-radius:99px;background:#141a20;overflow:hidden}
+.wave-bar{
+  height:100%;border-radius:99px;background:linear-gradient(to left,var(--amber),var(--red));
+  width:0;transition:width var(--story) var(--ease);
+}
+.wave.play .wave-bar{width:var(--w)}
+html:not(.js) .wave-bar{width:var(--w)}
+.wave-time{font-size:13px;color:var(--amber);min-width:52px;text-align:start;font-weight:600;font-variant-numeric:tabular-nums}
+.wave-note{font-size:14px;color:var(--ink-soft);margin-top:var(--s1);padding-top:var(--s2);border-top:1px dashed var(--line)}
+.wave-note strong{color:var(--amber)}
+
+/* ============================================================
+   المحاكاة — Signature Moment
+   ============================================================ */
+.sim-head{max-width:38em}
+.sim-head p{margin-top:var(--s1)}
+
+.sim-controls{
+  display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2) var(--s4);
+  margin-block:var(--s4) var(--s3);
+  background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+  padding:var(--s2) var(--s3);
+}
+.ctrl{display:flex;align-items:center;gap:12px}
+.ctrl label{font-size:14px;font-weight:600;color:var(--ink-soft)}
+.ctrl output{font-size:14px;font-weight:700;color:var(--amber);min-width:44px;font-variant-numeric:tabular-nums}
+input[type=range]{accent-color:var(--green);width:150px;height:28px;cursor:pointer}
+input[type=range]:focus-visible{outline:3px solid var(--amber);outline-offset:3px;border-radius:4px}
+
+.sim-timer{
+  margin-inline-start:auto;display:flex;align-items:center;gap:10px;
+  font-weight:700;font-variant-numeric:tabular-nums;font-size:15px;
+}
+.sim-timer .dot{width:12px;height:12px;border-radius:50%;background:var(--red);transition:background var(--mid)}
+.sim-timer.green .dot{background:var(--green);box-shadow:0 0 12px var(--green)}
+.sim-timer .t{color:var(--ink-soft)}
+.sim-timer.green .t{color:var(--green)}
+
+.sim-stage{display:grid;grid-template-columns:1fr 1fr;gap:var(--s2)}
+@media(min-width:640px){.sim-stage{gap:var(--s4)}}
+
+.road-card{
+  background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+  padding:var(--s2);display:flex;flex-direction:column;gap:var(--s2);
+  transition:border-color var(--mid) var(--ease);
+}
+.road-card.winner{border-color:var(--green)}
+.road-card h3{font-size:clamp(14px,2.4vw,18px);text-align:center}
+.road-card .tag{display:block;text-align:center;font-size:12px;color:var(--ink-soft);font-weight:500;margin-top:2px}
+
+.counter{
+  text-align:center;font-variant-numeric:tabular-nums;
+  background:#12181e;border:1px solid var(--line);border-radius:var(--radius-sm);
+  padding:8px 6px;
+}
+.counter .num{font-size:clamp(26px,5vw,38px);font-weight:700;line-height:1.2;display:block}
+.counter .lbl{font-size:12px;color:var(--ink-soft)}
+.road-card.winner .counter .num{color:var(--green)}
+
+.road{
+  position:relative;height:520px;border-radius:var(--radius-sm);
+  background:var(--road);overflow:hidden;margin-inline:auto;width:100%;max-width:150px;
+}
+.road::before{ /* خط الحارة المتقطع */
+  content:"";position:absolute;inset-block:0;inset-inline-start:calc(50% - 2px);width:4px;
+  background:repeating-linear-gradient(to bottom,var(--lane) 0 18px,transparent 18px 34px);
+  opacity:.35;
+}
+.stopline{
+  position:absolute;inset-inline:0;top:64px;height:6px;
+  background:repeating-linear-gradient(to left,#dfe5df 0 10px,#8f9a94 10px 20px);
+  opacity:.85;
+}
+.road-signal{
+  position:absolute;top:10px;inset-inline-start:10px;z-index:3;
+  width:22px;height:22px;border-radius:50%;
+  background:var(--red);box-shadow:0 0 12px rgba(239,83,80,.6);
+  transition:background var(--mid),box-shadow var(--mid);
+}
+.road.go .road-signal{background:var(--green);box-shadow:0 0 14px rgba(62,207,109,.75)}
+.car{
+  position:absolute;inset-inline-start:0;top:0;
+  width:26%;border-radius:4px;
+  inset-inline-start:37%;
+  background:#8b98a5;
+  will-change:transform;
+}
+.car::after{ /* زجاج السيارة */
+  content:"";position:absolute;inset-inline:15%;top:18%;height:22%;
+  background:rgba(12,16,20,.55);border-radius:2px;
+}
+.car.lead{background:#d7dde3}
+.car.crossed{background:var(--green)}
+
+.sim-result{
+  margin-top:var(--s3);background:var(--panel);border:1px solid var(--line);
+  border-radius:var(--radius);padding:var(--s3);
+  display:none;
+}
+.sim-result.show{display:block;animation:pop var(--story) var(--ease)}
+@keyframes pop{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.sim-result .headline{font-size:clamp(18px,3vw,24px);font-weight:700;color:var(--ink)}
+.sim-result .headline .win{color:var(--green)}
+.sim-result p{margin-top:var(--s1);max-width:44em}
+
+/* ============================================================
+   الأرقام
+   ============================================================ */
+.numbers{background:var(--bg-soft);border-block:1px solid var(--line)}
+.num-grid{display:grid;gap:var(--s2);margin-top:var(--s3)}
+@media(min-width:760px){.num-grid{grid-template-columns:repeat(3,1fr);gap:var(--s3)}}
+.num-card{
+  background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+  padding:var(--s3);
+}
+.num-card .big{font-size:clamp(28px,4vw,40px);font-weight:700;color:var(--green);font-variant-numeric:tabular-nums;line-height:1.3}
+.num-card h3{margin-block:var(--s1)}
+.num-card p{font-size:15px}
+.num-note{font-size:13px;color:var(--ink-soft);margin-top:var(--s3);max-width:52em}
+
+/* ============================================================
+   شرايي — التقييم
+   ============================================================ */
+.verdict .cols{display:grid;gap:var(--s3);margin-top:var(--s3)}
+@media(min-width:860px){.verdict .cols{grid-template-columns:1fr 1fr;gap:var(--s4)}}
+.v-card{
+  border:1px solid var(--line);border-radius:var(--radius);padding:var(--s3);
+  background:var(--panel);
+}
+.v-card.pro{border-color:rgba(62,207,109,.4)}
+.v-card.con{border-color:rgba(245,179,1,.4)}
+.v-card h3{display:flex;align-items:center;gap:10px;margin-bottom:var(--s2)}
+.v-card h3 .chip{width:12px;height:12px;border-radius:50%;flex-shrink:0}
+.v-card.pro h3 .chip{background:var(--green);box-shadow:0 0 10px rgba(62,207,109,.6)}
+.v-card.con h3 .chip{background:var(--amber);box-shadow:0 0 10px rgba(245,179,1,.5)}
+.v-card ul{list-style:none;display:flex;flex-direction:column;gap:var(--s2)}
+.v-card li{color:var(--ink-soft);padding-inline-start:22px;position:relative;font-size:16px}
+.v-card li::before{content:"";position:absolute;inset-inline-start:0;top:.72em;width:8px;height:8px;border-radius:50%;background:var(--line)}
+.v-card.pro li::before{background:var(--green)}
+.v-card.con li::before{background:var(--amber)}
+
+.path{margin-top:var(--s5)}
+.path ol{list-style:none;counter-reset:step;display:flex;flex-direction:column;gap:var(--s2);margin-top:var(--s3)}
+.path li{
+  counter-increment:step;position:relative;
+  background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+  padding:var(--s2) var(--s3);padding-inline-start:64px;color:var(--ink-soft);font-size:16px;
+}
+.path li::before{
+  content:counter(step);position:absolute;inset-inline-start:var(--s2);top:50%;transform:translateY(-50%);
+  width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  background:var(--bg);border:1px solid var(--green);color:var(--green);font-weight:700;font-size:15px;
+}
+.path li strong{display:block;color:var(--ink)}
+
+/* ============================================================
+   Footer
+   ============================================================ */
+footer{border-top:1px solid var(--line);padding-block:var(--s4);margin-top:var(--s5)}
+footer .wrap{display:flex;flex-wrap:wrap;gap:var(--s2);justify-content:space-between;align-items:center}
+footer p{font-size:14px}
+footer .sig{display:flex;gap:6px}
+footer .sig span{width:10px;height:10px;border-radius:50%}
+footer .sig .r{background:var(--red)}
+footer .sig .a{background:var(--amber)}
+footer .sig .g{background:var(--green)}
+
+/* ظهور الأقسام عند التمرير — يشتغل فقط إذا الجافاسكربت شغال */
+html.js .reveal{opacity:0;transform:translateY(18px);transition:opacity var(--story) var(--ease),transform var(--story) var(--ease)}
+html.js .reveal.in{opacity:1;transform:none}
+@media (prefers-reduced-motion: reduce){html.js .reveal{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+
+<!-- ================= Hero ================= -->
+<header class="hero">
+  <div class="wrap">
+    <div>
+      <span class="kicker">فكرة مرورية بسيطة</span>
+      <h1>إذا خضّرت الإشارة…<br>ليش ننطلق واحد… واحد؟</h1>
+      <p class="lead">
+        تخيّل كل السيارات الواقفة بالطابور تنطلق <strong>بنفس اللحظة، مع بعض</strong> —
+        مثل عربات القطار. بدل ما كل سايق ينتظر اللي قدامه يتحرك،
+        التقاطع كله يمشي كجسم واحد، وعدد أكبر بوايد من السيارات يعبر بنفس الفترة الخضراء.
+      </p>
+      <div class="cta-row">
+        <a class="btn btn-green" href="#sim">جرّب المحاكاة بنفسك</a>
+        <a class="btn btn-ghost" href="#verdict">شرايي بالفكرة؟</a>
+      </div>
+    </div>
+    <div class="hero-signal" aria-hidden="true">
+      <div>
+        <div class="signal" id="heroSignal">
+          <div class="lamp red on"></div>
+          <div class="lamp amber"></div>
+          <div class="lamp green"></div>
+        </div>
+        <div class="signal-pole"></div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ================= المشكلة ================= -->
+<section class="problem" id="problem">
+  <div class="wrap">
+    <span class="kicker">وين تضيع الثواني؟</span>
+    <h2>موجة الانطلاق البطيئة</h2>
+    <div class="cols">
+      <div>
+        <p>
+          اليوم، لما تخضّر الإشارة، أول سايق ياخذ حوالي <strong>ثانية</strong> عشان ينتبه ويتحرك.
+          الثاني ينتظر الأول يتحرك، وبعدين ياخذ ثانيته هو بعد. والثالث ينتظر الثاني… وهكذا.
+        </p>
+        <p>
+          النتيجة: ردّات الفعل <strong>تتراكم</strong> وتتحول لموجة بطيئة تمشي من قدام الطابور
+          لآخره. السيارة العاشرة يمكن ما تتحرك من مكانها إلا بعد أكثر من
+          <strong>10 ثواني</strong> من الخضرا — وأحياناً ترجع الإشارة حمرا وهي بعدها واقفة.
+        </p>
+        <p>
+          بهندسة المرور هالشي اسمه <strong>«الزمن الضائع للانطلاق»</strong>
+          (Start-up Lost Time)، وهو أحد أكبر أسباب هدر الفترة الخضراء بالتقاطعات.
+        </p>
+      </div>
+      <div class="wave reveal" id="wave" aria-label="رسم يوضح تأخر انطلاق كل سيارة عن اللي قبلها">
+        <div class="wave-row"><span class="wave-label">السيارة 1</span><div class="wave-track"><div class="wave-bar" style="--w:9%"></div></div><span class="wave-time">1.2 ث</span></div>
+        <div class="wave-row"><span class="wave-label">السيارة 2</span><div class="wave-track"><div class="wave-bar" style="--w:18%"></div></div><span class="wave-time">2.4 ث</span></div>
+        <div class="wave-row"><span class="wave-label">السيارة 3</span><div class="wave-track"><div class="wave-bar" style="--w:27%"></div></div><span class="wave-time">3.6 ث</span></div>
+        <div class="wave-row"><span class="wave-label">السيارة 4</span><div class="wave-track"><div class="wave-bar" style="--w:36%"></div></div><span class="wave-time">4.8 ث</span></div>
+        <div class="wave-row"><span class="wave-label">السيارة 6</span><div class="wave-track"><div class="wave-bar" style="--w:54%"></div></div><span class="wave-time">7.2 ث</span></div>
+        <div class="wave-row"><span class="wave-label">السيارة 8</span><div class="wave-track"><div class="wave-bar" style="--w:72%"></div></div><span class="wave-time">9.6 ث</span></div>
+        <div class="wave-row"><span class="wave-label">السيارة 10</span><div class="wave-track"><div class="wave-bar" style="--w:90%"></div></div><span class="wave-time">12 ث</span></div>
+        <p class="wave-note">الشريط = متى <strong>تبدأ</strong> كل سيارة بالتحرك بعد الخضرا (بردّة فعل 1.2 ثانية لكل سايق). التأخير يتضاعف مع كل سيارة بالطابور.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= المحاكاة ================= -->
+<section id="sim">
+  <div class="wrap">
+    <div class="sim-head">
+      <span class="kicker">المحاكاة — أنت تتحكم بالإشارة</span>
+      <h2>نفس الإشارة، نفس الثواني… شوف الفرق</h2>
+      <p>
+        طابورين متطابقين: <strong>18 سيارة</strong> بكل واحد، وفترة خضراء مدتها
+        <strong>15 ثانية</strong> بس. اضغط الزر وشوف كم سيارة تعبر خط التوقف بكل طريقة.
+      </p>
+    </div>
+
+    <div class="sim-controls">
+      <button class="btn btn-green" id="goBtn">🚦 خضّر الإشارة</button>
+      <div class="ctrl">
+        <label for="reaction">ردّة فعل السايق</label>
+        <input type="range" id="reaction" min="0.6" max="2" step="0.2" value="1.2">
+        <output id="reactionOut">1.2 ث</output>
+      </div>
+      <div class="sim-timer" id="simTimer" role="status">
+        <span class="dot" aria-hidden="true"></span>
+        <span class="t" id="timerText">الإشارة حمراء</span>
+      </div>
+    </div>
+
+    <div class="sim-stage">
+      <div class="road-card" id="cardSeq">
+        <div>
+          <h3>الوضع الحالي</h3>
+          <span class="tag">كل سيارة تنتظر اللي قدامها</span>
+        </div>
+        <div class="counter"><span class="num" id="countSeq">0</span><span class="lbl">سيارة عبرت</span></div>
+        <div class="road" id="roadSeq" aria-label="محاكاة الانطلاق المتتابع"><div class="road-signal"></div><div class="stopline"></div></div>
+      </div>
+      <div class="road-card" id="cardSync">
+        <div>
+          <h3>الفكرة المقترحة</h3>
+          <span class="tag">الكل ينطلق بنفس اللحظة</span>
+        </div>
+        <div class="counter"><span class="num" id="countSync">0</span><span class="lbl">سيارة عبرت</span></div>
+        <div class="road" id="roadSync" aria-label="محاكاة الانطلاق المتزامن"><div class="road-signal"></div><div class="stopline"></div></div>
+      </div>
+    </div>
+
+    <div class="sim-result" id="simResult" role="status">
+      <p class="headline" id="resultHeadline"></p>
+      <p id="resultDetail"></p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= الأرقام ================= -->
+<section class="numbers" id="numbers">
+  <div class="wrap">
+    <span class="kicker">ليش يصير هالفرق؟</span>
+    <h2>الفيزياء بصف الفكرة</h2>
+    <div class="num-grid">
+      <div class="num-card reveal">
+        <span class="big"><span dir="ltr">~2</span> ثانية</span>
+        <h3>الفاصل بين سيارة وسيارة اليوم</h3>
+        <p>مع القيادة البشرية، السيارات تعبر خط التوقف بفاصل ثانيتين تقريباً بين الوحدة والثانية — يعني حارة وحدة توصّل بحدود 1,800 سيارة بالساعة الخضراء كحد أقصى.</p>
+      </div>
+      <div class="num-card reveal">
+        <span class="big">التأخير × عدد السيارات</span>
+        <h3>الانتظار المتسلسل يتراكم</h3>
+        <p>بالانطلاق المتتابع، تأخير كل سايق ينضاف فوق تأخير اللي قدامه. بالانطلاق المتزامن، التأخير يصير <strong>مرة وحدة للجميع</strong> مهما طال الطابور.</p>
+      </div>
+      <div class="num-card reveal">
+        <span class="big">جسم واحد</span>
+        <h3>الطابور يتحرك كأنه قطار</h3>
+        <p>إذا تحرّك الكل بنفس اللحظة وبنفس التسارع، المسافات بينهم تظل ثابتة — والطابور كله يعبر التقاطع كقافلة وحدة بدل موجة متقطعة.</p>
+      </div>
+    </div>
+    <p class="num-note">
+      * الأرقام أعلاه قيم تقريبية شائعة بهندسة المرور (فاصل التشبع ~2 ثانية، ردّة فعل السايق 1–1.5 ثانية)، والمحاكاة فوق تستخدم تسارع واقعي 2.5 م/ث² وسرعة قصوى 50 كم/س.
+    </p>
+  </div>
+</section>
+
+<!-- ================= شرايي ================= -->
+<section class="verdict" id="verdict">
+  <div class="wrap">
+    <span class="kicker">تقييم صريح</span>
+    <h2>شرايي بالفكرة؟ حلوة… وموجودة فعلاً بالأبحاث</h2>
+    <div class="cols">
+      <div class="v-card pro reveal">
+        <h3><span class="chip" aria-hidden="true"></span>اللي يخليها فكرة قوية</h3>
+        <ul>
+          <li>المنطق سليم 100%: أكبر هدر بالتقاطع هو تراكم ردّات الفعل، وإلغاؤه يرفع عدد السيارات العابرة بشكل كبير — مثل ما شفت بالمحاكاة.</li>
+          <li>نفس المبدأ تدرسه هندسة المرور تحت اسم <strong>«القيادة بقافلة» (Platooning)</strong> للمركبات المتصلة والذاتية، والدراسات تتوقع مضاعفة سعة التقاطعات فيه.</li>
+          <li>ما تحتاج توسعة طرق ولا جسور — نفس الأسفلت، نفس الإشارة، بس توقيت أذكى.</li>
+        </ul>
+      </div>
+      <div class="v-card con reveal">
+        <h3><span class="chip" aria-hidden="true"></span>التحدي الحقيقي</h3>
+        <ul>
+          <li>البشر ما يقدرون يتزامنون: ردّة الفعل تفاوتها طبيعي، والسايق ما يشوف إلا اللي قدامه — فالانطلاق الجماعي بالقيادة اليدوية خطر تصادم حقيقي.</li>
+          <li>المسافات القصيرة الثابتة تحتاج <strong>فرملة متزامنة</strong> بعد، مو بس انطلاق متزامن — وهذا ما يصير بدون تحكم آلي.</li>
+          <li>تحتاج بنية اتصال: السيارات لازم تسمع أمر الانطلاق بنفس اللحظة (اتصال مركبة-إشارة V2I ومركبة-مركبة V2V).</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="path">
+      <h2>شلون تصير الفكرة واقع؟ خطوة خطوة</h2>
+      <ol>
+        <li class="reveal"><strong>اليوم: العدّاد التنازلي</strong> الإشارات اللي تعرض ثواني قبل الخضرا (موجودة بالكويت) تقلل ردّة فعل أول سيارات — نسخة مصغّرة من فكرتك تشتغل الحين.</li>
+        <li class="reveal"><strong>قريب: مساعدات التزامن</strong> أنظمة تثبيت السرعة التكيّفية (ACC) المنتشرة بالسيارات الجديدة تخلي السيارة تتبع اللي قدامها آلياً بدون تأخير بشري تقريباً.</li>
+        <li class="reveal"><strong>بعدين: القافلة المتصلة</strong> مع اتصال V2V/V2I، الإشارة ترسل أمر الانطلاق لكل الطابور بنفس اللحظة، والسيارات تتسارع وتفرمل كوحدة — فكرتك بالضبط، وهي من أهم وعود المركبات الذاتية بالمدن.</li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p>فكرة قيد النقاش — ٢٠٢٦ 🇰🇼</p>
+    <div class="sig" aria-hidden="true"><span class="r"></span><span class="a"></span><span class="g"></span></div>
+  </div>
+</footer>
+
+<script>
+document.documentElement.classList.add('js');
+
+/* ============================================================
+   إعدادات الفيزياء (بالمتر والثانية)
+   ============================================================ */
+const CFG = {
+  cars: 18,
+  spacing: 7,        // المسافة من مقدمة سيارة لمقدمة اللي وراها بالطابور
+  carLen: 4.5,
+  accel: 2.5,        // م/ث²
+  vmax: 13.9,        // ≈ 50 كم/س
+  green: 15,         // مدة الفترة الخضراء بالثواني
+  syncLatency: 0.5,  // تأخير النظام بالانطلاق المتزامن
+  tail: 2.5,         // ثواني إضافية بعد نهاية الخضرا لإكمال المشهد
+  timescale: 1.5     // تسريع العرض
+};
+
+const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* مسافة مقطوعة بعد τ ثانية من بدء الحركة */
+function dist(tau){
+  if (tau <= 0) return 0;
+  const tv = CFG.vmax / CFG.accel;               // زمن الوصول للسرعة القصوى
+  if (tau <= tv) return 0.5 * CFG.accel * tau * tau;
+  const dv = 0.5 * CFG.accel * tv * tv;
+  return dv + CFG.vmax * (tau - tv);
+}
+
+/* متى تعبر السيارة i خط التوقف؟ */
+function crossTime(startTime, gapToLine){
+  const tv = CFG.vmax / CFG.accel;
+  const dv = 0.5 * CFG.accel * tv * tv;
+  let tau;
+  if (gapToLine <= dv) tau = Math.sqrt(2 * gapToLine / CFG.accel);
+  else tau = tv + (gapToLine - dv) / CFG.vmax;
+  return startTime + tau;
+}
+
+/* ============================================================
+   بناء الطريقين
+   ============================================================ */
+function buildRoad(el){
+  const stopY = 70;                              // موقع خط التوقف بالبكسل
+  const h = el.clientHeight;
+  const queueMeters = CFG.spacing * (CFG.cars - 1) + CFG.carLen + 2;
+  const scale = (h - stopY - 10) / queueMeters;  // بكسل لكل متر
+  const cars = [];
+  for (let i = 0; i < CFG.cars; i++){
+    const d = document.createElement('div');
+    d.className = 'car' + (i === 0 ? ' lead' : '');
+    d.style.height = (CFG.carLen * scale) + 'px';
+    el.appendChild(d);
+    cars.push({el: d, x0: -(0.5 + i * CFG.spacing), crossed: false});
+  }
+  return {el, cars, scale, stopY};
+}
+
+function renderRoad(road, startFn, t){
+  for (const c of road.cars){
+    const start = startFn(c);
+    let x;
+    if (t <= start) x = c.x0;
+    else if (c.frozenX !== undefined) x = c.frozenX;
+    else x = c.x0 + dist(t - start);
+    // تجميد السيارات اللي ما عبرت الخط عند نهاية الخضرا
+    if (t >= CFG.green && x < 0 && c.frozenX === undefined) c.frozenX = x;
+    const y = road.stopY - x * road.scale;
+    c.el.style.transform = `translateY(${y - CFG.carLen * road.scale}px)`;
+    if (!c.crossed && x >= 0 && t <= CFG.green){
+      c.crossed = true;
+      c.el.classList.add('crossed');
+    }
+  }
+  return road.cars.filter(c => c.crossed).length;
+}
+
+/* ============================================================
+   تشغيل المحاكاة
+   ============================================================ */
+const roadSeqEl = document.getElementById('roadSeq');
+const roadSyncEl = document.getElementById('roadSync');
+const goBtn = document.getElementById('goBtn');
+const reactionInput = document.getElementById('reaction');
+const reactionOut = document.getElementById('reactionOut');
+const countSeqEl = document.getElementById('countSeq');
+const countSyncEl = document.getElementById('countSync');
+const timer = document.getElementById('simTimer');
+const timerText = document.getElementById('timerText');
+const resultBox = document.getElementById('simResult');
+const resultHeadline = document.getElementById('resultHeadline');
+const resultDetail = document.getElementById('resultDetail');
+const cardSeq = document.getElementById('cardSeq');
+const cardSync = document.getElementById('cardSync');
+
+let roadSeq, roadSync, rafId = null, running = false;
+
+function setupRoads(){
+  roadSeqEl.querySelectorAll('.car').forEach(c => c.remove());
+  roadSyncEl.querySelectorAll('.car').forEach(c => c.remove());
+  roadSeq = buildRoad(roadSeqEl);
+  roadSync = buildRoad(roadSyncEl);
+  renderRoad(roadSeq, () => Infinity, 0);
+  renderRoad(roadSync, () => Infinity, 0);
+}
+
+reactionInput.addEventListener('input', () => {
+  reactionOut.textContent = Number(reactionInput.value).toFixed(1) + ' ث';
+});
+
+function seqStart(reaction){ return c => reaction * (roadSeq.cars.indexOf(c) + 1); }
+function syncStart(){ return () => CFG.syncLatency; }
+
+/* حساب النتيجة النهائية بدون أنيميشن (لتقليل الحركة) */
+function finalCounts(reaction){
+  let seq = 0, sync = 0;
+  for (let i = 0; i < CFG.cars; i++){
+    const gap = 0.5 + i * CFG.spacing;
+    if (crossTime(reaction * (i + 1), gap) <= CFG.green) seq++;
+    if (crossTime(CFG.syncLatency, gap) <= CFG.green) sync++;
+  }
+  return {seq, sync};
+}
+
+function showResult(seq, sync){
+  const diff = sync - seq;
+  resultHeadline.innerHTML =
+    `النتيجة: <span class="win">${sync} سيارة</span> بالانطلاق المتزامن مقابل <strong>${seq}</strong> بالطريقة الحالية — بنفس الـ${CFG.green} ثانية خضراء.`;
+  const allCleared = sync >= CFG.cars;
+  resultDetail.textContent =
+    (allCleared
+      ? 'الطابور المتزامن عبر كامله وخلّص التقاطع، بينما الطابور التقليدي بعده نصه واقف. '
+      : '') +
+    `الفرق ${diff} سيارة إضافية بدورة إشارة وحدة — اضربها بعدد الدورات بالساعة وعدد الحارات وعدد التقاطعات، ويبين لك حجم الزحمة اللي ممكن تنحل. جرّب غيّر ردّة الفعل وشغّلها من جديد.`;
+  resultBox.classList.add('show');
+  cardSync.classList.add('winner');
+}
+
+function resetUI(){
+  resultBox.classList.remove('show');
+  cardSync.classList.remove('winner');
+  countSeqEl.textContent = '0';
+  countSyncEl.textContent = '0';
+  roadSeqEl.classList.remove('go');
+  roadSyncEl.classList.remove('go');
+}
+
+function runSim(){
+  if (running) return;
+  running = true;
+  goBtn.disabled = true;
+  resetUI();
+  setupRoads();
+
+  const reaction = Number(reactionInput.value);
+
+  if (reduceMotion){
+    // بدون حركة: نعرض النتيجة النهائية مباشرة
+    const {seq, sync} = finalCounts(reaction);
+    roadSeqEl.classList.add('go');
+    roadSyncEl.classList.add('go');
+    renderRoad(roadSeq, seqStart(reaction), CFG.green + CFG.tail);
+    renderRoad(roadSync, syncStart(), CFG.green + CFG.tail);
+    countSeqEl.textContent = seq;
+    countSyncEl.textContent = sync;
+    timerText.textContent = 'انتهت الفترة الخضراء';
+    showResult(seq, sync);
+    goBtn.disabled = false;
+    goBtn.textContent = '🚦 شغّلها من جديد';
+    running = false;
+    return;
+  }
+
+  roadSeqEl.classList.add('go');
+  roadSyncEl.classList.add('go');
+  timer.classList.add('green');
+  heroGreen();
+
+  let last = null, t = 0;
+  const seqFn = seqStart(reaction), syncFn = syncStart();
+
+  function frame(ts){
+    if (last === null) last = ts;
+    t += Math.min((ts - last) / 1000, 0.05) * CFG.timescale;
+    last = ts;
+
+    const seq = renderRoad(roadSeq, seqFn, t);
+    const sync = renderRoad(roadSync, syncFn, t);
+    countSeqEl.textContent = seq;
+    countSyncEl.textContent = sync;
+
+    if (t < CFG.green){
+      timerText.textContent = `خضراء: باقي ${Math.ceil(CFG.green - t)} ث`;
+    } else {
+      timer.classList.remove('green');
+      timerText.textContent = 'رجعت حمراء';
+      roadSeqEl.classList.remove('go');
+      roadSyncEl.classList.remove('go');
+    }
+
+    if (t < CFG.green + CFG.tail){
+      rafId = requestAnimationFrame(frame);
+    } else {
+      showResult(seq, sync);
+      goBtn.disabled = false;
+      goBtn.textContent = '🚦 شغّلها من جديد';
+      timerText.textContent = 'انتهت الدورة — جرّب من جديد';
+      running = false;
+    }
+  }
+  rafId = requestAnimationFrame(frame);
+}
+
+goBtn.addEventListener('click', runSim);
+setupRoads();
+addEventListener('resize', () => { if (!running) setupRoads(); });
+
+/* ============================================================
+   إشارة الهيرو: أحمر ← برتقالي ← أخضر عند تشغيل المحاكاة
+   ============================================================ */
+const heroLamps = {
+  red: document.querySelector('#heroSignal .red'),
+  amber: document.querySelector('#heroSignal .amber'),
+  green: document.querySelector('#heroSignal .green')
+};
+function heroGreen(){
+  heroLamps.red.classList.remove('on');
+  heroLamps.amber.classList.add('on');
+  setTimeout(() => {
+    heroLamps.amber.classList.remove('on');
+    heroLamps.green.classList.add('on');
+    setTimeout(() => {
+      heroLamps.green.classList.remove('on');
+      heroLamps.red.classList.add('on');
+    }, (CFG.green / CFG.timescale) * 1000);
+  }, 700);
+}
+
+/* ============================================================
+   ظهور العناصر عند التمرير + تشغيل رسم الموجة
+   ============================================================ */
+const io = new IntersectionObserver(entries => {
+  for (const e of entries){
+    if (e.isIntersecting){
+      e.target.classList.add('in');
+      if (e.target.id === 'wave') e.target.classList.add('play');
+      io.unobserve(e.target);
+    }
+  }
+}, {threshold: .25});
+document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+</script>
+</body>
+</html>
