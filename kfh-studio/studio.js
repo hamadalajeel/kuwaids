@@ -10,7 +10,7 @@ const state = {
   template: 'text', format: 'post', combo: 'dark', align: 'right',
   kicker: '', headline: 'بيت التمويل الكويتي\nيحصد جائزة جديدة', sub: '',
   numLabel: '', number: '', unit: '', cta: '', ctaColor: 'green', terms: '',
-  curve: true, wedge: false,
+  curve: true, wedge: false, deco: 'curve',
   photo: null, fx: 0.5, fy: 0.5, zoom: 1, cutScale: 1, logo: null,
 };
 

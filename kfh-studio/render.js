@@ -27,55 +27,35 @@ const COMBOS = {
 
 /* ---------- shapes ---------- */
 
-// The official KFH curve: two 45° arms joined by a rounded bowl (geometry taken from the brand base file).
-function uCurve(cx, bottom, w) {
-  const half = w / 2, y0 = bottom - 0.2069 * w, cy = y0 + 0.2759 * w, k = 0.2242 * w, L = 3000;
-  const p = new Path2D();
-  p.moveTo(cx - half - L, y0 - L);
-  p.lineTo(cx - half, y0);
-  p.bezierCurveTo(cx - k, cy, cx + k, cy, cx + half, y0);
-  p.lineTo(cx + half + L, y0 - L);
-  return { path: p, y0, half };
-}
-
-// Long sweeping arc used over full photos.
-function arcCurve(W, H) {
-  const p = new Path2D();
-  p.moveTo(600, H + 20);
-  p.bezierCurveTo(480, H - 190, 470, H - 420, 600, H - 590);
-  p.bezierCurveTo(720, H - 750, 900, H - 930, 1100, H - 1120);
-  return p;
-}
-
-// Bottom-left green hump (crop of the brand blade).
-function wedge(H) {
-  const p = new Path2D();
-  p.moveTo(0, H);
-  p.lineTo(0, H - 242);
-  p.bezierCurveTo(50, H - 285, 150, H - 285, 250, H - 220);
-  p.lineTo(600, H);
-  p.closePath();
-  return p;
-}
-
-// Photo area for the "photo + panel" layout: everything above a soft V.
-function panelClip(W, H) {
-  const yl = 0.22 * H, yr = 0.26 * H, c = { x: 450, y: 0.55 * H }, d = 220;
-  const toward = (tx, ty) => {
-    const dx = tx - c.x, dy = ty - c.y, n = Math.hypot(dx, dy);
-    return { x: c.x + (dx / n) * d, y: c.y + (dy / n) * d };
+// The one official KFH curve: two 45° arms joined by a rounded bowl (geometry from the brand base file).
+// Every decorative shape in KFH posts is this curve — as a line, as the edge of a photo, or as a filled block —
+// placed by its bowl's lowest point (cx, bottom), its width w and a rotation in degrees.
+function brandCurve({ cx, bottom, w, rot = 0 }) {
+  const half = w / 2, y0 = -0.2069 * w, cy = 0.0690 * w, k = 0.2242 * w, L = 4000, BIG = 9000;
+  const trace = (p) => {
+    p.moveTo(-half - L, y0 - L);
+    p.lineTo(-half, y0);
+    p.bezierCurveTo(-k, cy, k, cy, half, y0);
+    p.lineTo(half + L, y0 - L);
   };
-  const A = toward(W, yr), B = toward(0, yl);
-  const p = new Path2D();
-  p.moveTo(0, 0);
-  p.lineTo(W, 0);
-  p.lineTo(W, yr);
-  p.lineTo(A.x, A.y);
-  p.quadraticCurveTo(c.x, c.y, B.x, B.y);
-  p.lineTo(0, yl);
-  p.closePath();
-  return { path: p, bottom: 0.25 * A.y + 0.5 * c.y + 0.25 * B.y };
+  const line = new Path2D(); trace(line);
+  const inside = new Path2D(); trace(inside); inside.closePath();
+  const outside = new Path2D(); trace(outside);
+  outside.lineTo(half + L, BIG); outside.lineTo(-half - L, BIG); outside.closePath();
+  const m = new DOMMatrix().translate(cx, bottom).rotate(rot);
+  const place = (local) => { const out = new Path2D(); out.addPath(local, m); return out; };
+  return { line: place(line), inside: place(inside), outside: place(outside) };
 }
+
+// Where a symmetric curve's arm crosses the left edge, given its bowl.
+function curveForIntercept(intercept, cx = 540, w = 680) {
+  return { cx, w, bottom: intercept + (cx - w / 2) + 0.2069 * w };
+}
+
+// Green block in the bottom-left corner (the curve flipped, filled).
+const cornerBottom = (H) => brandCurve({ cx: 170, bottom: H - 282, w: 520, rot: 180 }).inside;
+// Green block in the top-left corner, for a partner logo.
+const cornerTop = () => brandCurve({ cx: 200, bottom: 300, w: 820 }).inside;
 
 /* ---------- images ---------- */
 
@@ -257,8 +237,8 @@ function drawTerms(ctx, text, W, H, color) {
 
 function topItems(s, c, big = 1) {
   return [
-    { kind: 'text', text: s.kicker, weight: 500, size: 38 * big, min: 26, maxLines: 2, lh: 1.5, color: c.kicker, gap: 14 },
-    { kind: 'text', text: s.headline, weight: 800, size: 80 * big, min: 44, maxLines: 4, lh: 1.42, color: c.head, gap: 22 },
+    { kind: 'text', text: s.kicker, weight: 400, size: 38 * big, min: 26, maxLines: 2, lh: 1.5, color: c.kicker, gap: 14 },
+    { kind: 'text', text: s.headline, weight: 600, size: 80 * big, min: 44, maxLines: 4, lh: 1.42, color: c.head, gap: 22 },
     { kind: 'text', text: s.sub, weight: 400, size: 40 * big, min: 28, maxLines: 3, lh: 1.55, color: c.sub, gap: 30 },
   ];
 }
@@ -277,26 +257,29 @@ function ctaItem(s) {
 /* ---------- templates ---------- */
 
 const TEMPLATES = {
-  // 1. Text only — solid institutional background + official curve.
+  // 1. Text only — solid institutional background; the curve sweeps just under the text.
   text(ctx, s, W, H) {
     const c = COMBOS[s.combo];
     const story = H > 1500, top = story ? 300 : H < 1200 ? 120 : 170;
     ctx.fillStyle = c.bg; ctx.fillRect(0, 0, W, H);
-
-    const bottom = story ? H - 330 : H - (H < 1200 ? 40 : 150);
-    const curve = uCurve(710, bottom, 680);
-    if (s.curve) { ctx.strokeStyle = c.line; ctx.lineWidth = 15; ctx.stroke(curve.path); }
-    if (s.wedge) { ctx.fillStyle = c.wedge; ctx.fill(wedge(story ? H - 240 : H)); }
+    if (s.wedge) { ctx.fillStyle = c.wedge; ctx.fill(cornerBottom(story ? H - 240 : H)); }
 
     let y = top;
     if (s.logo) { drawLogo(ctx, s.logo, s.align === 'center' ? W / 2 : M, y, 72, s.align === 'center' ? 'center' : 'left'); y += 140; }
 
+    const hasCta = s.cta && s.cta.trim();
     const ctaY = H - (story ? 300 : 130) - 72;
-    const limit = s.curve ? curve.y0 - (710 - curve.half - M) - 40 : (s.cta ? ctaY - 50 : H - 160);
-    const st = layout(ctx, [...topItems(s, c), ...numItems(s, c, 200)], W - 2 * M, limit - y);
+    const floor = hasCta ? ctaY - 40 : H - (story ? 300 : 90);
+    const maxIntercept = floor - 200 - 141; // keeps the bowl above the floor
+    const st = layout(ctx, [...topItems(s, c), ...numItems(s, c, 200)], W - 2 * M, (s.curve ? maxIntercept - 30 : floor - 40) - y);
+    if (s.curve) {
+      const intercept = Math.min(Math.max(y + st.h + 30, H * 0.3), maxIntercept);
+      ctx.strokeStyle = c.line; ctx.lineWidth = 15;
+      ctx.stroke(brandCurve(curveForIntercept(intercept)).line);
+    }
     drawStack(ctx, st, s.align === 'center' ? W / 2 : W - M, y, s.align);
 
-    if (s.cta && s.cta.trim()) drawStack(ctx, layout(ctx, [ctaItem(s)], W - 2 * M, 200), s.align === 'center' ? W / 2 : W - M, ctaY, s.align);
+    if (hasCta) drawStack(ctx, layout(ctx, [ctaItem(s)], W - 2 * M, 200), s.align === 'center' ? W / 2 : W - M, ctaY, s.align);
     drawTerms(ctx, s.terms, W, H, c.fine);
     return st.overflow;
   },
@@ -317,7 +300,8 @@ const TEMPLATES = {
       g.addColorStop(0, `rgba(${KFH.shade},0)`); g.addColorStop(1, `rgba(${KFH.shade},.7)`);
       ctx.fillStyle = g; ctx.fillRect(0, H * 0.5, W, H * 0.5);
     }
-    if (s.curve) { ctx.strokeStyle = KFH.green; ctx.lineWidth = 12; ctx.stroke(arcCurve(W, H)); }
+    // The curve turned on its side: arm enters top-right, bowl faces left, opens toward the bottom-right.
+    if (s.curve) { ctx.strokeStyle = KFH.green; ctx.lineWidth = 14; ctx.stroke(brandCurve({ cx: 507, bottom: H * 0.788, w: 840, rot: 90 }).line); }
 
     const x = s.align === 'center' ? W / 2 : W - M;
     const st = layout(ctx, topItems(s, c), W - 2 * M, H * 0.4);
@@ -331,43 +315,54 @@ const TEMPLATES = {
     return st.overflow || bs.overflow;
   },
 
-  // 3. Photo on top, dark green panel with text below (awards / news).
+  // 3. Photo on top; the dark green panel below starts exactly at the curve (awards / news).
   panel(ctx, s, W, H) {
     const story = H > 1500;
-    ctx.fillStyle = KFH.dark; ctx.fillRect(0, 0, W, H);
-    const clip = panelClip(W, H);
-    ctx.save(); ctx.clip(clip.path);
-    if (s.photo) drawCover(ctx, s.photo, 0, 0, W, H * 0.58, s.fx, s.fy, s.zoom);
-    else placeholder(ctx, 0, 0, W, H * 0.58, 'ارفع صورة', false);
-    ctx.restore();
+    const bottom = H * 0.528;
+    if (s.photo) drawCover(ctx, s.photo, 0, 0, W, bottom + 20, s.fx, s.fy, s.zoom);
+    else placeholder(ctx, 0, 0, W, bottom + 20, 'ارفع صورة', false);
+    ctx.fillStyle = KFH.dark; ctx.fill(brandCurve({ cx: 540, bottom, w: 680 }).outside);
 
-    ctx.fillStyle = KFH.green; ctx.fill(wedge(H));
+    ctx.fillStyle = KFH.green; ctx.fill(cornerBottom(H));
     if (s.logo) drawLogo(ctx, s.logo, 60, H - 150, 70, 'left');
 
     const c = { ...COMBOS.dark, sub: KFH.green };
-    const y = clip.bottom + (story ? 120 : 70);
+    const y = bottom + (story ? 110 : 60);
     const st = layout(ctx, [...topItems(s, c, 0.92), ...numItems(s, c, 170), ctaItem(s)], W - 2 * M, H - (story ? 330 : 290) - y);
     drawStack(ctx, st, s.align === 'center' ? W / 2 : W - M, y, s.align);
     drawTerms(ctx, s.terms, W, H, KFH.white);
     return st.overflow;
   },
 
-  // 4. Cut-out person/building standing inside the curve.
+  // 4. Cut-out person/building standing inside the curve, or under a green corner with a partner logo.
   cutout(ctx, s, W, H) {
     const c = COMBOS[s.combo];
-    const story = H > 1500, top = story ? 300 : H < 1200 ? 100 : 150;
+    const story = H > 1500;
     ctx.fillStyle = c.bg; ctx.fillRect(0, 0, W, H);
-    if (s.logo) drawLogo(ctx, s.logo, M, top - (story ? 0 : 40), 64, 'left');
+    const corner = s.deco === 'corner';
 
-    const curve = uCurve(540, H * (story ? 0.6 : 0.63), 560);
-    ctx.strokeStyle = c.line; ctx.lineWidth = 15; ctx.stroke(curve.path);
+    let textTop;
+    if (corner) {
+      ctx.fillStyle = c.wedge; ctx.fill(cornerTop());
+      if (s.logo) drawLogo(ctx, s.logo, M, 95, 80, 'left');
+      textTop = story ? 470 : H < 1200 ? 320 : 380;
+    } else {
+      textTop = story ? 300 : H < 1200 ? 100 : 150;
+      if (s.logo) { drawLogo(ctx, s.logo, M, textTop - (story ? 0 : 40), 64, 'left'); textTop += 70; }
+    }
 
-    const textTop = top + (s.logo ? 70 : 0);
-    const limit = curve.y0 - (540 - curve.half - M) - 30;
-    const st = layout(ctx, topItems(s, c, 0.9), W - 2 * M, limit - textTop);
+    const sub = corner ? { ...c, sub: s.combo === 'dark' ? KFH.green : c.sub } : c;
+    const maxIntercept = H * 0.42;
+    const st = layout(ctx, topItems(s, sub, 0.9), W - 2 * M, (corner ? H * 0.62 : maxIntercept - 30) - textTop);
+    let boxTop = textTop + st.h + 40;
+    if (!corner) {
+      const intercept = Math.min(Math.max(textTop + st.h + 30, H * 0.25), maxIntercept);
+      ctx.strokeStyle = c.line; ctx.lineWidth = 15;
+      ctx.stroke(brandCurve(curveForIntercept(intercept)).line);
+      boxTop = intercept + 70;
+    }
     drawStack(ctx, st, W - M, textTop, 'right');
 
-    const boxTop = Math.max(textTop + st.h + 40, limit + 10);
     if (s.photo) drawContainBottom(ctx, s.photo, W / 2, H, W * 0.92, H - boxTop, s.cutScale);
     else placeholder(ctx, W * 0.22, boxTop + 30, W * 0.56, H - boxTop - 30, 'صورة بدون خلفية', s.combo !== 'white');
     drawTerms(ctx, s.terms, W, H, c.fine);
