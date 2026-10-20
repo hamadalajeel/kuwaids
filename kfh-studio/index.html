@@ -17,8 +17,19 @@
 <main class="layout">
   <section class="preview" aria-label="المعاينة">
     <div class="stage"><canvas id="canvas"></canvas></div>
+    <div class="under">
+      <p class="hint">اسحب النص أو الشعار أو الصورة بإصبعك أو بالماوس لتحريكها.</p>
+      <button type="button" class="link" id="resetPos">رجّع المواضع</button>
+    </div>
     <p id="warn" class="warn" hidden>النص طويل على هالمساحة، صغّرناه تلقائياً. الأفضل تختصره.</p>
-    <button id="download" class="download" type="button">تحميل البوست</button>
+    <button type="button" class="twin" id="twin">
+      <canvas id="twinCanvas"></canvas>
+      <span><strong id="twinTitle">الستوري</strong><small id="twinNote">يتجهز تلقائياً من نفس البوست. اضغط لتعديله.</small></span>
+    </button>
+    <div class="actions">
+      <button id="download" class="download" type="button">تحميل</button>
+      <button id="downloadBoth" class="download alt" type="button">البوست + الستوري</button>
+    </div>
   </section>
 
   <section class="controls">
@@ -55,10 +66,12 @@
         <bdi>PNG</bdi>
         بدون خلفية عشان تطلع مفرّغة.</p>
       <div data-show="photo panel">
-        <label class="range">تحريك أفقي <input type="range" min="0" max="1" step="0.01" data-field="fx"></label>
-        <label class="range">تحريك عمودي <input type="range" min="0" max="1" step="0.01" data-field="fy"></label>
-        <label class="range">تكبير <input type="range" min="1" max="2.5" step="0.01" data-field="zoom"></label>
+        <label class="range">تحريك أفقي <input type="range" min="0" max="1" step="0.01" data-crop="fx" id="fx"></label>
+        <label class="range">تحريك عمودي <input type="range" min="0" max="1" step="0.01" data-crop="fy" id="fy"></label>
+        <label class="range">تكبير <input type="range" min="1" max="2.5" step="0.01" data-crop="zoom" id="zoom"></label>
+        <p class="hint">قص الصورة يُحفظ لكل مقاس بروحه.</p>
       </div>
+      <label class="range" data-show="photo">التظليل فوق الصورة <input type="range" min="0" max="0.9" step="0.01" data-field="shade" id="shade"></label>
       <div data-show="cutout offer">
         <label class="range">حجم الصورة <input type="range" min="0.5" max="1.3" step="0.01" data-field="cutScale"></label>
       </div>
@@ -75,6 +88,12 @@
       <label class="field">سطر توضيحي <small>اختياري</small>
         <input type="text" data-field="sub">
       </label>
+      <label class="range">حجم العنوان <input type="range" min="0.7" max="1.4" step="0.01" data-field="headScale" id="headScale"></label>
+      <div class="seg" data-field="headWeight">
+        <button type="button" data-value="400">خط خفيف</button>
+        <button type="button" data-value="600">متوسط</button>
+        <button type="button" data-value="800">عريض</button>
+      </div>
       <div class="seg" data-field="align" data-show="text photo panel">
         <button type="button" data-value="right">محاذاة يمين</button>
         <button type="button" data-value="center">في الوسط</button>
@@ -83,11 +102,23 @@
 
     <div class="step" data-show="text photo panel offer">
       <h2>رقم بارز <small>اختياري</small></h2>
-      <div class="row">
-        <label class="field">الرقم <input type="text" data-field="number" inputmode="decimal" placeholder="15%"></label>
-        <label class="field">بجانبه <input type="text" data-field="unit" placeholder="د.ك"></label>
+      <div class="row three">
+        <label class="field">قبله <input type="text" data-field="numPrefix" id="numPrefix" placeholder="بـ"></label>
+        <label class="field">الرقم <input type="text" data-field="number" id="number" inputmode="decimal" placeholder="0%"></label>
+        <label class="field">بعده <input type="text" data-field="unit" id="unit" placeholder="أرباح"></label>
       </div>
-      <label class="field">فوق الرقم <input type="text" data-field="numLabel" placeholder="خصم"></label>
+      <label class="field">فوق الرقم <input type="text" data-field="numLabel" id="numLabel" placeholder="خصم"></label>
+      <label class="range">حجم الرقم <input type="range" min="0.6" max="1.4" step="0.01" data-field="numScale" id="numScale"></label>
+      <div class="seg" data-field="numPos" data-show="photo">
+        <button type="button" data-value="top">مع العنوان</button>
+        <button type="button" data-value="bottom">تحت</button>
+      </div>
+    </div>
+
+    <div class="step" data-show="photo">
+      <h2>معلومات تحت <small>اختياري</small></h2>
+      <label class="field">العنوان <input type="text" data-field="infoTitle" id="infoTitle" placeholder="حيّاكم في جناح بيت التمويل الكويتي"></label>
+      <label class="field">التفاصيل <input type="text" data-field="infoText" id="infoText" placeholder="من 27 إلى 31 أكتوبر | أرض المعارض، مشرف"></label>
     </div>
 
     <div class="step">
@@ -104,6 +135,7 @@
         <span id="logoLabel">شعار جهة شريكة</span>
       </label>
       <button type="button" class="link" id="clearLogo" hidden>إزالة الشعار</button>
+      <label class="range" id="logoSize" hidden>حجم الشعار <input type="range" min="0.5" max="1.8" step="0.01" data-field="logoScale" id="logoScale"></label>
       <label class="field">الشروط والأحكام <input type="text" data-field="terms" placeholder="تطبق الشروط والأحكام"></label>
       <div class="seg" data-field="deco" data-show="cutout">
         <button type="button" data-value="curve">خط منحني</button>

@@ -6,12 +6,19 @@ const TEMPLATE_LIST = [
   { id: 'offer', name: 'عرض منتج' },
 ];
 
+const FORMAT_NAMES = { post: 'البوست', story: 'الستوري', square: 'المربع' };
+
 const state = {
   template: 'text', format: 'post', combo: 'dark', align: 'right',
   kicker: '', headline: 'بيت التمويل الكويتي\nيحصد جائزة جديدة', sub: '',
-  numLabel: '', number: '', unit: '', cta: '', ctaColor: 'green', terms: '',
-  curve: true, wedge: false, deco: 'curve',
-  photo: null, fx: 0.5, fy: 0.5, zoom: 1, cutScale: 1, logo: null,
+  headScale: 1, headWeight: '600',
+  numPrefix: '', numLabel: '', number: '', unit: '', numScale: 1, numPos: 'top',
+  infoTitle: '', infoText: '',
+  cta: '', ctaColor: 'green', terms: '',
+  curve: true, wedge: false, deco: 'curve', shade: 0.6,
+  photo: null, fx: 0.5, fy: 0.5, zoom: 1, cutScale: 1, logo: null, logoScale: 1,
+  crops: {},                                  // photo crop per size: { post: {fx, fy, zoom}, ... }
+  offsets: { post: {}, story: {}, square: {} }, // dragged positions per size: { top: {dx, dy}, ... }
 };
 
 // Per-template defaults applied when switching, so each starts looking right.
@@ -24,26 +31,59 @@ const DEFAULTS = {
 };
 
 const canvas = document.getElementById('canvas');
+const twinCanvas = document.getElementById('twinCanvas');
 const warn = document.getElementById('warn');
+let boxes = [];
+let hover = null;
+
+// The size shown next to the main preview: the story for a post, the post for a story.
+const twinFormat = () => (state.format === 'story' ? 'post' : 'story');
 
 function render() {
-  const overflow = renderPost(canvas, state, 1);
-  warn.hidden = !overflow;
+  const r = renderPost(canvas, state, 1);
+  boxes = r.boxes;
+  warn.hidden = !r.overflow;
+  if (hover) outline(hover);
+  renderPost(twinCanvas, state, 0.2, twinFormat());
 }
+
+function outline(id) {
+  const b = boxes.find((x) => x.id === id);
+  if (!b) return;
+  const ctx = canvas.getContext('2d');
+  ctx.save();
+  ctx.setLineDash([14, 10]);
+  ctx.lineWidth = 4;
+  ctx.strokeStyle = 'rgba(255,255,255,.9)';
+  ctx.strokeRect(b.x - 14, b.y - 14, b.w + 28, b.h + 28);
+  ctx.strokeStyle = 'rgba(67,176,42,.95)';
+  ctx.lineDashOffset = 12;
+  ctx.strokeRect(b.x - 14, b.y - 14, b.w + 28, b.h + 28);
+  ctx.restore();
+}
+
+const crop = () => state.crops[state.format] || state.crops.post || { fx: state.fx, fy: state.fy, zoom: state.zoom };
 
 function syncUI() {
   document.querySelectorAll('[data-show]').forEach((el) => {
     el.hidden = !el.dataset.show.split(' ').includes(state.template);
   });
   document.querySelectorAll('.seg[data-field], .swatches[data-field]').forEach((g) => {
-    g.querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', String(state[g.dataset.field] === b.dataset.value)));
+    g.querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', String(String(state[g.dataset.field]) === b.dataset.value)));
   });
   document.querySelectorAll('.tpl').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.id === state.template)));
   document.querySelectorAll('input[data-field], textarea[data-field]').forEach((el) => {
     if (el.type === 'checkbox') el.checked = !!state[el.dataset.field];
     else if (document.activeElement !== el) el.value = state[el.dataset.field];
   });
+  const c = crop();
+  document.querySelectorAll('input[data-crop]').forEach((el) => { el.value = c[el.dataset.crop]; });
   document.getElementById('clearLogo').hidden = !state.logo;
+  document.getElementById('logoSize').hidden = !state.logo;
+  const other = twinFormat();
+  document.getElementById('twinTitle').textContent = FORMAT_NAMES[other];
+  document.getElementById('twinNote').textContent = `يتجهز تلقائياً من نفس التصميم. اضغط لتعديل ${FORMAT_NAMES[other]}.`;
+  document.getElementById('download').textContent = `تحميل ${FORMAT_NAMES[state.format]}`;
 }
 
 function update() { syncUI(); render(); }
@@ -65,7 +105,10 @@ function buildTemplates() {
     const label = document.createElement('span');
     label.textContent = t.name;
     b.append(c, label);
-    b.addEventListener('click', () => { Object.assign(state, DEFAULTS[t.id], { template: t.id }); update(); });
+    b.addEventListener('click', () => {
+      Object.assign(state, DEFAULTS[t.id], { template: t.id, offsets: { post: {}, story: {}, square: {} } });
+      update();
+    });
     wrap.append(b);
   }
 }
@@ -86,7 +129,13 @@ function bindInputs() {
       render();
     });
   });
-  bindImage('photo', 'photoLabel', 'اختر صورة', (img) => { state.photo = img; state.fx = 0.5; state.fy = 0.5; state.zoom = 1; state.cutScale = 1; });
+  document.querySelectorAll('input[data-crop]').forEach((el) => {
+    el.addEventListener('input', () => {
+      state.crops[state.format] = { ...crop(), [el.dataset.crop]: parseFloat(el.value) };
+      render();
+    });
+  });
+  bindImage('photo', 'photoLabel', 'اختر صورة', (img) => { state.photo = img; state.crops = {}; state.cutScale = 1; });
   bindImage('logo', 'logoLabel', 'شعار جهة شريكة', (img) => { state.logo = img; });
   document.getElementById('clearLogo').addEventListener('click', () => {
     state.logo = null;
@@ -94,7 +143,61 @@ function bindInputs() {
     document.getElementById('logoLabel').textContent = 'شعار جهة شريكة';
     update();
   });
-  document.getElementById('download').addEventListener('click', download);
+  document.getElementById('resetPos').addEventListener('click', () => { state.offsets[state.format] = {}; render(); });
+  document.getElementById('twin').addEventListener('click', () => { state.format = twinFormat(); update(); });
+  document.getElementById('download').addEventListener('click', () => save([state.format]));
+  document.getElementById('downloadBoth').addEventListener('click', () => save(['post', 'story']));
+}
+
+/* ---------- dragging blocks on the preview ---------- */
+
+function toCanvas(e) {
+  const r = canvas.getBoundingClientRect();
+  return { x: ((e.clientX - r.left) / r.width) * canvas.width, y: ((e.clientY - r.top) / r.height) * canvas.height };
+}
+
+function hit(p) {
+  // Smallest box under the pointer wins, so a logo on top of a photo is still grabbable.
+  return boxes
+    .filter((b) => p.x >= b.x - 20 && p.x <= b.x + b.w + 20 && p.y >= b.y - 20 && p.y <= b.y + b.h + 20)
+    .sort((a, b) => a.w * a.h - b.w * b.h)[0];
+}
+
+function bindDrag() {
+  let drag = null;
+  canvas.addEventListener('pointerdown', (e) => {
+    const p = toCanvas(e), b = hit(p);
+    if (!b) return;
+    const o = state.offsets[state.format][b.id] || { dx: 0, dy: 0 };
+    drag = { id: b.id, start: p, o: { ...o } };
+    hover = b.id;
+    canvas.setPointerCapture(e.pointerId);
+    canvas.classList.add('dragging');
+    render();
+  });
+  canvas.addEventListener('pointermove', (e) => {
+    const p = toCanvas(e);
+    if (!drag) {
+      const b = hit(p);
+      const id = b ? b.id : null;
+      if (id !== hover) { hover = id; render(); }
+      return;
+    }
+    state.offsets[state.format][drag.id] = {
+      dx: Math.round(drag.o.dx + p.x - drag.start.x),
+      dy: Math.round(drag.o.dy + p.y - drag.start.y),
+    };
+    render();
+  });
+  const end = () => {
+    if (!drag) return;
+    drag = null;
+    canvas.classList.remove('dragging');
+    render();
+  };
+  canvas.addEventListener('pointerup', end);
+  canvas.addEventListener('pointercancel', end);
+  canvas.addEventListener('pointerleave', () => { if (!drag && hover) { hover = null; render(); } });
 }
 
 function bindImage(id, labelId, emptyText, apply) {
@@ -113,25 +216,33 @@ function bindImage(id, labelId, emptyText, apply) {
   });
 }
 
-function download() {
+/* ---------- saving ---------- */
+
+function toBlob(format) {
   const out = document.createElement('canvas');
-  renderPost(out, state, 1);
+  renderPost(out, state, 1, format);
+  return new Promise((resolve) => out.toBlob(resolve, 'image/png'));
+}
+
+async function save(formats) {
   const d = new Date();
   const pad = (n) => String(n).padStart(2, '0');
-  const filename = `kfh-${state.format}-${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}-${pad(d.getHours())}${pad(d.getMinutes())}.png`;
-  out.toBlob(async (blob) => {
-    // Inside a Claude artifact, files are offered through the downloads capability; elsewhere a plain link works.
-    const downloads = window.claude?.use ? await window.claude.use('downloads') : null;
+  const stamp = `${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}-${pad(d.getHours())}${pad(d.getMinutes())}`;
+  // Inside a Claude artifact, files are offered through the downloads capability; elsewhere a plain link works.
+  const downloads = window.claude?.use ? await window.claude.use('downloads') : null;
+  for (const f of formats) {
+    const filename = `kfh-${f}-${stamp}.png`;
+    const blob = await toBlob(f);
     if (downloads) {
-      try { await downloads.save({ filename, data: blob }); } catch (e) { if (e?.code !== 'declined') console.warn(e); }
-      return;
+      try { await downloads.save({ filename, data: blob }); } catch (e) { if (e?.code === 'declined') return; console.warn(e); }
+    } else {
+      const a = document.createElement('a');
+      a.download = filename;
+      a.href = URL.createObjectURL(blob);
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(a.href), 4000);
     }
-    const a = document.createElement('a');
-    a.download = filename;
-    a.href = URL.createObjectURL(blob);
-    a.click();
-    setTimeout(() => URL.revokeObjectURL(a.href), 4000);
-  }, 'image/png');
+  }
 }
 
 async function loadFonts() {
@@ -146,5 +257,6 @@ async function loadFonts() {
 loadFonts().then(() => {
   buildTemplates();
   bindInputs();
+  bindDrag();
   update();
 });
