@@ -116,11 +116,18 @@ function bindImage(id, labelId, emptyText, apply) {
 function download() {
   const out = document.createElement('canvas');
   renderPost(out, state, 1);
-  out.toBlob((blob) => {
+  const d = new Date();
+  const pad = (n) => String(n).padStart(2, '0');
+  const filename = `kfh-${state.format}-${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}-${pad(d.getHours())}${pad(d.getMinutes())}.png`;
+  out.toBlob(async (blob) => {
+    // Inside a Claude artifact, files are offered through the downloads capability; elsewhere a plain link works.
+    const downloads = window.claude?.use ? await window.claude.use('downloads') : null;
+    if (downloads) {
+      try { await downloads.save({ filename, data: blob }); } catch (e) { if (e?.code !== 'declined') console.warn(e); }
+      return;
+    }
     const a = document.createElement('a');
-    const d = new Date();
-    const stamp = `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}-${String(d.getHours()).padStart(2, '0')}${String(d.getMinutes()).padStart(2, '0')}`;
-    a.download = `kfh-${state.format}-${stamp}.png`;
+    a.download = filename;
     a.href = URL.createObjectURL(blob);
     a.click();
     setTimeout(() => URL.revokeObjectURL(a.href), 4000);
