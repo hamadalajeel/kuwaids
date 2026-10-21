@@ -10,45 +10,47 @@
 <div class="app">
 <header class="top">
   <div class="brandline">
-    <h1>استوديو البوستات</h1>
-    <p>اكتب النص، اختر الشكل، ونزّل البوست جاهز بهوية بيت التمويل.</p>
+    <svg class="mark" viewBox="0 0 1068.3 1068.3" aria-hidden="true"><path style="--i:0" d="M23.9,488.1l116-116h232.1L93.6,650.7l-69.7-69.7c-25.6-25.6-25.6-67.3,0-92.9h0Z"/><path style="--i:1" d="M206.2,140.7h164.1l164.1,164.1H140.4v-98.3c0-37,28.8-65.8,65.8-65.8h0Z"/><path style="--i:2" d="M140.7,862.3v-164.1l164.1-164.1v394h-98.3c-37,0-65.8-28.8-65.8-65.8h0Z"/><path style="--i:3" d="M372,928.4v-231.8l278.6,278.1-69.7,69.7c-25.6,25.6-67.3,25.6-92.9,0l-116-116h0Z"/><path style="--i:4" d="M418.1,93.6l69.5-69.7c25.6-25.6,67.3-25.6,92.9,0l116,116v232.1L418.1,93.6Z"/><path style="--i:5" d="M534.4,763.5h393.7v98.3c0,37-28.8,65.8-65.5,65.8h-164.1l-164.1-164.1h0Z"/><path style="--i:6" d="M974.9,417.9l69.5,69.7c25.6,25.6,25.6,67.3,0,92.9l-116,116h-231.8l278.4-278.6h0Z"/><path style="--i:7" d="M763.5,140.5h98.3c37,0,65.8,28.8,65.8,65.8v164.1l-164.1,163.9V140.5h0Z"/></svg>
+    <div class="titles">
+      <h1>استوديو البوستات</h1>
+      <p>اكتب النص، اختر الشكل، ونزّل البوست جاهز بهوية بيت التمويل.</p>
+    </div>
   </div>
 </header>
 
 <main class="layout">
   <section class="preview" aria-label="المعاينة">
-    <div class="stage"><canvas id="canvas"></canvas></div>
-    <div class="under">
-      <p class="hint">اسحب النص أو الشعار أو الصورة لتحريكها، وتلزق على خطوط القريد.</p>
-      <span class="under-actions">
-        <button type="button" class="link" id="gridToggle" aria-pressed="false">إظهار القريد</button>
-        <button type="button" class="link" id="resetPos">رجّع المواضع</button>
-      </span>
+    <div class="desk">
+      <div class="toolbar">
+        <div class="pills" id="formatStep" data-field="format" role="group" aria-label="المقاس">
+          <button type="button" data-value="post">منشور <span class="dim">4:5</span></button>
+          <button type="button" data-value="story">ستوري <span class="dim">9:16</span></button>
+          <button type="button" data-value="square">مربع <span class="dim">1:1</span></button>
+        </div>
+        <div class="tools">
+          <button type="button" class="tool" id="gridToggle" aria-pressed="false">القريد</button>
+          <button type="button" class="tool" id="resetPos">رجّع المواضع</button>
+        </div>
+      </div>
+      <div class="stage"><canvas id="canvas" aria-label="معاينة البوست"></canvas></div>
+      <button type="button" class="twin" id="twin">
+        <canvas id="twinCanvas"></canvas>
+        <span><strong id="twinTitle">الستوري</strong><small id="twinNote">يتجهز تلقائياً من نفس البوست. اضغط لتعديله.</small></span>
+      </button>
+      <p class="hint desk-hint">اسحب النص أو الشعار أو الصورة لتحريكها، وتلزق على خطوط القريد.</p>
     </div>
     <p id="warn" class="warn" hidden>النص طويل على هالمساحة، صغّرناه تلقائياً. الأفضل تختصره.</p>
-    <button type="button" class="twin" id="twin">
-      <canvas id="twinCanvas"></canvas>
-      <span><strong id="twinTitle">الستوري</strong><small id="twinNote">يتجهز تلقائياً من نفس البوست. اضغط لتعديله.</small></span>
-    </button>
     <div class="actions">
       <button id="download" class="download" type="button">تحميل</button>
       <button id="downloadBoth" class="download alt" type="button">البوست + الستوري</button>
     </div>
+    <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
   </section>
 
   <section class="controls">
     <div class="step">
       <h2>الشكل</h2>
       <div id="templates" class="templates"></div>
-    </div>
-
-    <div class="step" id="formatStep">
-      <h2>المقاس</h2>
-      <div class="seg" data-field="format">
-        <button type="button" data-value="post">منشور</button>
-        <button type="button" data-value="story">ستوري</button>
-        <button type="button" data-value="square">مربع</button>
-      </div>
     </div>
 
     <div class="step" data-show="quiz">

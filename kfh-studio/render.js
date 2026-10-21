@@ -19,8 +19,20 @@ const FORMATS = {
 const M = 100;
 // Brand pattern backgrounds for the Friday quiz, loaded by the page: { arch, stars, sun, leaves }.
 const QUIZ_BG = {};
-// «لنكن على دراية» campaign artwork, loaded by the page: { logo, shapes }.
+// «لنكن على دراية» campaign logo, loaded by the page: { logo }.
 const DARAYA = {};
+
+// The official KFH mark (brand/KFH.svg, 1068.3 units square): eight blades.
+const KFH_MARK = [
+  'M23.9,488.1l116-116h232.1L93.6,650.7l-69.7-69.7c-25.6-25.6-25.6-67.3,0-92.9h0Z',
+  'M206.2,140.7h164.1l164.1,164.1H140.4v-98.3c0-37,28.8-65.8,65.8-65.8h0Z',
+  'M140.7,862.3v-164.1l164.1-164.1v394h-98.3c-37,0-65.8-28.8-65.8-65.8h0Z',
+  'M372,928.4v-231.8l278.6,278.1-69.7,69.7c-25.6,25.6-67.3,25.6-92.9,0l-116-116h0Z',
+  'M418.1,93.6l69.5-69.7c25.6-25.6,67.3-25.6,92.9,0l116,116v232.1L418.1,93.6Z',
+  'M534.4,763.5h393.7v98.3c0,37-28.8,65.8-65.5,65.8h-164.1l-164.1-164.1h0Z',
+  'M974.9,417.9l69.5,69.7c25.6,25.6,25.6,67.3,0,92.9l-116,116h-231.8l278.4-278.6h0Z',
+  'M763.5,140.5h98.3c37,0,65.8,28.8,65.8,65.8v164.1l-164.1,163.9V140.5h0Z'
+].map((d) => new Path2D(d));
 const ROW = 143.75;
 function grid(W, H) {
   const rows = Math.round((H - 2 * M) / ROW);
@@ -621,10 +633,13 @@ const TEMPLATES = {
   daraya(ctx, s, W, H) {
     const G = grid(W, H), shift = G.top - M;
     ctx.fillStyle = KFH.green; ctx.fillRect(0, 0, W, H);
-    if (DARAYA.shapes) {
-      const k = 0.675, w = DARAYA.shapes.width * k, h = DARAYA.shapes.height * k;
-      ctx.drawImage(DARAYA.shapes, W - w, H - h, w, h);
-    }
+    // The KFH mark in white outline, enlarged and cropped by the bottom-right corner (as on the campaign posts).
+    ctx.save();
+    ctx.translate(W - 535, H - 502);
+    ctx.scale(0.783, 0.783);
+    ctx.strokeStyle = KFH.white; ctx.lineWidth = 3.2; ctx.lineJoin = 'round';
+    for (const p of KFH_MARK) ctx.stroke(p);
+    ctx.restore();
     if (DARAYA.logo) {
       const lw = 130, lh = lw * DARAYA.logo.height / DARAYA.logo.width, r = { x: M, y: G.bottom - lh, w: lw, h: lh };
       moved(ctx, s, 'logo', r, () => ctx.drawImage(DARAYA.logo, r.x, r.y, r.w, r.h));

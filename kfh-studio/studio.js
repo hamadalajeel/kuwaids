@@ -4,7 +4,7 @@ const TEMPLATE_LIST = [
   { id: 'panel', name: 'صورة ولوحة' },
   { id: 'cutout', name: 'شخص أو مبنى' },
   { id: 'offer', name: 'عرض منتج' },
-  { id: 'blade', name: 'صورة وقطعة خضراء' },
+  { id: 'blade', name: 'قطعة خضراء' },
   { id: 'quiz', name: 'سؤال الجمعة' },
   { id: 'daraya', name: 'لنكن على دراية' },
 ];
@@ -153,7 +153,7 @@ function syncUI() {
   document.querySelectorAll('[data-show]').forEach((el) => {
     el.hidden = !el.dataset.show.split(' ').includes(state.template);
   });
-  document.querySelectorAll('.seg[data-field], .swatches[data-field], .positions[data-field]').forEach((g) => {
+  document.querySelectorAll('.seg[data-field], .swatches[data-field], .positions[data-field], .pills[data-field]').forEach((g) => {
     g.querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', String(String(state[g.dataset.field]) === b.dataset.value)));
   });
   document.querySelectorAll('#templates .tpl').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.id === state.template)));
@@ -213,7 +213,6 @@ function loadImage(src) {
 
 async function loadDaraya() {
   DARAYA.logo = await loadImage('backgrounds/daraya-logo.png');
-  DARAYA.shapes = await loadImage('backgrounds/daraya-shapes.png');
 }
 
 function loadQuizBackgrounds() {
@@ -261,7 +260,7 @@ function buildBladePositions() {
 }
 
 function bindInputs() {
-  document.querySelectorAll('.seg[data-field], .swatches[data-field], .positions[data-field]').forEach((g) => {
+  document.querySelectorAll('.seg[data-field], .swatches[data-field], .positions[data-field], .pills[data-field]').forEach((g) => {
     g.addEventListener('click', (e) => {
       const b = e.target.closest('button');
       if (!b) return;
@@ -394,7 +393,7 @@ async function save(formats) {
     const filename = `kfh-${f}-${stamp}.png`;
     const blob = await toBlob(f);
     if (downloads) {
-      try { await downloads.save({ filename, data: blob }); } catch (e) { if (e?.code === 'declined') return; console.warn(e); }
+      try { await downloads.save({ filename, data: blob }); } catch (e) { if (e?.code === 'declined') return; console.warn(e); continue; }
     } else {
       const a = document.createElement('a');
       a.download = filename;
@@ -403,6 +402,17 @@ async function save(formats) {
       setTimeout(() => URL.revokeObjectURL(a.href), 4000);
     }
   }
+  toast(formats.length > 1 ? 'تم تحميل البوست والستوري' : `تم تحميل ${FORMAT_NAMES[formats[0]]}`);
+}
+
+function toast(text) {
+  const t = document.getElementById('toast');
+  t.hidden = true;
+  t.textContent = text;
+  void t.offsetWidth; // restart the animation
+  t.hidden = false;
+  clearTimeout(toast.timer);
+  toast.timer = setTimeout(() => { t.hidden = true; }, 2500);
 }
 
 async function loadFonts() {
