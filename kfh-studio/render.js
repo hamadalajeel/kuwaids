@@ -334,13 +334,15 @@ function drawStack(ctx, stack, x, y, align) {
 // Two short answers («صح / خطأ») sit side by side like buttons; longer ones stack, optionally numbered
 // in a small white disc.
 function chipGeometry(ctx, it) {
-  const s = it.size, h = Math.round(s * 1.62), pad = Math.round(s * 0.85), gap = Math.round(s * 0.32);
+  // Without an outline the answers line up with the question's edge and sit closer together.
+  const framed = it.stroke !== false;
+  const s = it.size, h = Math.round(s * (framed ? 1.62 : 1.45)), pad = framed ? Math.round(s * 0.85) : 0, gap = Math.round(s * (framed ? 0.32 : 0.15));
   const disc = it.style === 'numbered' ? Math.round(h * 0.68) : 0;
   ctx.font = TEXT_FONT(it.weight, s);
   const tw = it.lines.map((l) => ctx.measureText(l).width);
   const inner = Math.max(...tw) + (disc ? disc + s * 0.45 : 0);
   const row = it.lines.length <= 2 && !disc && Math.max(...tw) < 260;
-  const w = row ? Math.max(Math.max(...tw) + pad * 2, h * 2.4) : inner + pad * 2;
+  const w = row ? (framed ? Math.max(Math.max(...tw) + pad * 2, h * 2.4) : Math.max(...tw) + s * 1.2) : inner + pad * 2;
   return { h, pad, gap, disc, w, row, total: row ? h : it.lines.length * h + (it.lines.length - 1) * gap, width: row ? it.lines.length * w + (it.lines.length - 1) * gap : w };
 }
 
@@ -352,9 +354,13 @@ function drawBullets(ctx, it, right, y) {
     const x = g.row ? right - g.w - i * (g.w + g.gap) : right - g.w;
     const top = g.row ? y : y + i * (g.h + g.gap);
     ctx.beginPath(); ctx.roundRect(x, top, g.w, g.h, g.h / 2);
-    ctx.strokeStyle = it.color; ctx.stroke();
+    if (it.stroke !== false) { ctx.strokeStyle = it.color; ctx.stroke(); }
     ctx.font = TEXT_FONT(it.weight, s); ctx.fillStyle = it.color; ctx.textBaseline = 'middle';
-    if (g.row) { ctx.textAlign = 'center'; ctx.fillText(l, x + g.w / 2, top + g.h / 2 + s * 0.06); return; }
+    if (g.row) {
+      ctx.textAlign = it.stroke !== false ? 'center' : 'right';
+      ctx.fillText(l, it.stroke !== false ? x + g.w / 2 : x + g.w, top + g.h / 2 + s * 0.06);
+      return;
+    }
     let tx = x + g.w - g.pad;
     if (g.disc) {
       const cx = tx - g.disc / 2, cy = top + g.h / 2;
@@ -659,7 +665,7 @@ const TEMPLATES = {
     const y = Math.max(420 + shift, G.top + top.h + 44);
     const qa = layout(ctx, [
       { kind: 'text', text: s.question, weight: 500, size: 52, min: 34, maxLines: 4, lh: 1.3, color: KFH.white, gap: 36 },
-      { kind: 'bullets', lines: (s.options || '').split('\n').map((l) => l.trim()).filter(Boolean), style: numbered ? 'numbered' : 'plain', weight: 500, size: 52, lh: 1, discText: KFH.green, color: KFH.white, gap: 0 },
+      { kind: 'bullets', lines: (s.options || '').split('\n').map((l) => l.trim()).filter(Boolean), style: numbered ? 'numbered' : 'plain', weight: 500, size: 52, lh: 1, discText: KFH.green, stroke: s.chipStroke !== false, color: KFH.white, gap: 0 },
     ], W - 2 * M, H * 0.62 - y);
     placeStack(ctx, s, 'bottom', qa, W - M, y, 'right');
     return top.overflow || qa.overflow;
