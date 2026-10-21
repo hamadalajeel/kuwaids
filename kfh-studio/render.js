@@ -188,7 +188,7 @@ function stackWidth(ctx, st) {
     else if (it.kind === 'num') w = Math.max(w, numberWidth(ctx, it, it.size).total);
     else if (it.kind === 'cta') { ctx.font = TEXT_FONT(600, it.size); w = Math.max(w, ctx.measureText(it.text).width + it.size * 2.4); }
     else if (it.kind === 'bar') w = Math.max(w, 120);
-    else if (it.kind === 'bullets') { ctx.font = TEXT_FONT(it.weight, it.size); for (const l of bulletText(it)) w = Math.max(w, ctx.measureText(l).width + it.size * 1.45); }
+    else if (it.kind === 'bullets') { ctx.font = TEXT_FONT(it.weight, it.size); for (const l of bulletText(it)) w = Math.max(w, ctx.measureText(l).width); }
   }
   return w;
 }
@@ -330,38 +330,16 @@ function drawStack(ctx, stack, x, y, align) {
   ctx.restore();
 }
 
-// Answer list with campaign bullets: a filled triangle and «1-» numbering, or an outlined rounded triangle.
+// Answer list: plain lines, optionally numbered «1- 2- 3-».
 const bulletText = (it) => it.lines.map((l, i) => (it.style === 'numbered' ? `${i + 1}- ${l}` : l));
 
 function drawBullets(ctx, it, right, y) {
-  const s = it.size, outline = it.style !== 'numbered';
-  const tw = s * (outline ? 0.8 : 0.66), th = s * (outline ? 0.9 : 0.86);
   ctx.save();
-  ctx.font = TEXT_FONT(it.weight, s);
+  ctx.font = TEXT_FONT(it.weight, it.size);
   ctx.textAlign = 'right';
   ctx.textBaseline = 'middle';
   ctx.fillStyle = it.color;
-  ctx.strokeStyle = it.color;
-  ctx.lineWidth = Math.max(2.5, s * 0.06);
-  ctx.lineJoin = 'round';
-  bulletText(it).forEach((t, i) => {
-    const cy = y + (i + 0.5) * s * it.lh;
-    ctx.beginPath();
-    ctx.moveTo(right, cy - th / 2);
-    ctx.lineTo(right, cy + th / 2);
-    ctx.lineTo(right - tw, cy);
-    ctx.closePath();
-    if (outline) {
-      // rounded corners like the campaign's outlined pointer
-      ctx.beginPath();
-      const r = s * 0.14, pts = [[right, cy - th / 2], [right, cy + th / 2], [right - tw, cy]];
-      ctx.moveTo((pts[0][0] + pts[2][0]) / 2, (pts[0][1] + pts[2][1]) / 2);
-      for (let k = 0; k < 3; k++) ctx.arcTo(pts[k][0], pts[k][1], pts[(k + 1) % 3][0], pts[(k + 1) % 3][1], r);
-      ctx.closePath();
-      ctx.stroke();
-    } else ctx.fill();
-    ctx.fillText(t, right - s * 1.45, cy + s * 0.06);
-  });
+  bulletText(it).forEach((t, i) => ctx.fillText(t, right, y + (i + 0.5) * it.size * it.lh + it.size * 0.06));
   ctx.restore();
 }
 
@@ -629,7 +607,7 @@ const TEMPLATES = {
   },
 
   // 8. «لنكن على دراية» awareness campaign: bright green, white text, a title or a prize on top,
-  //    the question and pointer-bulleted answers, campaign logo bottom-left, outlined mark bottom-right.
+  //    the question and its answers, campaign logo bottom-left, outlined mark bottom-right.
   daraya(ctx, s, W, H) {
     const G = grid(W, H), shift = G.top - M;
     ctx.fillStyle = KFH.green; ctx.fillRect(0, 0, W, H);
@@ -656,7 +634,7 @@ const TEMPLATES = {
     const y = Math.max(430 + shift, G.top + top.h + 60);
     const qa = layout(ctx, [
       { kind: 'text', text: s.question, weight: 500, size: 52, min: 34, maxLines: 4, lh: 1.3, color: KFH.white, gap: numbered ? 44 : 48 },
-      { kind: 'bullets', lines: (s.options || '').split('\n').map((l) => l.trim()).filter(Boolean), style: numbered ? 'numbered' : 'outline', weight: 500, size: numbered ? 46 : 58, lh: numbered ? 1.12 : 1.42, color: KFH.white, gap: 0 },
+      { kind: 'bullets', lines: (s.options || '').split('\n').map((l) => l.trim()).filter(Boolean), style: numbered ? 'numbered' : 'plain', weight: 500, size: 52, lh: 1.4, color: KFH.white, gap: 0 },
     ], W - 2 * M, H * 0.62 - y);
     placeStack(ctx, s, 'bottom', qa, W - M, y, 'right');
     return top.overflow || qa.overflow;
