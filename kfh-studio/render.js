@@ -14,7 +14,19 @@ const FORMATS = {
   square: [1080, 1080],
 };
 
-const M = 90; // side margin
+// KFH layout grid (brand grid file): a 100px margin on every side, 8 columns, and rows of about
+// 144px (8 on a post, 12 on a story, 6 on a square). Text, logos and the curve line up on it.
+const M = 100;
+const ROW = 143.75;
+function grid(W, H) {
+  const rows = Math.round((H - 2 * M) / ROW);
+  const colW = (W - 2 * M) / 8, rowH = (H - 2 * M) / rows;
+  const xs = Array.from({ length: 9 }, (_, i) => M + i * colW);
+  const ys = Array.from({ length: rows + 1 }, (_, i) => M + i * rowH);
+  // Instagram covers the top and bottom of a story, so story content starts and ends one row in.
+  const story = H > 1500;
+  return { xs, ys, colW, rowH, top: story ? ys[1] : M, bottom: story ? ys[rows - 1] : H - M };
+}
 
 const TEXT_FONT = (w, s) => `${w} ${s}px "KFH Figtree", "KFH Kufi"`;
 const NUM_FONT = (s, w = 800) => `${w} ${s}px "KFH Figtree", "KFH Kufi"`;
@@ -336,7 +348,7 @@ const TEMPLATES = {
   // 1. Text only — solid institutional background; the curve sweeps just under the text.
   text(ctx, s, W, H) {
     const c = COMBOS[s.combo];
-    const story = H > 1500, top = story ? 300 : H < 1200 ? 120 : 170;
+    const story = H > 1500, G = grid(W, H), top = G.top;
     ctx.fillStyle = c.bg; ctx.fillRect(0, 0, W, H);
     if (s.wedge) { ctx.fillStyle = c.wedge; ctx.fill(cornerBottom(story ? H - 240 : H)); }
 
@@ -344,8 +356,8 @@ const TEMPLATES = {
     if (s.logo) y += placeLogo(ctx, s, s.align === 'center' ? W / 2 : M, y, 72, s.align === 'center' ? 'center' : 'left') + 68;
 
     const hasCta = s.cta && s.cta.trim();
-    const ctaY = H - (story ? 300 : 130) - 72;
-    const floor = hasCta ? ctaY - 40 : H - (story ? 300 : 90);
+    const ctaY = G.bottom - 72;
+    const floor = hasCta ? ctaY - 40 : G.bottom;
     const maxIntercept = floor - 200 - 141; // keeps the bowl above the floor
     const st = layout(ctx, [...topItems(s, c), ...numItems(s, c, 200)], W - 2 * M, (s.curve ? maxIntercept - 30 : floor - 40) - y);
     if (s.curve) {
@@ -362,7 +374,7 @@ const TEMPLATES = {
 
   // 2. Full-bleed photo: headline (and number) on top, info block and button at the bottom.
   photo(ctx, s, W, H) {
-    const story = H > 1500, top = story ? 290 : 110, bottomPad = story ? 290 : 100;
+    const G = grid(W, H), top = G.top, bottomPad = H - G.bottom;
     if (s.photo) drawCover(ctx, s.photo, 0, 0, W, H, s.fx, s.fy, s.zoom);
     else { ctx.fillStyle = '#C9D8D2'; ctx.fillRect(0, 0, W, H); placeholder(ctx, 0, 0, W, H, 'ارفع صورة', false); }
 
@@ -421,11 +433,11 @@ const TEMPLATES = {
     let textTop;
     if (corner) {
       ctx.fillStyle = c.wedge; ctx.fill(userCurve(s, W, { cx: 200, bottom: 341 }).inside);
-      placeLogo(ctx, s, M, 95, 80, 'left');
+      placeLogo(ctx, s, M, M, 80, 'left');
       textTop = story ? 470 : H < 1200 ? 320 : 380;
     } else {
-      textTop = story ? 300 : H < 1200 ? 100 : 150;
-      if (s.logo) textTop += placeLogo(ctx, s, M, textTop - (story ? 0 : 40), 64, 'left') + 6;
+      textTop = grid(W, H).top;
+      if (s.logo) textTop += placeLogo(ctx, s, M, textTop, 64, 'left') + 30;
     }
 
     const sub = corner ? { ...c, sub: s.combo === 'dark' ? KFH.green : c.sub } : c;
@@ -456,7 +468,7 @@ const TEMPLATES = {
 
     const c = COMBOS.green, nc = { ...c, label: KFH.white };
     const right = s.align === 'center' ? null : W - M;
-    const pad = story ? 300 : 100;
+    const G = grid(W, H), pad = H - G.bottom;
     const textOnPhoto = v === 'left' || v === 'corner';
     if (textOnPhoto) {
       const shade = s.shade ?? 0.6;
@@ -472,7 +484,7 @@ const TEMPLATES = {
       .map((it) => (big > 1.2 && it.text === s.headline && it.kind === 'text' ? { ...it, lh: 1.28 } : it));
     if (v === 'tr') {
       ctx.fill(userCurve(s, W, { cx: 259, bottom: 270 * k, rot: 90 }).inside);
-      const y = story ? 320 : 160;
+      const y = G.top + (story ? 0 : 50);
       st = layout(ctx, items(1.3), W - M - 300, 0.36 * H);
       box = { y };
       placeLogo(ctx, s, M, H - pad - 90, 90, 'left');
@@ -482,7 +494,7 @@ const TEMPLATES = {
       const y = apex + 140;
       st = layout(ctx, items(1.55), 600, H - (story ? pad : 60) - y);
       box = { y };
-      placeLogo(ctx, s, M, story ? 300 : 90, 90, 'left');
+      placeLogo(ctx, s, M, G.top, 90, 'left');
     } else if (v === 'photoTop') {
       const bottom = 850 * k;
       ctx.fill(userCurve(s, W, { cx: 820, bottom: bottom - 14 }).outside);
@@ -496,7 +508,7 @@ const TEMPLATES = {
           : userCurve(s, W, { cx: 229, bottom: 1200 * k, rot: -90 }).inside);
       const lh = big ? 170 : 140, cy = (big ? 1140 : 1185) * k;
       placeLogo(ctx, s, big ? 185 : 170, cy - lh / 2, lh, 'center');
-      const y = story ? 300 : 140;
+      const y = G.top;
       st = layout(ctx, items(0.82), big ? W - M - 300 : W - 2 * M, 0.42 * H);
       box = { y };
     }
@@ -508,7 +520,7 @@ const TEMPLATES = {
   // 5. Offer — product cut-out with a big number, centred.
   offer(ctx, s, W, H) {
     const c = COMBOS[s.combo];
-    const story = H > 1500, top = story ? 280 : 90, bottomPad = story ? 300 : 100;
+    const G = grid(W, H), top = G.top, bottomPad = H - G.bottom;
     ctx.fillStyle = c.bg; ctx.fillRect(0, 0, W, H);
     placeLogo(ctx, s, W / 2, top, 96, 'center');
 

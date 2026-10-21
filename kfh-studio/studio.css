@@ -143,3 +143,5 @@ small { color: var(--muted); font-weight: 400; font-size: 13px; }
 .chip:focus-visible, .link:focus-visible, .tpl:focus-visible, .seg button:focus-visible { outline: 3px solid var(--green); outline-offset: 2px; }
 .dirs button { display: grid; place-items: center; min-height: 52px; }
 .dirs svg { width: 26px; height: 32px; fill: none; stroke: var(--green); stroke-width: 4; stroke-linecap: round; }
+.under-actions { display: flex; gap: 14px; }
+#gridToggle[aria-pressed="true"] { color: #C62828; font-weight: 700; }

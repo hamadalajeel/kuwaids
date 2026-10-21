@@ -46,6 +46,7 @@ const twinCanvas = document.getElementById('twinCanvas');
 const warn = document.getElementById('warn');
 let boxes = [];
 let hover = null;
+let showGrid = false;
 
 // The size shown next to the main preview: the story for a post, the post for a story.
 const twinFormat = () => (state.format === 'story' ? 'post' : 'story');
@@ -54,8 +55,47 @@ function render() {
   const r = renderPost(canvas, state, 1);
   boxes = r.boxes;
   warn.hidden = !r.overflow;
+  if (showGrid) drawGrid();
   if (hover) outline(hover);
   renderPost(twinCanvas, state, 0.2, twinFormat());
+}
+
+const currentGrid = () => grid(...FORMATS[state.format]);
+
+// Brand grid drawn over the preview only; downloads never include it.
+function drawGrid() {
+  const g = currentGrid(), [W, H] = FORMATS[state.format];
+  const ctx = canvas.getContext('2d');
+  ctx.save();
+  ctx.strokeStyle = 'rgba(229,57,53,.75)';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  for (const x of g.xs) { ctx.moveTo(x, g.ys[0]); ctx.lineTo(x, g.ys[g.ys.length - 1]); }
+  for (const y of g.ys) { ctx.moveTo(g.xs[0], y); ctx.lineTo(g.xs[8], y); }
+  ctx.stroke();
+  ctx.restore();
+}
+
+// Pulls a dragged box onto the nearest grid line when it comes within reach.
+// Text and images snap by their edges; the curve snaps its bowl to a grid crossing.
+const SNAP = 18;
+function snapAxis(edges, lines) {
+  let best = null;
+  for (const e of edges) for (const l of lines) {
+    const d = l - e;
+    if (Math.abs(d) <= SNAP && (best === null || Math.abs(d) < Math.abs(best))) best = d;
+  }
+  return best ?? 0;
+}
+
+function snapped(id, base, dx, dy) {
+  const g = currentGrid(), x = base.x + dx, y = base.y + dy;
+  // Text snaps by the edge it is aligned on: right for Arabic, the middle when centred.
+  const centred = state.template === 'offer' || (state.align === 'center' && state.template !== 'cutout');
+  const isText = id === 'top' || id === 'bottom';
+  const xEdges = id === 'curve' || (isText && centred) ? [x + base.w / 2] : isText ? [x + base.w] : [x, x + base.w];
+  const yEdges = id === 'curve' ? [y + base.h / 2] : [y, y + base.h];
+  return { dx: Math.round(dx + snapAxis(xEdges, g.xs)), dy: Math.round(dy + snapAxis(yEdges, g.ys)) };
 }
 
 function outline(id) {
@@ -171,6 +211,12 @@ function bindInputs() {
     update();
   });
   document.getElementById('resetPos').addEventListener('click', () => { state.offsets[state.format] = {}; render(); });
+  const gridBtn = document.getElementById('gridToggle');
+  gridBtn.addEventListener('click', () => {
+    showGrid = !showGrid;
+    gridBtn.setAttribute('aria-pressed', String(showGrid));
+    render();
+  });
   document.getElementById('curveReset').addEventListener('click', () => {
     state.curveDir = '';
     for (const f in state.offsets) delete state.offsets[f].curve;
@@ -203,7 +249,7 @@ function bindDrag() {
     const p = toCanvas(e), b = hit(p);
     if (!b) return;
     const o = state.offsets[state.format][b.id] || { dx: 0, dy: 0 };
-    drag = { id: b.id, start: p, o: { ...o } };
+    drag = { id: b.id, start: p, o: { ...o }, base: { x: b.x - o.dx, y: b.y - o.dy, w: b.w, h: b.h } };
     hover = b.id;
     canvas.setPointerCapture(e.pointerId);
     canvas.classList.add('dragging');
@@ -217,10 +263,7 @@ function bindDrag() {
       if (id !== hover) { hover = id; render(); }
       return;
     }
-    state.offsets[state.format][drag.id] = {
-      dx: Math.round(drag.o.dx + p.x - drag.start.x),
-      dy: Math.round(drag.o.dy + p.y - drag.start.y),
-    };
+    state.offsets[state.format][drag.id] = snapped(drag.id, drag.base, drag.o.dx + p.x - drag.start.x, drag.o.dy + p.y - drag.start.y);
     render();
   });
   const end = () => {

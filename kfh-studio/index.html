@@ -19,8 +19,11 @@
   <section class="preview" aria-label="المعاينة">
     <div class="stage"><canvas id="canvas"></canvas></div>
     <div class="under">
-      <p class="hint">اسحب النص أو الشعار أو الصورة بإصبعك أو بالماوس لتحريكها.</p>
-      <button type="button" class="link" id="resetPos">رجّع المواضع</button>
+      <p class="hint">اسحب النص أو الشعار أو الصورة لتحريكها، وتلزق على خطوط القريد.</p>
+      <span class="under-actions">
+        <button type="button" class="link" id="gridToggle" aria-pressed="false">إظهار القريد</button>
+        <button type="button" class="link" id="resetPos">رجّع المواضع</button>
+      </span>
     </div>
     <p id="warn" class="warn" hidden>النص طويل على هالمساحة، صغّرناه تلقائياً. الأفضل تختصره.</p>
     <button type="button" class="twin" id="twin">
