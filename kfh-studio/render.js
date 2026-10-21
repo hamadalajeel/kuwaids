@@ -17,6 +17,8 @@ const FORMATS = {
 // KFH layout grid (brand grid file): a 100px margin on every side, 8 columns, and rows of about
 // 144px (8 on a post, 12 on a story, 6 on a square). Text, logos and the curve line up on it.
 const M = 100;
+// Brand pattern backgrounds for the Friday quiz, loaded by the page: { arch, stars, sun, leaves }.
+const QUIZ_BG = {};
 const ROW = 143.75;
 function grid(W, H) {
   const rows = Math.round((H - 2 * M) / ROW);
@@ -203,7 +205,7 @@ function numberWidth(ctx, it, size) {
   const gap = size * 0.08;
   ctx.font = NUM_FONT(size, it.weight);
   const nw = ctx.measureText(it.number).width;
-  ctx.font = TEXT_FONT(600, Math.round(size * 0.36));
+  ctx.font = TEXT_FONT(600, Math.round(size * (it.unitRatio || 0.36)));
   const pw = it.prefix ? ctx.measureText(it.prefix).width + gap : 0;
   const uw = it.unit ? ctx.measureText(it.unit).width + gap : 0;
   return { nw, pw, uw, gap, total: pw + nw + uw };
@@ -258,7 +260,7 @@ function drawStack(ctx, stack, x, y, align) {
       const { nw, pw, gap, total } = numberWidth(ctx, it, it.size);
       const right = align === 'center' ? x + total / 2 : x;
       const base = y + it.size * 0.74;
-      const small = TEXT_FONT(600, Math.round(it.size * 0.36));
+      const small = TEXT_FONT(600, Math.round(it.size * (it.unitRatio || 0.36)));
       ctx.textBaseline = 'alphabetic';
       ctx.textAlign = 'right';
       ctx.fillStyle = it.color;
@@ -515,6 +517,35 @@ const TEMPLATES = {
     placeStack(ctx, s, 'top', st, right ?? W / 2, box.y, s.align);
     drawTerms(ctx, s.terms, W, H, KFH.white);
     return st.overflow;
+  },
+
+  // 7. Friday quiz («سؤال الجمعة»): prize on top inside the curve, question and numbered answers
+  //    below, green corner block, on one of the brand pattern backgrounds. Measured from the brand file.
+  quiz(ctx, s, W, H) {
+    const G = grid(W, H), shift = G.top - M;
+    const bg = s.quizBg === 'custom' ? s.photo : QUIZ_BG[s.quizBg];
+    ctx.fillStyle = KFH.white; ctx.fillRect(0, 0, W, H);
+    if (bg) drawCover(ctx, bg, 0, 0, W, H, s.fx, s.fy, s.zoom);
+
+    ctx.fillStyle = KFH.green;
+    ctx.fill(brandCurve({ cx: 39, bottom: H - 245, w: CURVE_W, rot: 180 }).inside);
+    ctx.strokeStyle = KFH.green; ctx.lineWidth = 15;
+    ctx.stroke(userCurve(s, W, { cx: 709, bottom: 523 + shift }).line);
+
+    const prize = layout(ctx, [
+      { kind: 'text', text: s.kicker, weight: 600, size: 40, min: 28, maxLines: 1, lh: 1.5, color: KFH.green, gap: 18 },
+      { kind: 'num', weight: 800, number: (s.number || '').trim(), unit: (s.unit || '').trim(), unitRatio: 0.16, size: 265 * (s.numScale || 1), color: KFH.green, gap: 0 },
+    ], W - 2 * M - 300, 330);
+    placeStack(ctx, s, 'top', prize, W - M, G.top + 10, 'right');
+
+    const answers = (s.options || '').split('\n').map((l) => l.trim()).filter(Boolean).map((l, i) => `${i + 1}.  ${l}`).join('\n');
+    const y = G.ys[Math.round((G.ys.length - 1) / 2)];
+    const qa = layout(ctx, [
+      { kind: 'text', text: s.headline, weight: Number(s.headWeight) || 600, size: 54 * (s.headScale || 1), min: 34, maxLines: 3, lh: 1.4, color: KFH.dark, gap: 40 },
+      { kind: 'text', text: answers, weight: 500, size: 50, min: 32, maxLines: 6, lh: 1.32, color: KFH.dark, gap: 0 },
+    ], W - 2 * M, H - 260 - y);
+    placeStack(ctx, s, 'bottom', qa, W - M, y, 'right');
+    return prize.overflow || qa.overflow;
   },
 
   // 5. Offer — product cut-out with a big number, centred.

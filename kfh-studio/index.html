@@ -51,12 +51,18 @@
       </div>
     </div>
 
+    <div class="step" data-show="quiz">
+      <h2>الخلفية</h2>
+      <div id="quizBg" class="templates positions" data-field="quizBg"></div>
+      <p class="hint">أو ارفع خلفية من عندك من قسم «الصورة».</p>
+    </div>
+
     <div class="step" data-show="blade">
       <h2>مكان القطعة الخضراء</h2>
       <div id="bladePos" class="templates positions seg-like" data-field="bladePos"></div>
     </div>
 
-    <div class="step" data-show="text photo panel cutout blade">
+    <div class="step" data-show="text photo panel cutout blade quiz">
       <h2>الكيرف</h2>
       <p class="hint">اسحب الكيرف من وسط انحناءته في المعاينة لتحريكه.</p>
       <div class="dirs seg" data-field="curveDir" aria-label="اتجاه الانحناءة">
@@ -78,7 +84,7 @@
       </div>
     </div>
 
-    <div class="step" data-show="photo panel cutout offer blade">
+    <div class="step" data-show="photo panel cutout offer blade quiz">
       <h2>الصورة</h2>
       <label class="upload">
         <input type="file" accept="image/*" id="photo">
@@ -87,7 +93,7 @@
       <p class="hint" data-show="cutout offer">استخدم صورة
         <bdi>PNG</bdi>
         بدون خلفية عشان تطلع مفرّغة.</p>
-      <div data-show="photo panel blade">
+      <div data-show="photo panel blade quiz">
         <label class="range">تحريك أفقي <input type="range" min="0" max="1" step="0.01" data-crop="fx" id="fx"></label>
         <label class="range">تحريك عمودي <input type="range" min="0" max="1" step="0.01" data-crop="fy" id="fy"></label>
         <label class="range">تكبير <input type="range" min="1" max="2.5" step="0.01" data-crop="zoom" id="zoom"></label>
@@ -101,13 +107,16 @@
 
     <div class="step">
       <h2>النصوص</h2>
-      <label class="field" data-show="text photo panel cutout">سطر تمهيدي <small>اختياري</small>
+      <label class="field" data-show="text photo panel cutout quiz">سطر تمهيدي <small>اختياري</small>
         <input type="text" data-field="kicker" placeholder="تقديراً لـ ...">
       </label>
       <label class="field">العنوان
         <textarea rows="3" data-field="headline" placeholder="اكتب العنوان. كل سطر جديد = سطر في التصميم"></textarea>
       </label>
-      <label class="field">سطر توضيحي <small>اختياري</small>
+      <label class="field" data-show="quiz">الخيارات <small>كل خيار في سطر، والترقيم تلقائي</small>
+        <textarea rows="4" data-field="options" id="options"></textarea>
+      </label>
+      <label class="field" data-show="text photo panel cutout offer blade">سطر توضيحي <small>اختياري</small>
         <input type="text" data-field="sub">
       </label>
       <label class="range">حجم العنوان <input type="range" min="0.7" max="1.4" step="0.01" data-field="headScale" id="headScale"></label>
@@ -122,7 +131,7 @@
       </div>
     </div>
 
-    <div class="step" data-show="text photo panel offer blade">
+    <div class="step" data-show="text photo panel offer blade quiz">
       <h2>رقم بارز <small>اختياري</small></h2>
       <div class="row three">
         <label class="field">قبله <input type="text" data-field="numPrefix" id="numPrefix" placeholder="بـ"></label>

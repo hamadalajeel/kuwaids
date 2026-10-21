@@ -5,7 +5,22 @@ const TEMPLATE_LIST = [
   { id: 'cutout', name: 'شخص أو مبنى' },
   { id: 'offer', name: 'عرض منتج' },
   { id: 'blade', name: 'صورة وقطعة خضراء' },
+  { id: 'quiz', name: 'سؤال الجمعة' },
 ];
+
+const QUIZ_BG_LIST = [
+  { id: 'arch', name: 'قوس' },
+  { id: 'stars', name: 'نجوم' },
+  { id: 'sun', name: 'شمسة' },
+  { id: 'leaves', name: 'ظلال' },
+  { id: 'plain', name: 'أبيض' },
+];
+
+// A first quiz opens filled with last week's example so the layout is visible straight away.
+const QUIZ_SAMPLE = {
+  kicker: 'جاوب واربح جائزة بقيمة', number: '50', unit: 'د.ك',
+  headline: 'قال النبي ﷺ: "إنما الأعمال..."', options: 'بالاجتهاد\nبالنيات\nبالنتائج',
+};
 
 const BLADE_LIST = [
   { id: 'tr', name: 'فوق يمين' },
@@ -24,6 +39,7 @@ const state = {
   numPrefix: '', numLabel: '', number: '', unit: '', numScale: 1, numPos: 'top',
   infoTitle: '', infoText: '',
   cta: '', ctaColor: 'green', ctaStyle: 'fill', terms: '', bladePos: 'tr',
+  options: '', quizBg: 'arch',
   curve: true, wedge: false, deco: 'curve', shade: 0.6,
   curveDir: '', // '' = the layout's own orientation, else 0 / 90 / 180 / -90
   photo: null, fx: 0.5, fy: 0.5, zoom: 1, cutScale: 1, logo: null, logoScale: 1,
@@ -39,6 +55,7 @@ const DEFAULTS = {
   cutout: { combo: 'dark' },
   offer: { combo: 'white' },
   blade: {},
+  quiz: { headWeight: '600' },
 };
 
 const canvas = document.getElementById('canvas');
@@ -152,15 +169,45 @@ function buildTemplates() {
       kicker: t.id === 'panel' || t.id === 'cutout' ? 'تقديراً لإنجاز جديد' : '',
       headline: t.id === 'offer' ? 'على جميع المنتجات' : 'بيت التمويل الكويتي\nيحصد جائزة جديدة',
       number: t.id === 'offer' ? '15%' : '', numLabel: t.id === 'offer' ? 'خصم' : '',
+      ...(t.id === 'quiz' ? QUIZ_SAMPLE : {}),
     }, 0.2);
     const label = document.createElement('span');
     label.textContent = t.name;
     b.append(c, label);
     b.addEventListener('click', () => {
       Object.assign(state, DEFAULTS[t.id], { template: t.id, offsets: { post: {}, story: {}, square: {} } });
+      if (t.id === 'quiz' && !state.options.trim()) Object.assign(state, QUIZ_SAMPLE);
       update();
     });
     wrap.append(b);
+  }
+}
+
+function loadQuizBackgrounds() {
+  return Promise.all(QUIZ_BG_LIST.filter((b) => b.id !== 'plain').map((b) => new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => { QUIZ_BG[b.id] = img; resolve(); };
+    img.onerror = resolve;
+    img.src = `backgrounds/${b.id}.webp`;
+  })));
+}
+
+function buildQuizBackgrounds() {
+  const wrap = document.getElementById('quizBg');
+  for (const b of QUIZ_BG_LIST) {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'tpl';
+    btn.dataset.value = b.id;
+    const c = document.createElement('canvas');
+    c.width = 108; c.height = 135;
+    const ctx = c.getContext('2d');
+    ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, 108, 135);
+    if (QUIZ_BG[b.id]) ctx.drawImage(QUIZ_BG[b.id], 0, 0, 108, 135);
+    const label = document.createElement('span');
+    label.textContent = b.name;
+    btn.append(c, label);
+    wrap.append(btn);
   }
 }
 
@@ -202,7 +249,10 @@ function bindInputs() {
       render();
     });
   });
-  bindImage('photo', 'photoLabel', 'اختر صورة', (img) => { state.photo = img; state.crops = {}; state.cutScale = 1; });
+  bindImage('photo', 'photoLabel', 'اختر صورة', (img) => {
+    state.photo = img; state.crops = {}; state.cutScale = 1;
+    if (state.template === 'quiz') state.quizBg = 'custom';
+  });
   bindImage('logo', 'logoLabel', 'شعار جهة شريكة', (img) => { state.logo = img; });
   document.getElementById('clearLogo').addEventListener('click', () => {
     state.logo = null;
@@ -331,8 +381,9 @@ async function loadFonts() {
   await Promise.all(loads);
 }
 
-loadFonts().then(() => {
+Promise.all([loadFonts(), loadQuizBackgrounds()]).then(() => {
   buildTemplates();
+  buildQuizBackgrounds();
   buildBladePositions();
   bindInputs();
   bindDrag();
