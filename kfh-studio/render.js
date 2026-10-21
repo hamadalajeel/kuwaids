@@ -17,7 +17,7 @@ const FORMATS = {
 const M = 90; // side margin
 
 const TEXT_FONT = (w, s) => `${w} ${s}px "KFH Figtree", "KFH Kufi"`;
-const NUM_FONT = (s) => `800 ${s}px "KFH Figtree", "KFH Kufi"`;
+const NUM_FONT = (s, w = 800) => `${w} ${s}px "KFH Figtree", "KFH Kufi"`;
 
 const COMBOS = {
   dark:  { bg: KFH.dark,  line: KFH.green, kicker: KFH.white, head: KFH.white, sub: KFH.white, num: KFH.white, label: KFH.green, wedge: KFH.green, fine: KFH.white },
@@ -178,7 +178,7 @@ function fit(ctx, it, maxW, scale) {
 // Big number laid out right to left: [prefix] [number] [unit], e.g. «بـ 0% أرباح».
 function numberWidth(ctx, it, size) {
   const gap = size * 0.08;
-  ctx.font = NUM_FONT(size);
+  ctx.font = NUM_FONT(size, it.weight);
   const nw = ctx.measureText(it.number).width;
   ctx.font = TEXT_FONT(600, Math.round(size * 0.36));
   const pw = it.prefix ? ctx.measureText(it.prefix).width + gap : 0;
@@ -240,7 +240,7 @@ function drawStack(ctx, stack, x, y, align) {
       ctx.textAlign = 'right';
       ctx.fillStyle = it.color;
       if (it.prefix) { ctx.font = small; ctx.fillText(it.prefix, right, base); }
-      ctx.font = NUM_FONT(it.size);
+      ctx.font = NUM_FONT(it.size, it.weight);
       ctx.save(); ctx.direction = 'ltr'; ctx.textAlign = 'right'; ctx.fillText(it.number, right - pw, base); ctx.restore();
       if (it.unit) {
         ctx.font = small;
@@ -291,7 +291,7 @@ function topItems(s, c, big = 1, between = []) {
     { kind: 'text', text: s.kicker, weight: 400, size: 38 * Math.min(big, 1), min: 26, maxLines: 2, lh: 1.5, color: c.kicker, gap: 14 },
     { kind: 'text', text: s.headline, weight: Number(s.headWeight) || 600, size: 80 * big * hs, min: 44 * Math.min(1, hs), maxLines: 4, lh: 1.42, color: c.head, gap: 22 },
     ...between,
-    { kind: 'text', text: s.sub, weight: 400, size: 40 * Math.min(big, 1), min: 28, maxLines: 3, lh: 1.55, color: c.sub, gap: 30 },
+    { kind: 'text', text: s.sub, weight: 400, size: 37 * Math.min(big, 1), min: 28, maxLines: 3, lh: 1.55, color: c.sub, gap: 30 },
   ];
 }
 
@@ -299,7 +299,8 @@ function numItems(s, c, size = 220) {
   size *= s.numScale || 1;
   return [
     { kind: 'text', text: s.numLabel, weight: 700, size: 56, min: 36, maxLines: 1, lh: 1.3, color: c.label, gap: 4 },
-    { kind: 'num', number: (s.number || '').trim(), prefix: (s.numPrefix || '').trim(), unit: (s.unit || '').trim(), size, color: c.num, unitColor: c.num, gap: 26 },
+    // The number follows the headline: a light headline gets a light number.
+    { kind: 'num', weight: Number(s.headWeight) <= 400 ? 500 : 800, number: (s.number || '').trim(), prefix: (s.numPrefix || '').trim(), unit: (s.unit || '').trim(), size, color: c.num, unitColor: c.num, gap: 26 },
   ];
 }
 
@@ -308,8 +309,8 @@ function infoItems(s, c) {
   if (!(s.infoTitle || '').trim() && !(s.infoText || '').trim()) return [];
   return [
     { kind: 'bar', color: KFH.green, gap: 26 },
-    { kind: 'text', text: s.infoTitle, weight: 600, size: 50, min: 34, maxLines: 2, lh: 1.4, color: c.head, gap: 8 },
-    { kind: 'text', text: s.infoText, weight: 400, size: 36, min: 26, maxLines: 2, lh: 1.5, color: c.sub, gap: 30 },
+    { kind: 'text', text: s.infoTitle, weight: 600, size: 44, min: 32, maxLines: 2, lh: 1.4, color: c.head, gap: 8 },
+    { kind: 'text', text: s.infoText, weight: 400, size: 33, min: 24, maxLines: 2, lh: 1.5, color: c.sub, gap: 30 },
   ];
 }
 
@@ -373,7 +374,7 @@ const TEMPLATES = {
 
     let y = top;
     if (s.logo) y += placeLogo(ctx, s, s.align === 'center' ? W / 2 : M, y, 110, s.align === 'center' ? 'center' : 'left') + 80;
-    const st = layout(ctx, topItems(s, c, 1, numTop ? numItems(s, nc, 230) : []), W - 2 * M, H * 0.52 - (y - top));
+    const st = layout(ctx, topItems(s, c, 1, numTop ? numItems(s, nc, 170) : []), W - 2 * M, H * 0.52 - (y - top));
     placeStack(ctx, s, 'top', st, x, y, s.align);
     placeStack(ctx, s, 'bottom', bs, x, H - bottomPad - bs.h, s.align);
     drawTerms(ctx, s.terms, W, H, KFH.white);
