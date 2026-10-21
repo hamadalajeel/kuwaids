@@ -47,6 +47,11 @@
       </div>
     </div>
 
+    <div class="step" data-show="blade">
+      <h2>مكان القطعة الخضراء</h2>
+      <div id="bladePos" class="templates positions seg-like" data-field="bladePos"></div>
+    </div>
+
     <div class="step" data-show="text cutout offer">
       <h2>الخلفية</h2>
       <div class="swatches" data-field="combo">
@@ -56,7 +61,7 @@
       </div>
     </div>
 
-    <div class="step" data-show="photo panel cutout offer">
+    <div class="step" data-show="photo panel cutout offer blade">
       <h2>الصورة</h2>
       <label class="upload">
         <input type="file" accept="image/*" id="photo">
@@ -65,13 +70,13 @@
       <p class="hint" data-show="cutout offer">استخدم صورة
         <bdi>PNG</bdi>
         بدون خلفية عشان تطلع مفرّغة.</p>
-      <div data-show="photo panel">
+      <div data-show="photo panel blade">
         <label class="range">تحريك أفقي <input type="range" min="0" max="1" step="0.01" data-crop="fx" id="fx"></label>
         <label class="range">تحريك عمودي <input type="range" min="0" max="1" step="0.01" data-crop="fy" id="fy"></label>
         <label class="range">تكبير <input type="range" min="1" max="2.5" step="0.01" data-crop="zoom" id="zoom"></label>
         <p class="hint">قص الصورة يُحفظ لكل مقاس بروحه.</p>
       </div>
-      <label class="range" data-show="photo">التظليل فوق الصورة <input type="range" min="0" max="0.9" step="0.01" data-field="shade" id="shade"></label>
+      <label class="range" data-show="photo blade">التظليل فوق الصورة <input type="range" min="0" max="0.9" step="0.01" data-field="shade" id="shade"></label>
       <div data-show="cutout offer">
         <label class="range">حجم الصورة <input type="range" min="0.5" max="1.3" step="0.01" data-field="cutScale"></label>
       </div>
@@ -94,13 +99,13 @@
         <button type="button" data-value="600">متوسط</button>
         <button type="button" data-value="800">عريض</button>
       </div>
-      <div class="seg" data-field="align" data-show="text photo panel">
+      <div class="seg" data-field="align" data-show="text photo panel blade">
         <button type="button" data-value="right">محاذاة يمين</button>
         <button type="button" data-value="center">في الوسط</button>
       </div>
     </div>
 
-    <div class="step" data-show="text photo panel offer">
+    <div class="step" data-show="text photo panel offer blade">
       <h2>رقم بارز <small>اختياري</small></h2>
       <div class="row three">
         <label class="field">قبله <input type="text" data-field="numPrefix" id="numPrefix" placeholder="بـ"></label>
@@ -123,11 +128,15 @@
 
     <div class="step">
       <h2>إضافات <small>اختياري</small></h2>
-      <div data-show="text photo panel offer">
+      <div data-show="text photo panel offer blade">
         <label class="field">زر <input type="text" data-field="cta" placeholder="افتح حسابك الآن"></label>
         <div class="seg" data-field="ctaColor">
           <button type="button" data-value="green">زر أخضر فاتح</button>
           <button type="button" data-value="dark">زر أخضر غامق</button>
+        </div>
+        <div class="seg" data-field="ctaStyle">
+          <button type="button" data-value="fill">معبّى</button>
+          <button type="button" data-value="outline">مفرّغ</button>
         </div>
       </div>
       <label class="upload small">

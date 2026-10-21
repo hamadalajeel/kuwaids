@@ -252,9 +252,9 @@ function drawStack(ctx, stack, x, y, align) {
       const tw = ctx.measureText(it.text).width;
       const h = it.size * 2.1, w = tw + it.size * 2.4;
       const bx = align === 'center' ? x - w / 2 : x - w;
-      ctx.fillStyle = it.fill;
-      ctx.beginPath(); ctx.roundRect(bx, y, w, h, h / 2); ctx.fill();
-      ctx.fillStyle = KFH.white;
+      ctx.beginPath(); ctx.roundRect(bx, y, w, h, h / 2);
+      if (it.outline) { ctx.strokeStyle = it.outline; ctx.lineWidth = 3; ctx.stroke(); ctx.fillStyle = it.outline; }
+      else { ctx.fillStyle = it.fill; ctx.fill(); ctx.fillStyle = KFH.white; }
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.fillText(it.text, bx + w / 2, y + h / 2 + it.size * 0.06);
@@ -288,10 +288,10 @@ function drawTerms(ctx, text, W, H, color) {
 function topItems(s, c, big = 1, between = []) {
   const hs = s.headScale || 1;
   return [
-    { kind: 'text', text: s.kicker, weight: 400, size: 38 * big, min: 26, maxLines: 2, lh: 1.5, color: c.kicker, gap: 14 },
+    { kind: 'text', text: s.kicker, weight: 400, size: 38 * Math.min(big, 1), min: 26, maxLines: 2, lh: 1.5, color: c.kicker, gap: 14 },
     { kind: 'text', text: s.headline, weight: Number(s.headWeight) || 600, size: 80 * big * hs, min: 44 * Math.min(1, hs), maxLines: 4, lh: 1.42, color: c.head, gap: 22 },
     ...between,
-    { kind: 'text', text: s.sub, weight: 400, size: 40 * big, min: 28, maxLines: 3, lh: 1.55, color: c.sub, gap: 30 },
+    { kind: 'text', text: s.sub, weight: 400, size: 40 * Math.min(big, 1), min: 28, maxLines: 3, lh: 1.55, color: c.sub, gap: 30 },
   ];
 }
 
@@ -313,8 +313,9 @@ function infoItems(s, c) {
   ];
 }
 
-function ctaItem(s) {
-  return { kind: 'cta', text: s.cta, fill: s.ctaColor === 'dark' ? KFH.dark : KFH.green, gap: 0 };
+// Filled pill, or an outlined one (drawn in `line`, white unless the background is white).
+function ctaItem(s, line = KFH.white) {
+  return { kind: 'cta', text: s.cta, fill: s.ctaColor === 'dark' ? KFH.dark : KFH.green, outline: s.ctaStyle === 'outline' ? line : null, gap: 0 };
 }
 
 /* ---------- templates ---------- */
@@ -342,7 +343,7 @@ const TEMPLATES = {
     }
     placeStack(ctx, s, 'top', st, s.align === 'center' ? W / 2 : W - M, y, s.align);
 
-    if (hasCta) placeStack(ctx, s, 'bottom', layout(ctx, [ctaItem(s)], W - 2 * M, 200), s.align === 'center' ? W / 2 : W - M, ctaY, s.align);
+    if (hasCta) placeStack(ctx, s, 'bottom', layout(ctx, [ctaItem(s, c.head)], W - 2 * M, 200), s.align === 'center' ? W / 2 : W - M, ctaY, s.align);
     drawTerms(ctx, s.terms, W, H, c.fine);
     return st.overflow;
   },
@@ -433,6 +434,65 @@ const TEMPLATES = {
     return st.overflow;
   },
 
+  // 6. Photo with a large bright-green block cut from the official curve. Placements measured from live posts:
+  //    tr — top right, text inside (national days) · bottom — text inside (occasions)
+  //    photoTop — photo above the curve, text in the green (products) · left / corner — partner logo inside.
+  blade(ctx, s, W, H) {
+    const v = s.bladePos || 'tr', k = H / 1350, story = H > 1500;
+    if (s.photo) drawCover(ctx, s.photo, 0, 0, W, H, s.fx, s.fy, s.zoom);
+    else { ctx.fillStyle = '#C9D8D2'; ctx.fillRect(0, 0, W, H); placeholder(ctx, 0, 0, W, H, 'ارفع صورة', false); }
+
+    const c = COMBOS.green, nc = { ...c, label: KFH.white };
+    const right = s.align === 'center' ? null : W - M;
+    const pad = story ? 300 : 100;
+    const textOnPhoto = v === 'left' || v === 'corner';
+    if (textOnPhoto) {
+      const shade = s.shade ?? 0.6;
+      const g = ctx.createLinearGradient(0, 0, 0, H * 0.55);
+      g.addColorStop(0, `rgba(${KFH.shade},${shade})`); g.addColorStop(1, `rgba(${KFH.shade},0)`);
+      ctx.fillStyle = g; ctx.fillRect(0, 0, W, H * 0.55);
+    }
+
+    ctx.fillStyle = KFH.green;
+    let st, box;
+    // Big headlines inside the green block sit tighter, like the posts.
+    const items = (big) => [...topItems(s, c, big, numItems(s, nc, 200)), ctaItem(s)]
+      .map((it) => (big > 1.2 && it.text === s.headline && it.kind === 'text' ? { ...it, lh: 1.28 } : it));
+    if (v === 'tr') {
+      ctx.fill(brandCurve({ cx: 215, bottom: 270 * k, w: 530, rot: 90 }).inside);
+      const y = story ? 320 : 160;
+      st = layout(ctx, items(1.3), W - M - 300, 0.36 * H);
+      box = { y };
+      placeLogo(ctx, s, M, H - pad - 90, 90, 'left');
+    } else if (v === 'bottom') {
+      const apex = story ? H * 0.52 : 793 * k;
+      ctx.fill(brandCurve({ cx: 750, bottom: apex, w: 696, rot: 180 }).inside);
+      const y = apex + 140;
+      st = layout(ctx, items(1.55), 600, H - (story ? pad : 60) - y);
+      box = { y };
+      placeLogo(ctx, s, M, story ? 300 : 90, 90, 'left');
+    } else if (v === 'photoTop') {
+      const bottom = 850 * k;
+      ctx.fill(brandCurve({ cx: 820, bottom, w: 634 }).outside);
+      st = layout(ctx, items(1.1), W - 2 * M, H - pad - bottom - 60);
+      box = { y: H - pad - st.h };
+      placeLogo(ctx, s, M, H - pad - 80, 80, 'left');
+    } else {
+      const big = v === 'left';
+      ctx.fill(big
+        ? brandCurve({ cx: 455, bottom: 1014 * k, w: 690, rot: -90 }).inside
+        : brandCurve({ cx: 330, bottom: 1200 * k, w: 334, rot: -90 }).inside);
+      const lh = big ? 170 : 140, cy = (big ? 1140 : 1185) * k;
+      placeLogo(ctx, s, big ? 185 : 170, cy - lh / 2, lh, 'center');
+      const y = story ? 300 : 140;
+      st = layout(ctx, items(0.82), big ? W - M - 300 : W - 2 * M, 0.42 * H);
+      box = { y };
+    }
+    placeStack(ctx, s, 'top', st, right ?? W / 2, box.y, s.align);
+    drawTerms(ctx, s.terms, W, H, KFH.white);
+    return st.overflow;
+  },
+
   // 5. Offer — product cut-out with a big number, centred.
   offer(ctx, s, W, H) {
     const c = COMBOS[s.combo];
@@ -445,7 +505,7 @@ const TEMPLATES = {
       ...numItems(s, oc, 280),
       { kind: 'text', text: s.headline, weight: 700, size: 52, min: 34, maxLines: 2, lh: 1.45, color: oc.head, gap: 12 },
       { kind: 'text', text: s.sub, weight: 400, size: 36, min: 26, maxLines: 2, lh: 1.5, color: oc.sub, gap: 26 },
-      ctaItem(s),
+      ctaItem(s, c.head),
     ];
     const st = layout(ctx, items, W - 2 * M, H * 0.42);
     const sy = H - bottomPad - st.h;

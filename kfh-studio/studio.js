@@ -4,6 +4,15 @@ const TEMPLATE_LIST = [
   { id: 'panel', name: 'صورة ولوحة' },
   { id: 'cutout', name: 'شخص أو مبنى' },
   { id: 'offer', name: 'عرض منتج' },
+  { id: 'blade', name: 'صورة وقطعة خضراء' },
+];
+
+const BLADE_LIST = [
+  { id: 'tr', name: 'فوق يمين' },
+  { id: 'bottom', name: 'تحت' },
+  { id: 'photoTop', name: 'الصورة فوق' },
+  { id: 'left', name: 'يسار مع شعار' },
+  { id: 'corner', name: 'زاوية صغيرة' },
 ];
 
 const FORMAT_NAMES = { post: 'البوست', story: 'الستوري', square: 'المربع' };
@@ -14,7 +23,7 @@ const state = {
   headScale: 1, headWeight: '600',
   numPrefix: '', numLabel: '', number: '', unit: '', numScale: 1, numPos: 'top',
   infoTitle: '', infoText: '',
-  cta: '', ctaColor: 'green', terms: '',
+  cta: '', ctaColor: 'green', ctaStyle: 'fill', terms: '', bladePos: 'tr',
   curve: true, wedge: false, deco: 'curve', shade: 0.6,
   photo: null, fx: 0.5, fy: 0.5, zoom: 1, cutScale: 1, logo: null, logoScale: 1,
   crops: {},                                  // photo crop per size: { post: {fx, fy, zoom}, ... }
@@ -28,6 +37,7 @@ const DEFAULTS = {
   panel: {},
   cutout: { combo: 'dark' },
   offer: { combo: 'white' },
+  blade: {},
 };
 
 const canvas = document.getElementById('canvas');
@@ -68,10 +78,10 @@ function syncUI() {
   document.querySelectorAll('[data-show]').forEach((el) => {
     el.hidden = !el.dataset.show.split(' ').includes(state.template);
   });
-  document.querySelectorAll('.seg[data-field], .swatches[data-field]').forEach((g) => {
+  document.querySelectorAll('.seg[data-field], .swatches[data-field], .positions[data-field]').forEach((g) => {
     g.querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', String(String(state[g.dataset.field]) === b.dataset.value)));
   });
-  document.querySelectorAll('.tpl').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.id === state.template)));
+  document.querySelectorAll('#templates .tpl').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.id === state.template)));
   document.querySelectorAll('input[data-field], textarea[data-field]').forEach((el) => {
     if (el.type === 'checkbox') el.checked = !!state[el.dataset.field];
     else if (document.activeElement !== el) el.value = state[el.dataset.field];
@@ -113,8 +123,24 @@ function buildTemplates() {
   }
 }
 
+function buildBladePositions() {
+  const wrap = document.getElementById('bladePos');
+  for (const p of BLADE_LIST) {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'tpl';
+    b.dataset.value = p.id;
+    const c = document.createElement('canvas');
+    renderPost(c, { ...state, template: 'blade', bladePos: p.id, format: 'post', photo: null, logo: null, kicker: '', sub: '', number: '', cta: '', headline: 'كل عام\nوالكويت بخير' }, 0.12);
+    const label = document.createElement('span');
+    label.textContent = p.name;
+    b.append(c, label);
+    wrap.append(b);
+  }
+}
+
 function bindInputs() {
-  document.querySelectorAll('.seg[data-field], .swatches[data-field]').forEach((g) => {
+  document.querySelectorAll('.seg[data-field], .swatches[data-field], .positions[data-field]').forEach((g) => {
     g.addEventListener('click', (e) => {
       const b = e.target.closest('button');
       if (!b) return;
@@ -256,6 +282,7 @@ async function loadFonts() {
 
 loadFonts().then(() => {
   buildTemplates();
+  buildBladePositions();
   bindInputs();
   bindDrag();
   update();

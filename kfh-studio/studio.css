@@ -99,6 +99,9 @@ small { color: var(--muted); font-weight: 400; font-size: 13px; }
 }
 .tpl canvas { width: 100%; height: auto; border-radius: 6px; display: block; }
 .tpl[aria-pressed="true"] { border-color: var(--green); background: #EAF6E6; }
+.positions { grid-template-columns: repeat(5, 1fr); gap: 6px; }
+.positions .tpl { font-size: 11px; padding: 4px 4px 6px; }
+@media (max-width: 420px) { .positions { grid-template-columns: repeat(3, 1fr); } }
 
 .seg { display: flex; background: var(--soft); border-radius: 12px; padding: 4px; gap: 4px; }
 .seg button { flex: 1; border: 0; background: transparent; padding: 10px 6px; border-radius: 9px; cursor: pointer; font-weight: 600; font-size: 14px; }
