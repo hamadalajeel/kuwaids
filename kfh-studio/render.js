@@ -188,7 +188,7 @@ function stackWidth(ctx, st) {
     else if (it.kind === 'num') w = Math.max(w, numberWidth(ctx, it, it.size).total);
     else if (it.kind === 'cta') { ctx.font = TEXT_FONT(600, it.size); w = Math.max(w, ctx.measureText(it.text).width + it.size * 2.4); }
     else if (it.kind === 'bar') w = Math.max(w, 120);
-    else if (it.kind === 'bullets') { ctx.font = TEXT_FONT(it.weight, it.size); for (const l of bulletText(it)) w = Math.max(w, ctx.measureText(l).width); }
+    else if (it.kind === 'bullets') w = Math.max(w, chipGeometry(ctx, it).width);
   }
   return w;
 }
@@ -264,8 +264,8 @@ function measure(ctx, items, maxW, scale) {
       out.push({ ...it, h: 8 });
     } else if (it.kind === 'bullets') {
       if (!it.lines.length) continue;
-      const size = Math.round(it.size * scale);
-      out.push({ ...it, size, h: it.lines.length * size * it.lh });
+      const m = { ...it, size: Math.round(it.size * Math.max(scale, 0.8)) };
+      out.push({ ...m, h: chipGeometry(ctx, m).total });
     }
   }
   return out;
@@ -330,16 +330,41 @@ function drawStack(ctx, stack, x, y, align) {
   ctx.restore();
 }
 
-// Answer list: plain lines, optionally numbered «1- 2- 3-».
-const bulletText = (it) => it.lines.map((l, i) => (it.style === 'numbered' ? `${i + 1}- ${l}` : l));
+// Answers as outlined chips, in the same white line weight as the KFH mark outline on the campaign posts.
+// Two short answers («صح / خطأ») sit side by side like buttons; longer ones stack, optionally numbered
+// in a small white disc.
+function chipGeometry(ctx, it) {
+  const s = it.size, h = Math.round(s * 1.62), pad = Math.round(s * 0.85), gap = Math.round(s * 0.32);
+  const disc = it.style === 'numbered' ? Math.round(h * 0.68) : 0;
+  ctx.font = TEXT_FONT(it.weight, s);
+  const tw = it.lines.map((l) => ctx.measureText(l).width);
+  const inner = Math.max(...tw) + (disc ? disc + s * 0.45 : 0);
+  const row = it.lines.length <= 2 && !disc && Math.max(...tw) < 260;
+  const w = row ? Math.max(Math.max(...tw) + pad * 2, h * 2.4) : inner + pad * 2;
+  return { h, pad, gap, disc, w, row, total: row ? h : it.lines.length * h + (it.lines.length - 1) * gap, width: row ? it.lines.length * w + (it.lines.length - 1) * gap : w };
+}
 
 function drawBullets(ctx, it, right, y) {
+  const g = chipGeometry(ctx, it), s = it.size;
   ctx.save();
-  ctx.font = TEXT_FONT(it.weight, it.size);
-  ctx.textAlign = 'right';
-  ctx.textBaseline = 'middle';
-  ctx.fillStyle = it.color;
-  bulletText(it).forEach((t, i) => ctx.fillText(t, right, y + (i + 0.5) * it.size * it.lh + it.size * 0.06));
+  ctx.lineWidth = 3.5;
+  it.lines.forEach((l, i) => {
+    const x = g.row ? right - g.w - i * (g.w + g.gap) : right - g.w;
+    const top = g.row ? y : y + i * (g.h + g.gap);
+    ctx.beginPath(); ctx.roundRect(x, top, g.w, g.h, g.h / 2);
+    ctx.strokeStyle = it.color; ctx.stroke();
+    ctx.font = TEXT_FONT(it.weight, s); ctx.fillStyle = it.color; ctx.textBaseline = 'middle';
+    if (g.row) { ctx.textAlign = 'center'; ctx.fillText(l, x + g.w / 2, top + g.h / 2 + s * 0.06); return; }
+    let tx = x + g.w - g.pad;
+    if (g.disc) {
+      const cx = tx - g.disc / 2, cy = top + g.h / 2;
+      ctx.beginPath(); ctx.arc(cx, cy, g.disc / 2, 0, Math.PI * 2); ctx.fill();
+      ctx.save(); ctx.fillStyle = it.discText; ctx.textAlign = 'center'; ctx.font = NUM_FONT(Math.round(g.disc * 0.66), 800);
+      ctx.fillText(String(i + 1), cx, cy + g.disc * 0.04); ctx.restore();
+      tx -= g.disc + s * 0.45;
+    }
+    ctx.textAlign = 'right'; ctx.fillText(l, tx, top + g.h / 2 + s * 0.06);
+  });
   ctx.restore();
 }
 
@@ -624,17 +649,17 @@ const TEMPLATES = {
     }
 
     const top = layout(ctx, [
-      { kind: 'text', text: s.kicker, weight: 400, size: 50, min: 32, maxLines: 1, lh: 1.4, color: KFH.white, gap: 30 },
+      { kind: 'text', text: s.kicker, weight: 500, size: 70, min: 40, maxLines: 1, lh: 1.3, color: KFH.white, gap: 18 },
       { kind: 'text', text: s.headline, weight: Number(s.headWeight) || 700, size: 112 * (s.headScale || 1), min: 60, maxLines: 3, lh: 1.08, color: KFH.white, gap: 10 },
       { kind: 'num', weight: 500, number: (s.number || '').trim(), unit: (s.unit || '').trim(), unitRatio: 0.22, size: 228 * (s.numScale || 1), color: KFH.white, gap: 0 },
     ], W - 2 * M, 330);
     placeStack(ctx, s, 'top', top, W - M, G.top, 'right');
 
     const numbered = s.bulletStyle === 'numbered';
-    const y = Math.max(430 + shift, G.top + top.h + 60);
+    const y = Math.max(420 + shift, G.top + top.h + 44);
     const qa = layout(ctx, [
-      { kind: 'text', text: s.question, weight: 500, size: 52, min: 34, maxLines: 4, lh: 1.3, color: KFH.white, gap: numbered ? 44 : 48 },
-      { kind: 'bullets', lines: (s.options || '').split('\n').map((l) => l.trim()).filter(Boolean), style: numbered ? 'numbered' : 'plain', weight: 500, size: 52, lh: 1.4, color: KFH.white, gap: 0 },
+      { kind: 'text', text: s.question, weight: 500, size: 52, min: 34, maxLines: 4, lh: 1.3, color: KFH.white, gap: 36 },
+      { kind: 'bullets', lines: (s.options || '').split('\n').map((l) => l.trim()).filter(Boolean), style: numbered ? 'numbered' : 'plain', weight: 500, size: 52, lh: 1, discText: KFH.green, color: KFH.white, gap: 0 },
     ], W - 2 * M, H * 0.62 - y);
     placeStack(ctx, s, 'bottom', qa, W - M, y, 'right');
     return top.overflow || qa.overflow;
