@@ -53,7 +53,7 @@ html, body { height: 100%; }
 }
 .download:active { transform: scale(.99); }
 .download.alt { background: var(--dark); }
-.actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.actions { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 10px; }
 .under { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
 .twin {
   position: absolute; top: 12px; left: 12px; z-index: 2; display: flex; align-items: center; gap: 10px; text-align: start;

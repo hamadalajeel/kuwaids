@@ -30,6 +30,9 @@ const BLADE_LIST = [
   { id: 'corner', name: 'زاوية صغيرة' },
 ];
 
+// Templates published as a feed post only: no story, no other sizes.
+const POST_ONLY = new Set(['quiz']);
+
 const FORMAT_NAMES = { post: 'البوست', story: 'الستوري', square: 'المربع' };
 
 const state = {
@@ -74,7 +77,7 @@ function render() {
   warn.hidden = !r.overflow;
   if (showGrid) drawGrid();
   if (hover) outline(hover);
-  renderPost(twinCanvas, state, 0.2, twinFormat());
+  if (!POST_ONLY.has(state.template)) renderPost(twinCanvas, state, 0.2, twinFormat());
 }
 
 const currentGrid = () => grid(...FORMATS[state.format]);
@@ -133,6 +136,11 @@ function outline(id) {
 const crop = () => state.crops[state.format] || state.crops.post || { fx: state.fx, fy: state.fy, zoom: state.zoom };
 
 function syncUI() {
+  const postOnly = POST_ONLY.has(state.template);
+  if (postOnly) state.format = 'post';
+  document.getElementById('formatStep').hidden = postOnly;
+  document.getElementById('twin').hidden = postOnly;
+  document.getElementById('downloadBoth').hidden = postOnly;
   document.querySelectorAll('[data-show]').forEach((el) => {
     el.hidden = !el.dataset.show.split(' ').includes(state.template);
   });
