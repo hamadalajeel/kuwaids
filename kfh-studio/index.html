@@ -107,15 +107,22 @@
 
     <div class="step">
       <h2>النصوص</h2>
-      <label class="field" data-show="text photo panel cutout quiz">سطر تمهيدي <small>اختياري</small>
+      <label class="field" data-show="text photo panel cutout quiz daraya">سطر تمهيدي <small>اختياري</small>
         <input type="text" data-field="kicker" placeholder="تقديراً لـ ...">
       </label>
       <label class="field">العنوان
         <textarea rows="3" data-field="headline" placeholder="اكتب العنوان. كل سطر جديد = سطر في التصميم"></textarea>
       </label>
-      <label class="field" data-show="quiz">الخيارات <small>كل خيار في سطر، والترقيم تلقائي</small>
+      <label class="field" data-show="daraya">السؤال
+        <textarea rows="3" data-field="question" id="question"></textarea>
+      </label>
+      <label class="field" data-show="quiz daraya">الخيارات <small>كل خيار في سطر، والترقيم تلقائي</small>
         <textarea rows="4" data-field="options" id="options"></textarea>
       </label>
+      <div class="seg" data-field="bulletStyle" data-show="daraya">
+        <button type="button" data-value="numbered">مثلث وترقيم</button>
+        <button type="button" data-value="outline">مثلث مفرّغ</button>
+      </div>
       <label class="field" data-show="text photo panel cutout offer blade">سطر توضيحي <small>اختياري</small>
         <input type="text" data-field="sub">
       </label>
@@ -131,7 +138,7 @@
       </div>
     </div>
 
-    <div class="step" data-show="text photo panel offer blade quiz">
+    <div class="step" data-show="text photo panel offer blade quiz daraya">
       <h2>رقم بارز <small>اختياري</small></h2>
       <div class="row three">
         <label class="field">قبله <input type="text" data-field="numPrefix" id="numPrefix" placeholder="بـ"></label>

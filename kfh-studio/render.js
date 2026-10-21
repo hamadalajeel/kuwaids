@@ -19,6 +19,8 @@ const FORMATS = {
 const M = 100;
 // Brand pattern backgrounds for the Friday quiz, loaded by the page: { arch, stars, sun, leaves }.
 const QUIZ_BG = {};
+// «لنكن على دراية» campaign artwork, loaded by the page: { logo, shapes }.
+const DARAYA = {};
 const ROW = 143.75;
 function grid(W, H) {
   const rows = Math.round((H - 2 * M) / ROW);
@@ -157,6 +159,7 @@ function stackWidth(ctx, st) {
     else if (it.kind === 'num') w = Math.max(w, numberWidth(ctx, it, it.size).total);
     else if (it.kind === 'cta') { ctx.font = TEXT_FONT(600, it.size); w = Math.max(w, ctx.measureText(it.text).width + it.size * 2.4); }
     else if (it.kind === 'bar') w = Math.max(w, 120);
+    else if (it.kind === 'bullets') { ctx.font = TEXT_FONT(it.weight, it.size); for (const l of bulletText(it)) w = Math.max(w, ctx.measureText(l).width + it.size * 1.45); }
   }
   return w;
 }
@@ -230,6 +233,10 @@ function measure(ctx, items, maxW, scale) {
       out.push({ ...it, size, h: size * 2.3 });
     } else if (it.kind === 'bar') {
       out.push({ ...it, h: 8 });
+    } else if (it.kind === 'bullets') {
+      if (!it.lines.length) continue;
+      const size = Math.round(it.size * scale);
+      out.push({ ...it, size, h: it.lines.length * size * it.lh });
     }
   }
   return out;
@@ -286,9 +293,46 @@ function drawStack(ctx, stack, x, y, align) {
     } else if (it.kind === 'bar') {
       ctx.fillStyle = it.color;
       ctx.fillRect(align === 'center' ? x - 60 : x - 120, y, 120, 8);
+    } else if (it.kind === 'bullets') {
+      drawBullets(ctx, it, x, y);
     }
     y += it.h + (it.gap ?? 20);
   }
+  ctx.restore();
+}
+
+// Answer list with campaign bullets: a filled triangle and «1-» numbering, or an outlined rounded triangle.
+const bulletText = (it) => it.lines.map((l, i) => (it.style === 'numbered' ? `${i + 1}- ${l}` : l));
+
+function drawBullets(ctx, it, right, y) {
+  const s = it.size, outline = it.style !== 'numbered';
+  const tw = s * (outline ? 0.8 : 0.66), th = s * (outline ? 0.9 : 0.86);
+  ctx.save();
+  ctx.font = TEXT_FONT(it.weight, s);
+  ctx.textAlign = 'right';
+  ctx.textBaseline = 'middle';
+  ctx.fillStyle = it.color;
+  ctx.strokeStyle = it.color;
+  ctx.lineWidth = Math.max(2.5, s * 0.06);
+  ctx.lineJoin = 'round';
+  bulletText(it).forEach((t, i) => {
+    const cy = y + (i + 0.5) * s * it.lh;
+    ctx.beginPath();
+    ctx.moveTo(right, cy - th / 2);
+    ctx.lineTo(right, cy + th / 2);
+    ctx.lineTo(right - tw, cy);
+    ctx.closePath();
+    if (outline) {
+      // rounded corners like the campaign's outlined pointer
+      ctx.beginPath();
+      const r = s * 0.14, pts = [[right, cy - th / 2], [right, cy + th / 2], [right - tw, cy]];
+      ctx.moveTo((pts[0][0] + pts[2][0]) / 2, (pts[0][1] + pts[2][1]) / 2);
+      for (let k = 0; k < 3; k++) ctx.arcTo(pts[k][0], pts[k][1], pts[(k + 1) % 3][0], pts[(k + 1) % 3][1], r);
+      ctx.closePath();
+      ctx.stroke();
+    } else ctx.fill();
+    ctx.fillText(t, right - s * 1.45, cy + s * 0.06);
+  });
   ctx.restore();
 }
 
@@ -546,6 +590,37 @@ const TEMPLATES = {
     ], W - 2 * M, H - 260 - y);
     placeStack(ctx, s, 'bottom', qa, W - M, y, 'right');
     return prize.overflow || qa.overflow;
+  },
+
+  // 8. «لنكن على دراية» awareness campaign: bright green, white text, a title or a prize on top,
+  //    the question and pointer-bulleted answers, campaign logo bottom-left, outlined mark bottom-right.
+  daraya(ctx, s, W, H) {
+    const G = grid(W, H), shift = G.top - M;
+    ctx.fillStyle = KFH.green; ctx.fillRect(0, 0, W, H);
+    if (DARAYA.shapes) {
+      const k = 0.675, w = DARAYA.shapes.width * k, h = DARAYA.shapes.height * k;
+      ctx.drawImage(DARAYA.shapes, W - w, H - h, w, h);
+    }
+    if (DARAYA.logo) {
+      const lw = 130, lh = lw * DARAYA.logo.height / DARAYA.logo.width, r = { x: M, y: G.bottom - lh, w: lw, h: lh };
+      moved(ctx, s, 'logo', r, () => ctx.drawImage(DARAYA.logo, r.x, r.y, r.w, r.h));
+    }
+
+    const top = layout(ctx, [
+      { kind: 'text', text: s.kicker, weight: 400, size: 50, min: 32, maxLines: 1, lh: 1.4, color: KFH.white, gap: 30 },
+      { kind: 'text', text: s.headline, weight: Number(s.headWeight) || 700, size: 112 * (s.headScale || 1), min: 60, maxLines: 3, lh: 1.08, color: KFH.white, gap: 10 },
+      { kind: 'num', weight: 500, number: (s.number || '').trim(), unit: (s.unit || '').trim(), unitRatio: 0.22, size: 228 * (s.numScale || 1), color: KFH.white, gap: 0 },
+    ], W - 2 * M, 330);
+    placeStack(ctx, s, 'top', top, W - M, G.top, 'right');
+
+    const numbered = s.bulletStyle === 'numbered';
+    const y = Math.max(430 + shift, G.top + top.h + 60);
+    const qa = layout(ctx, [
+      { kind: 'text', text: s.question, weight: 500, size: 52, min: 34, maxLines: 4, lh: 1.3, color: KFH.white, gap: numbered ? 44 : 48 },
+      { kind: 'bullets', lines: (s.options || '').split('\n').map((l) => l.trim()).filter(Boolean), style: numbered ? 'numbered' : 'outline', weight: 500, size: numbered ? 46 : 58, lh: numbered ? 1.12 : 1.42, color: KFH.white, gap: 0 },
+    ], W - 2 * M, H * 0.62 - y);
+    placeStack(ctx, s, 'bottom', qa, W - M, y, 'right');
+    return top.overflow || qa.overflow;
   },
 
   // 5. Offer — product cut-out with a big number, centred.

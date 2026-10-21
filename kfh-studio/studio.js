@@ -6,7 +6,14 @@ const TEMPLATE_LIST = [
   { id: 'offer', name: 'عرض منتج' },
   { id: 'blade', name: 'صورة وقطعة خضراء' },
   { id: 'quiz', name: 'سؤال الجمعة' },
+  { id: 'daraya', name: 'لنكن على دراية' },
 ];
+
+const DARAYA_SAMPLE = {
+  kicker: 'جاوب واربح', number: '50', unit: 'د.ك', headline: '',
+  question: 'استخدام نفس كلمة المرور لأكثر من حساب يزيد من خطر اختراق حساباتك؟',
+  options: 'صح\nخطأ', bulletStyle: 'outline',
+};
 
 const QUIZ_BG_LIST = [
   { id: 'arch', name: 'قوس' },
@@ -31,7 +38,7 @@ const BLADE_LIST = [
 ];
 
 // Templates published as a feed post only: no story, no other sizes.
-const POST_ONLY = new Set(['quiz']);
+const POST_ONLY = new Set(['quiz', 'daraya']);
 
 const FORMAT_NAMES = { post: 'البوست', story: 'الستوري', square: 'المربع' };
 
@@ -42,7 +49,7 @@ const state = {
   numPrefix: '', numLabel: '', number: '', unit: '', numScale: 1, numPos: 'top',
   infoTitle: '', infoText: '',
   cta: '', ctaColor: 'green', ctaStyle: 'fill', terms: '', bladePos: 'tr',
-  options: '', quizBg: 'arch',
+  options: '', quizBg: 'arch', question: '', bulletStyle: 'outline',
   curve: true, wedge: false, deco: 'curve', shade: 0.6,
   curveDir: '', // '' = the layout's own orientation, else 0 / 90 / 180 / -90
   photo: null, fx: 0.5, fy: 0.5, zoom: 1, cutScale: 1, logo: null, logoScale: 1,
@@ -59,6 +66,7 @@ const DEFAULTS = {
   offer: { combo: 'white' },
   blade: {},
   quiz: { headWeight: '600' },
+  daraya: { headWeight: '700' },
 };
 
 const canvas = document.getElementById('canvas');
@@ -178,6 +186,7 @@ function buildTemplates() {
       headline: t.id === 'offer' ? 'على جميع المنتجات' : 'بيت التمويل الكويتي\nيحصد جائزة جديدة',
       number: t.id === 'offer' ? '15%' : '', numLabel: t.id === 'offer' ? 'خصم' : '',
       ...(t.id === 'quiz' ? QUIZ_SAMPLE : {}),
+      ...(t.id === 'daraya' ? DARAYA_SAMPLE : {}),
     }, 0.2);
     const label = document.createElement('span');
     label.textContent = t.name;
@@ -185,10 +194,25 @@ function buildTemplates() {
     b.addEventListener('click', () => {
       Object.assign(state, DEFAULTS[t.id], { template: t.id, offsets: { post: {}, story: {}, square: {} } });
       if (t.id === 'quiz' && !state.options.trim()) Object.assign(state, QUIZ_SAMPLE);
+      if (t.id === 'daraya' && !state.question.trim()) Object.assign(state, DARAYA_SAMPLE);
       update();
     });
     wrap.append(b);
   }
+}
+
+function loadImage(src) {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = () => resolve(null);
+    img.src = src;
+  });
+}
+
+async function loadDaraya() {
+  DARAYA.logo = await loadImage('backgrounds/daraya-logo.png');
+  DARAYA.shapes = await loadImage('backgrounds/daraya-shapes.png');
 }
 
 function loadQuizBackgrounds() {
@@ -389,7 +413,7 @@ async function loadFonts() {
   await Promise.all(loads);
 }
 
-Promise.all([loadFonts(), loadQuizBackgrounds()]).then(() => {
+Promise.all([loadFonts(), loadQuizBackgrounds(), loadDaraya()]).then(() => {
   buildTemplates();
   buildQuizBackgrounds();
   buildBladePositions();
