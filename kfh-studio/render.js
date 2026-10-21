@@ -84,6 +84,23 @@ function userCurve(s, W, { cx, bottom, rot = 0 }) {
   return brandCurve(r);
 }
 
+// Highest left-edge crossing for a curve (bowl at cx) whose arms stay clear of every text line:
+// at least 110px below a line's left end on the left arm and 60px below its right end on the right arm.
+function clearIntercept(ctx, st, right, top, cx) {
+  let y = top, need = 0;
+  for (const it of st.items) {
+    if (it.kind === 'text') {
+      ctx.font = TEXT_FONT(it.weight, it.size);
+      it.lines.forEach((l, i) => {
+        const bottom = y + (i + 1) * it.size * it.lh, left = right - ctx.measureText(l).width;
+        need = Math.max(need, bottom + 110 - left, bottom + 60 - 2 * cx + right);
+      });
+    }
+    y += it.h + (it.gap ?? 20);
+  }
+  return need;
+}
+
 // Where a symmetric curve's arm crosses the left edge, given its bowl.
 function curveForIntercept(intercept, cx = 540, w = 680) {
   return { cx, w, bottom: intercept + (cx - w / 2) - OFFICIAL.y0 * w };
@@ -483,7 +500,11 @@ const TEMPLATES = {
       textTop = story ? 470 : H < 1200 ? 320 : 380;
     } else {
       textTop = grid(W, H).top;
-      if (s.logo) textTop += placeLogo(ctx, s, M, textTop, 64, 'left') + 30;
+      if (s.cutCorner) {
+        // green block bottom-left holding the partner logo (Forbes post)
+        ctx.fillStyle = c.wedge; ctx.fill(brandCurve({ cx: 50, bottom: H - 389, w: CURVE_W, rot: 180 }).inside);
+        placeLogo(ctx, s, M, grid(W, H).bottom - 60, 60, 'left');
+      } else if (s.logo) textTop += placeLogo(ctx, s, M, textTop, 64, 'left') + 30;
     }
 
     const sub = corner ? { ...c, sub: s.combo === 'dark' ? KFH.green : c.sub } : c;
@@ -491,14 +512,17 @@ const TEMPLATES = {
     const st = layout(ctx, topItems(s, sub, 0.9), W - 2 * M, (corner ? H * 0.62 : maxIntercept - 30) - textTop);
     let boxTop = textTop + st.h + 40;
     if (!corner) {
-      const intercept = Math.min(Math.max(textTop + st.h + 30, H * 0.25), maxIntercept);
+      // The curve hugs the text like the Forbes post: its arms pass close to each line without touching it.
+      const cx = 600;
+      const intercept = Math.min(Math.max(clearIntercept(ctx, st, W - M, textTop, cx), H * 0.18), maxIntercept);
       ctx.strokeStyle = c.line; ctx.lineWidth = 15;
-      ctx.stroke(userCurve(s, W, curveForIntercept(intercept)).line);
+      ctx.stroke(userCurve(s, W, curveForIntercept(intercept, cx)).line);
       boxTop = intercept + 70;
     }
     placeStack(ctx, s, 'top', st, W - M, textTop, 'right');
 
-    if (s.photo) placeImage(ctx, s, containRect(s.photo, W / 2, H, W * 0.92, H - boxTop, s.cutScale, 'bottom'));
+    const px = s.cutCorner ? W * 0.63 : W / 2;
+    if (s.photo) placeImage(ctx, s, containRect(s.photo, px, H, W * 0.92, H - boxTop, s.cutScale, 'bottom'));
     else placeholder(ctx, W * 0.22, boxTop + 30, W * 0.56, H - boxTop - 30, 'صورة بدون خلفية', s.combo !== 'white');
     drawTerms(ctx, s.terms, W, H, c.fine);
     return st.overflow;

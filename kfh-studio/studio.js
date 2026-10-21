@@ -50,6 +50,7 @@ const state = {
   infoTitle: '', infoText: '',
   cta: '', ctaColor: 'green', ctaStyle: 'fill', terms: '', bladePos: 'tr',
   options: '', quizBg: 'arch', question: '', bulletStyle: 'outline',
+  cutCorner: false,
   curve: true, wedge: false, deco: 'curve', shade: 0.6,
   curveDir: '', // '' = the layout's own orientation, else 0 / 90 / 180 / -90
   photo: null, fx: 0.5, fy: 0.5, zoom: 1, cutScale: 1, logo: null, logoScale: 1,
