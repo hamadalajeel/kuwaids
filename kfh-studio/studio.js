@@ -25,6 +25,7 @@ const state = {
   infoTitle: '', infoText: '',
   cta: '', ctaColor: 'green', ctaStyle: 'fill', terms: '', bladePos: 'tr',
   curve: true, wedge: false, deco: 'curve', shade: 0.6,
+  curveRot: 0, curveScale: 1, curveFlip: false,
   photo: null, fx: 0.5, fy: 0.5, zoom: 1, cutScale: 1, logo: null, logoScale: 1,
   crops: {},                                  // photo crop per size: { post: {fx, fy, zoom}, ... }
   offsets: { post: {}, story: {}, square: {} }, // dragged positions per size: { top: {dx, dy}, ... }
@@ -170,6 +171,15 @@ function bindInputs() {
     update();
   });
   document.getElementById('resetPos').addEventListener('click', () => { state.offsets[state.format] = {}; render(); });
+  document.getElementById('curveTurn').addEventListener('click', () => {
+    state.curveRot = ((state.curveRot + 90 + 180) % 360) - 180;
+    update();
+  });
+  document.getElementById('curveReset').addEventListener('click', () => {
+    Object.assign(state, { curveRot: 0, curveScale: 1, curveFlip: false });
+    for (const f in state.offsets) delete state.offsets[f].curve;
+    update();
+  });
   document.getElementById('twin').addEventListener('click', () => { state.format = twinFormat(); update(); });
   document.getElementById('download').addEventListener('click', () => save([state.format]));
   document.getElementById('downloadBoth').addEventListener('click', () => save(['post', 'story']));
@@ -183,10 +193,12 @@ function toCanvas(e) {
 }
 
 function hit(p) {
-  // Smallest box under the pointer wins, so a logo on top of a photo is still grabbable.
+  // Smallest box under the pointer wins, so a logo on top of a photo is still grabbable;
+  // the curve's handle yields to text and images sitting on it.
+  const area = (b) => b.w * b.h * (b.id === 'curve' ? 100 : 1);
   return boxes
     .filter((b) => p.x >= b.x - 20 && p.x <= b.x + b.w + 20 && p.y >= b.y - 20 && p.y <= b.y + b.h + 20)
-    .sort((a, b) => a.w * a.h - b.w * b.h)[0];
+    .sort((a, b) => area(a) - area(b))[0];
 }
 
 function bindDrag() {

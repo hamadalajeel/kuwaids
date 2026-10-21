@@ -52,6 +52,18 @@
       <div id="bladePos" class="templates positions seg-like" data-field="bladePos"></div>
     </div>
 
+    <div class="step" data-show="text photo panel cutout blade">
+      <h2>الكيرف</h2>
+      <p class="hint">اسحب الكيرف من وسط انحناءته في المعاينة لتحريكه.</p>
+      <label class="range">تدوير <input type="range" min="-180" max="180" step="1" data-field="curveRot" id="curveRot"></label>
+      <label class="range">الحجم <input type="range" min="0.5" max="1.8" step="0.01" data-field="curveScale" id="curveScale"></label>
+      <div class="row">
+        <button type="button" class="chip" id="curveTurn">لف ٩٠°</button>
+        <label class="check"><input type="checkbox" data-field="curveFlip" id="curveFlip"> اقلب يمين ويسار</label>
+      </div>
+      <button type="button" class="link" id="curveReset">رجّع الكيرف لمكانه</button>
+    </div>
+
     <div class="step" data-show="text cutout offer">
       <h2>الخلفية</h2>
       <div class="swatches" data-field="combo">

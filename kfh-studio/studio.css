@@ -137,3 +137,5 @@ small { color: var(--muted); font-weight: 400; font-size: 13px; }
 .check { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; }
 .check input { width: 20px; height: 20px; accent-color: var(--green); }
 .link { white-space: nowrap; background: none; border: 0; color: var(--dark); text-decoration: underline; cursor: pointer; justify-self: start; font-size: 13px; }
+.chip { border: 1.5px solid var(--line); background: var(--soft); border-radius: 10px; padding: 10px; font-weight: 600; cursor: pointer; color: var(--dark); }
+.chip:focus-visible, .link:focus-visible, .tpl:focus-visible, .seg button:focus-visible { outline: 3px solid var(--green); outline-offset: 2px; }

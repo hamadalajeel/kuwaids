@@ -55,6 +55,16 @@ function brandCurve({ cx, bottom, w, rot = 0 }) {
   return { line: place(line), inside: place(inside), outside: place(outside) };
 }
 
+// A layout's main curve with the viewer's adjustments applied: mirrored left-right, dragged
+// (per size), rotated and resized. Its bowl is the handle the viewer grabs to drag it.
+function userCurve(s, W, { cx, bottom, w, rot = 0 }) {
+  if (s.curveFlip) { cx = W - cx; rot = -rot; }
+  const o = s.offsets.curve || { dx: 0, dy: 0 };
+  const r = { cx: cx + o.dx, bottom: bottom + o.dy, w: w * (s.curveScale || 1), rot: rot + (s.curveRot || 0) };
+  s._boxes.push({ id: 'curve', x: r.cx - 80, y: r.bottom - 80, w: 160, h: 160 });
+  return brandCurve(r);
+}
+
 // Where a symmetric curve's arm crosses the left edge, given its bowl.
 function curveForIntercept(intercept, cx = 540, w = 680) {
   return { cx, w, bottom: intercept + (cx - w / 2) - OFFICIAL.y0 * w };
@@ -62,8 +72,6 @@ function curveForIntercept(intercept, cx = 540, w = 680) {
 
 // Green block in the bottom-left corner (the curve flipped, filled).
 const cornerBottom = (H) => brandCurve({ cx: 170, bottom: H - 282, w: 520, rot: 180 }).inside;
-// Green block in the top-left corner, for a partner logo.
-const cornerTop = () => brandCurve({ cx: 200, bottom: 300, w: 820 }).inside;
 
 /* ---------- images ---------- */
 
@@ -340,7 +348,7 @@ const TEMPLATES = {
     if (s.curve) {
       const intercept = Math.min(Math.max(y + st.h + 30, H * 0.3), maxIntercept);
       ctx.strokeStyle = c.line; ctx.lineWidth = 15;
-      ctx.stroke(brandCurve(curveForIntercept(intercept)).line);
+      ctx.stroke(userCurve(s, W, curveForIntercept(intercept)).line);
     }
     placeStack(ctx, s, 'top', st, s.align === 'center' ? W / 2 : W - M, y, s.align);
 
@@ -370,7 +378,7 @@ const TEMPLATES = {
       ctx.fillStyle = g; ctx.fillRect(0, H * 0.5, W, H * 0.5);
     }
     // The curve turned on its side: arm enters top-right, bowl faces left, opens toward the bottom-right.
-    if (s.curve) { ctx.strokeStyle = KFH.green; ctx.lineWidth = 14; ctx.stroke(brandCurve({ cx: 507, bottom: H * 0.788, w: 840, rot: 90 }).line); }
+    if (s.curve) { ctx.strokeStyle = KFH.green; ctx.lineWidth = 14; ctx.stroke(userCurve(s, W, { cx: 507, bottom: H * 0.788, w: 840, rot: 90 }).line); }
 
     let y = top;
     if (s.logo) y += placeLogo(ctx, s, s.align === 'center' ? W / 2 : M, y, 110, s.align === 'center' ? 'center' : 'left') + 80;
@@ -387,7 +395,7 @@ const TEMPLATES = {
     const bottom = H * 0.528;
     if (s.photo) drawCover(ctx, s.photo, 0, 0, W, bottom + 20, s.fx, s.fy, s.zoom);
     else placeholder(ctx, 0, 0, W, bottom + 20, 'ارفع صورة', false);
-    ctx.fillStyle = KFH.dark; ctx.fill(brandCurve({ cx: 540, bottom, w: 680 }).outside);
+    ctx.fillStyle = KFH.dark; ctx.fill(userCurve(s, W, { cx: 540, bottom, w: 680 }).outside);
 
     ctx.fillStyle = KFH.green; ctx.fill(cornerBottom(H));
     placeLogo(ctx, s, 60, H - 150, 70, 'left');
@@ -409,7 +417,7 @@ const TEMPLATES = {
 
     let textTop;
     if (corner) {
-      ctx.fillStyle = c.wedge; ctx.fill(cornerTop());
+      ctx.fillStyle = c.wedge; ctx.fill(userCurve(s, W, { cx: 200, bottom: 300, w: 820 }).inside);
       placeLogo(ctx, s, M, 95, 80, 'left');
       textTop = story ? 470 : H < 1200 ? 320 : 380;
     } else {
@@ -424,7 +432,7 @@ const TEMPLATES = {
     if (!corner) {
       const intercept = Math.min(Math.max(textTop + st.h + 30, H * 0.25), maxIntercept);
       ctx.strokeStyle = c.line; ctx.lineWidth = 15;
-      ctx.stroke(brandCurve(curveForIntercept(intercept)).line);
+      ctx.stroke(userCurve(s, W, curveForIntercept(intercept)).line);
       boxTop = intercept + 70;
     }
     placeStack(ctx, s, 'top', st, W - M, textTop, 'right');
@@ -460,29 +468,29 @@ const TEMPLATES = {
     const items = (big) => [...topItems(s, c, big, numItems(s, nc, 200)), ctaItem(s)]
       .map((it) => (big > 1.2 && it.text === s.headline && it.kind === 'text' ? { ...it, lh: 1.28 } : it));
     if (v === 'tr') {
-      ctx.fill(brandCurve({ cx: 215, bottom: 270 * k, w: 530, rot: 90 }).inside);
+      ctx.fill(userCurve(s, W, { cx: 215, bottom: 270 * k, w: 530, rot: 90 }).inside);
       const y = story ? 320 : 160;
       st = layout(ctx, items(1.3), W - M - 300, 0.36 * H);
       box = { y };
       placeLogo(ctx, s, M, H - pad - 90, 90, 'left');
     } else if (v === 'bottom') {
       const apex = story ? H * 0.52 : 793 * k;
-      ctx.fill(brandCurve({ cx: 750, bottom: apex, w: 696, rot: 180 }).inside);
+      ctx.fill(userCurve(s, W, { cx: 750, bottom: apex, w: 696, rot: 180 }).inside);
       const y = apex + 140;
       st = layout(ctx, items(1.55), 600, H - (story ? pad : 60) - y);
       box = { y };
       placeLogo(ctx, s, M, story ? 300 : 90, 90, 'left');
     } else if (v === 'photoTop') {
       const bottom = 850 * k;
-      ctx.fill(brandCurve({ cx: 820, bottom, w: 634 }).outside);
+      ctx.fill(userCurve(s, W, { cx: 820, bottom, w: 634 }).outside);
       st = layout(ctx, items(1.1), W - 2 * M, H - pad - bottom - 60);
       box = { y: H - pad - st.h };
       placeLogo(ctx, s, M, H - pad - 80, 80, 'left');
     } else {
       const big = v === 'left';
       ctx.fill(big
-        ? brandCurve({ cx: 455, bottom: 1014 * k, w: 690, rot: -90 }).inside
-        : brandCurve({ cx: 330, bottom: 1200 * k, w: 334, rot: -90 }).inside);
+        ? userCurve(s, W, { cx: 455, bottom: 1014 * k, w: 690, rot: -90 }).inside
+        : userCurve(s, W, { cx: 330, bottom: 1200 * k, w: 334, rot: -90 }).inside);
       const lh = big ? 170 : 140, cy = (big ? 1140 : 1185) * k;
       placeLogo(ctx, s, big ? 185 : 170, cy - lh / 2, lh, 'center');
       const y = story ? 300 : 140;
