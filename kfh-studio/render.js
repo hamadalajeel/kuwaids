@@ -27,11 +27,19 @@ const COMBOS = {
 
 /* ---------- shapes ---------- */
 
-// The one official KFH curve: two 45° arms joined by a rounded bowl (geometry from the brand base file).
-// Every decorative shape in KFH posts is this curve — as a line, as the edge of a photo, or as a filled block —
-// placed by its bowl's lowest point (cx, bottom), its width w and a rotation in degrees.
+// The official KFH curve, taken from brand/KFH_Curve.svg:
+//   M116.22,657.42 V0 L906.37,788.73 L708.69,986.41 C636.08,1059.02 517.82,1059.02 445.21,986.41 L116.22,657.42 Z
+// Its two 45° sides meet in one rounded bowl (708.69 → 445.21). Every decorative shape in KFH posts is this
+// curve — as a line, as the edge of a photo, or as a filled block — placed by its bowl's lowest point
+// (cx, bottom), the bowl's width w and a rotation in degrees.
+const OFFICIAL = (() => {
+  const right = 708.69, left = 445.21, top = 986.41, ctrlY = 1059.02, ctrlR = 636.08;
+  const w = right - left, mid = (right + left) / 2, bottom = top + 0.75 * (ctrlY - top);
+  return { y0: (top - bottom) / w, cy: (ctrlY - bottom) / w, k: (ctrlR - mid) / w };
+})();
+
 function brandCurve({ cx, bottom, w, rot = 0 }) {
-  const half = w / 2, y0 = -0.2069 * w, cy = 0.0690 * w, k = 0.2242 * w, L = 4000, BIG = 9000;
+  const half = w / 2, y0 = OFFICIAL.y0 * w, cy = OFFICIAL.cy * w, k = OFFICIAL.k * w, L = 4000, BIG = 9000;
   const trace = (p) => {
     p.moveTo(-half - L, y0 - L);
     p.lineTo(-half, y0);
@@ -49,7 +57,7 @@ function brandCurve({ cx, bottom, w, rot = 0 }) {
 
 // Where a symmetric curve's arm crosses the left edge, given its bowl.
 function curveForIntercept(intercept, cx = 540, w = 680) {
-  return { cx, w, bottom: intercept + (cx - w / 2) + 0.2069 * w };
+  return { cx, w, bottom: intercept + (cx - w / 2) - OFFICIAL.y0 * w };
 }
 
 // Green block in the bottom-left corner (the curve flipped, filled).
