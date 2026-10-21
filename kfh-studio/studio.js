@@ -25,7 +25,7 @@ const state = {
   infoTitle: '', infoText: '',
   cta: '', ctaColor: 'green', ctaStyle: 'fill', terms: '', bladePos: 'tr',
   curve: true, wedge: false, deco: 'curve', shade: 0.6,
-  curveRot: 0, curveScale: 1, curveFlip: false,
+  curveDir: '', // '' = the layout's own orientation, else 0 / 90 / 180 / -90
   photo: null, fx: 0.5, fy: 0.5, zoom: 1, cutScale: 1, logo: null, logoScale: 1,
   crops: {},                                  // photo crop per size: { post: {fx, fy, zoom}, ... }
   offsets: { post: {}, story: {}, square: {} }, // dragged positions per size: { top: {dx, dy}, ... }
@@ -171,12 +171,8 @@ function bindInputs() {
     update();
   });
   document.getElementById('resetPos').addEventListener('click', () => { state.offsets[state.format] = {}; render(); });
-  document.getElementById('curveTurn').addEventListener('click', () => {
-    state.curveRot = ((state.curveRot + 90 + 180) % 360) - 180;
-    update();
-  });
   document.getElementById('curveReset').addEventListener('click', () => {
-    Object.assign(state, { curveRot: 0, curveScale: 1, curveFlip: false });
+    state.curveDir = '';
     for (const f in state.offsets) delete state.offsets[f].curve;
     update();
   });
