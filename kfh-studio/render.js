@@ -140,20 +140,24 @@ function placeImage(ctx, s, r) {
   moved(ctx, s, 'image', r, () => ctx.drawImage(s.photo, r.x, r.y, r.w, r.h));
 }
 
+// Calm stand-in shown until a photo is added: a soft panel with a picture icon and a hint.
 function placeholder(ctx, x, y, w, h, label, dark) {
   ctx.save();
-  ctx.fillStyle = dark ? 'rgba(255,255,255,.12)' : '#E3ECE8';
+  ctx.fillStyle = dark ? 'rgba(255,255,255,.10)' : '#DCE8E3';
   ctx.fillRect(x, y, w, h);
-  ctx.setLineDash([18, 14]);
-  ctx.lineWidth = 4;
-  ctx.strokeStyle = dark ? 'rgba(255,255,255,.45)' : 'rgba(45,120,100,.45)';
-  ctx.strokeRect(x + 30, y + 30, w - 60, h - 60);
-  ctx.fillStyle = dark ? 'rgba(255,255,255,.75)' : KFH.dark;
-  ctx.font = TEXT_FONT(600, 44);
+  const s = Math.min(w, h) * 0.16, cx = x + w / 2, cy = y + h / 2 - s * 0.35;
+  ctx.strokeStyle = dark ? 'rgba(255,255,255,.55)' : '#8FB3A6';
+  ctx.fillStyle = ctx.strokeStyle;
+  ctx.lineWidth = Math.max(3, s * 0.07); ctx.lineJoin = 'round';
+  ctx.beginPath(); ctx.roundRect(cx - s, cy - s * 0.75, s * 2, s * 1.5, s * 0.18); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(cx - s * 0.8, cy + s * 0.55); ctx.lineTo(cx - s * 0.2, cy - s * 0.05); ctx.lineTo(cx + s * 0.2, cy + s * 0.3);
+  ctx.lineTo(cx + s * 0.45, cy + s * 0.1); ctx.lineTo(cx + s * 0.8, cy + s * 0.55); ctx.stroke();
+  ctx.beginPath(); ctx.arc(cx + s * 0.45, cy - s * 0.35, s * 0.16, 0, Math.PI * 2); ctx.fill();
+  ctx.font = TEXT_FONT(600, Math.max(26, Math.round(s * 0.42)));
   ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
+  ctx.textBaseline = 'top';
   ctx.direction = 'rtl';
-  ctx.fillText(label, x + w / 2, y + h / 2);
+  ctx.fillText(label, cx, cy + s * 0.95);
   ctx.restore();
 }
 

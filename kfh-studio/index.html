@@ -28,7 +28,8 @@
           <button type="button" data-value="square">مربع <span class="dim">1:1</span></button>
         </div>
         <div class="tools">
-          <button type="button" class="tool" id="gridToggle" aria-pressed="false">القريد</button>
+          <button type="button" class="tool" id="undo" disabled aria-label="تراجع عن آخر تعديل"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 7l-5 5 5 5M4 12h11a5 5 0 010 10h-2"/></svg>تراجع</button>
+          <button type="button" class="tool" id="gridToggle" aria-pressed="false">خطوط المحاذاة</button>
           <button type="button" class="tool" id="resetPos">رجّع المواضع</button>
         </div>
       </div>
@@ -37,7 +38,7 @@
         <canvas id="twinCanvas"></canvas>
         <span><strong id="twinTitle">الستوري</strong><small id="twinNote">يتجهز تلقائياً من نفس البوست. اضغط لتعديله.</small></span>
       </button>
-      <p class="hint desk-hint">اسحب النص أو الشعار أو الصورة لتحريكها، وتلزق على خطوط القريد.</p>
+      <p class="hint desk-hint">اضغط على أي نص في التصميم عشان تعدّله، أو اسحبه عشان تحركه.</p>
     </div>
     <p id="warn" class="warn" hidden>النص طويل على هالمساحة، صغّرناه تلقائياً. الأفضل تختصره.</p>
     <div class="actions">
@@ -47,149 +48,186 @@
     <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
   </section>
 
-  <section class="controls">
-    <div class="step">
-      <h2>الشكل</h2>
-      <div id="templates" class="templates"></div>
-    </div>
+  <section class="controls" aria-label="الإعدادات">
+    <nav class="stepper" role="tablist" aria-label="خطوات التصميم">
+      <button type="button" role="tab" data-step="1"><b>1</b><span>اختر التصميم</span></button>
+      <button type="button" role="tab" data-step="2"><b>2</b><span>المحتوى</span></button>
+      <button type="button" role="tab" data-step="3"><b>3</b><span>اللمسات</span></button>
+    </nav>
 
-    <div class="step" data-show="quiz">
-      <h2>الخلفية</h2>
-      <div id="quizBg" class="templates positions" data-field="quizBg"></div>
-      <p class="hint">أو ارفع خلفية من عندك من قسم «الصورة».</p>
-    </div>
+    <div class="panes">
+      <!-- 1. Choose by purpose -->
+      <div class="pane" data-pane="1" role="tabpanel">
+        <p class="lead">وش تبي تنشر؟ اختر الأقرب، وتقدر تغيّره بعدين بدون ما يضيع كلامك.</p>
+        <div id="recipes" class="recipes"></div>
+      </div>
 
-    <div class="step" data-show="blade">
-      <h2>مكان القطعة الخضراء</h2>
-      <div id="bladePos" class="templates positions seg-like" data-field="bladePos"></div>
-    </div>
-
-    <div class="step" data-show="text photo panel cutout blade quiz">
-      <h2>الكيرف</h2>
-      <p class="hint">اسحب الكيرف من وسط انحناءته في المعاينة لتحريكه.</p>
-      <div class="dirs seg" data-field="curveDir" aria-label="اتجاه الانحناءة">
-        <button type="button" data-value="">الأصلي</button>
-        <button type="button" data-value="0" aria-label="الانحناءة تحت"><svg viewBox="0 0 40 50"><path d="M2 2 L12 12 C16 16 24 16 28 12 L38 2"/></svg></button>
-        <button type="button" data-value="90" aria-label="الانحناءة يسار"><svg viewBox="0 0 40 50"><path d="M38 2 L12 28 C8 32 8 40 12 44 L18 50"/></svg></button>
-        <button type="button" data-value="180" aria-label="الانحناءة فوق"><svg viewBox="0 0 40 50"><path d="M2 48 L12 38 C16 34 24 34 28 38 L38 48"/></svg></button>
-        <button type="button" data-value="-90" aria-label="الانحناءة يمين"><svg viewBox="0 0 40 50"><path d="M2 2 L28 28 C32 32 32 40 28 44 L22 50"/></svg></button>
-      </div>
-      <button type="button" class="link" id="curveReset">رجّع الكيرف لمكانه</button>
-    </div>
-
-    <div class="step" data-show="text cutout offer">
-      <h2>الخلفية</h2>
-      <div class="swatches" data-field="combo">
-        <button type="button" data-value="dark" style="--sw:#2D7864" aria-label="أخضر غامق"></button>
-        <button type="button" data-value="green" style="--sw:#43B02A" aria-label="أخضر فاتح"></button>
-        <button type="button" data-value="white" style="--sw:#FFFFFF" aria-label="أبيض"></button>
-      </div>
-    </div>
-
-    <div class="step" data-show="photo panel cutout offer blade quiz">
-      <h2>الصورة</h2>
-      <label class="upload">
-        <input type="file" accept="image/*" id="photo">
-        <span id="photoLabel">اختر صورة</span>
-      </label>
-      <p class="hint" data-show="cutout offer">استخدم صورة
-        <bdi>PNG</bdi>
-        بدون خلفية عشان تطلع مفرّغة.</p>
-      <div data-show="photo panel blade quiz">
-        <label class="range">تحريك أفقي <input type="range" min="0" max="1" step="0.01" data-crop="fx" id="fx"></label>
-        <label class="range">تحريك عمودي <input type="range" min="0" max="1" step="0.01" data-crop="fy" id="fy"></label>
-        <label class="range">تكبير <input type="range" min="1" max="2.5" step="0.01" data-crop="zoom" id="zoom"></label>
-        <p class="hint">قص الصورة يُحفظ لكل مقاس بروحه.</p>
-      </div>
-      <label class="range" data-show="photo blade">التظليل فوق الصورة <input type="range" min="0" max="0.9" step="0.01" data-field="shade" id="shade"></label>
-      <div data-show="cutout offer">
-        <label class="range">حجم الصورة <input type="range" min="0.5" max="1.3" step="0.01" data-field="cutScale"></label>
-      </div>
-    </div>
-
-    <div class="step">
-      <h2>النصوص</h2>
-      <label class="field" data-show="text photo panel cutout quiz daraya">سطر تمهيدي <small>اختياري</small>
-        <input type="text" data-field="kicker" placeholder="تقديراً لـ ...">
-      </label>
-      <label class="field">العنوان
-        <textarea rows="3" data-field="headline" placeholder="اكتب العنوان. كل سطر جديد = سطر في التصميم"></textarea>
-      </label>
-      <label class="field" data-show="daraya">السؤال
-        <textarea rows="3" data-field="question" id="question"></textarea>
-      </label>
-      <label class="field" data-show="quiz daraya">الخيارات <small>كل خيار في سطر، والترقيم تلقائي</small>
-        <textarea rows="4" data-field="options" id="options"></textarea>
-      </label>
-      <div class="seg" data-field="bulletStyle" data-show="daraya">
-        <button type="button" data-value="numbered">مرقّمة</button>
-        <button type="button" data-value="outline">بدون ترقيم</button>
-      </div>
-      <label class="check" data-show="daraya"><input type="checkbox" data-field="chipStroke" id="chipStroke"> إطار حول الخيارات</label>
-      <label class="field" data-show="text photo panel cutout offer blade">سطر توضيحي <small>اختياري</small>
-        <input type="text" data-field="sub">
-      </label>
-      <label class="range">حجم العنوان <input type="range" min="0.7" max="1.4" step="0.01" data-field="headScale" id="headScale"></label>
-      <div class="seg" data-field="headWeight">
-        <button type="button" data-value="400">خط خفيف</button>
-        <button type="button" data-value="600">متوسط</button>
-        <button type="button" data-value="800">عريض</button>
-      </div>
-      <div class="seg" data-field="align" data-show="text photo panel blade">
-        <button type="button" data-value="right">محاذاة يمين</button>
-        <button type="button" data-value="center">في الوسط</button>
-      </div>
-    </div>
-
-    <div class="step" data-show="text photo panel offer blade quiz daraya">
-      <h2>رقم بارز <small>اختياري</small></h2>
-      <div class="row three">
-        <label class="field">قبله <input type="text" data-field="numPrefix" id="numPrefix" placeholder="بـ"></label>
-        <label class="field">الرقم <input type="text" data-field="number" id="number" inputmode="decimal" placeholder="0%"></label>
-        <label class="field">بعده <input type="text" data-field="unit" id="unit" placeholder="أرباح"></label>
-      </div>
-      <label class="field">فوق الرقم <input type="text" data-field="numLabel" id="numLabel" placeholder="خصم"></label>
-      <label class="range">حجم الرقم <input type="range" min="0.6" max="1.4" step="0.01" data-field="numScale" id="numScale"></label>
-      <div class="seg" data-field="numPos" data-show="photo">
-        <button type="button" data-value="top">مع العنوان</button>
-        <button type="button" data-value="bottom">تحت</button>
-      </div>
-    </div>
-
-    <div class="step" data-show="photo">
-      <h2>معلومات تحت <small>اختياري</small></h2>
-      <label class="field">العنوان <input type="text" data-field="infoTitle" id="infoTitle" placeholder="حيّاكم في جناح بيت التمويل الكويتي"></label>
-      <label class="field">التفاصيل <input type="text" data-field="infoText" id="infoText" placeholder="من 27 إلى 31 أكتوبر | أرض المعارض، مشرف"></label>
-    </div>
-
-    <div class="step">
-      <h2>إضافات <small>اختياري</small></h2>
-      <div data-show="text photo panel offer blade">
-        <label class="field">زر <input type="text" data-field="cta" placeholder="افتح حسابك الآن"></label>
-        <div class="seg" data-field="ctaColor">
-          <button type="button" data-value="green">زر أخضر فاتح</button>
-          <button type="button" data-value="dark">زر أخضر غامق</button>
+      <!-- 2. Content only -->
+      <div class="pane" data-pane="2" role="tabpanel">
+        <div class="group" data-show="photo panel cutout offer blade">
+          <label class="drop" id="photoDrop">
+            <input type="file" accept="image/*" id="photo">
+            <span class="drop-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 16l4.5-5 3.5 4 2.5-3L20 16M4 5h16v14H4z"/></svg></span>
+            <span><strong id="photoLabel">ارفع الصورة</strong><small id="photoHint">اسحبها هنا أو اضغط للاختيار</small></span>
+          </label>
         </div>
-        <div class="seg" data-field="ctaStyle">
-          <button type="button" data-value="fill">معبّى</button>
-          <button type="button" data-value="outline">مفرّغ</button>
+
+        <label class="field" data-show="text photo panel cutout quiz daraya">سطر صغير فوق العنوان <small>اختياري</small>
+          <input type="text" data-field="kicker" id="kicker" placeholder="مثال: تقديراً لإنجاز جديد">
+        </label>
+        <label class="field" id="headlineField"><span id="headlineLabel">العنوان</span>
+          <textarea rows="3" data-field="headline" id="headline" placeholder="اكتب العنوان. اضغط Enter لسطر جديد"></textarea>
+        </label>
+        <label class="field" data-show="daraya">السؤال
+          <textarea rows="3" data-field="question" id="question" placeholder="مثال: هل تشارك رمز التحقق مع أحد؟"></textarea>
+        </label>
+        <label class="field" data-show="quiz daraya">الخيارات <small>كل خيار في سطر</small>
+          <textarea rows="3" data-field="options" id="options" placeholder="صح&#10;خطأ"></textarea>
+        </label>
+        <label class="field" data-show="text photo panel cutout offer blade">سطر تحت العنوان <small>اختياري</small>
+          <input type="text" data-field="sub" id="sub" placeholder="جملة قصيرة توضّح العنوان">
+        </label>
+
+        <fieldset class="group" data-show="text photo panel offer blade quiz daraya">
+          <legend id="numberLegend">رقم بارز <small>اختياري، مثل نسبة أو مبلغ</small></legend>
+          <div class="row">
+            <label class="field">الرقم <input type="text" data-field="number" id="number" inputmode="decimal" placeholder="0%"></label>
+            <label class="field">بعده <input type="text" data-field="unit" id="unit" placeholder="د.ك أو أرباح"></label>
+          </div>
+          <div class="row">
+            <label class="field">فوقه <input type="text" data-field="numLabel" id="numLabel" placeholder="خصم"></label>
+            <label class="field">قبله <input type="text" data-field="numPrefix" id="numPrefix" placeholder="بـ"></label>
+          </div>
+        </fieldset>
+
+        <fieldset class="group" data-show="photo">
+          <legend>المكان والتاريخ <small>اختياري</small></legend>
+          <label class="field">العنوان <input type="text" data-field="infoTitle" id="infoTitle" placeholder="حيّاكم في جناح بيت التمويل الكويتي"></label>
+          <label class="field">التفاصيل <input type="text" data-field="infoText" id="infoText" placeholder="من 27 إلى 31 أكتوبر | أرض المعارض"></label>
+        </fieldset>
+
+        <label class="field" data-show="text photo panel offer blade">نص الزر <small>اختياري</small>
+          <input type="text" data-field="cta" id="cta" placeholder="مثال: افتح حسابك الآن">
+        </label>
+
+        <div class="group" data-show="text photo panel cutout offer blade">
+          <label class="drop small" id="logoDrop">
+            <input type="file" accept="image/*" id="logo">
+            <span><strong id="logoLabel">شعار جهة شريكة</strong><small>اختياري، يفضّل PNG بدون خلفية</small></span>
+          </label>
+          <button type="button" class="link" id="clearLogo" hidden>إزالة الشعار</button>
         </div>
+
+        <label class="field">الشروط والأحكام <small>اختياري، تطلع صغيرة على الطرف</small>
+          <input type="text" data-field="terms" id="terms" placeholder="تطبق الشروط والأحكام">
+        </label>
       </div>
-      <label class="upload small">
-        <input type="file" accept="image/*" id="logo">
-        <span id="logoLabel">شعار جهة شريكة</span>
-      </label>
-      <button type="button" class="link" id="clearLogo" hidden>إزالة الشعار</button>
-      <label class="range" id="logoSize" hidden>حجم الشعار <input type="range" min="0.5" max="1.8" step="0.01" data-field="logoScale" id="logoScale"></label>
-      <label class="field">الشروط والأحكام <input type="text" data-field="terms" placeholder="تطبق الشروط والأحكام"></label>
-      <label class="check" data-show="cutout"><input type="checkbox" data-field="cutCorner" id="cutCorner"> قطعة خضراء تحت فيها شعار الجهة الشريكة</label>
-      <div class="seg" data-field="deco" data-show="cutout">
-        <button type="button" data-value="curve">خط منحني</button>
-        <button type="button" data-value="corner">قطعة خضراء فوق</button>
+
+      <!-- 3. Optional touches, grouped and collapsed -->
+      <div class="pane" data-pane="3" role="tabpanel">
+        <p class="lead">كل شي هنا اختياري. التصميم جاهز بدونه.</p>
+
+        <details class="fold" open data-show="text cutout offer quiz blade">
+          <summary>الخلفية والألوان</summary>
+          <div class="fold-body">
+            <div class="swatches" data-field="combo" data-show="text cutout offer">
+              <button type="button" data-value="dark" style="--sw:#2D7864" aria-label="أخضر غامق"></button>
+              <button type="button" data-value="green" style="--sw:#43B02A" aria-label="أخضر فاتح"></button>
+              <button type="button" data-value="white" style="--sw:#FFFFFF" aria-label="أبيض"></button>
+            </div>
+            <div data-show="quiz">
+              <div id="quizBg" class="templates positions" data-field="quizBg"></div>
+              <p class="hint">تقدر ترفع خلفية من عندك من قسم المحتوى.</p>
+            </div>
+            <div data-show="blade">
+              <p class="hint">مكان القطعة الخضراء</p>
+              <div id="bladePos" class="templates positions" data-field="bladePos"></div>
+            </div>
+          </div>
+        </details>
+
+        <details class="fold" data-show="text photo panel cutout blade quiz">
+          <summary>الخط المنحني</summary>
+          <div class="fold-body">
+            <label class="check" data-show="text photo"><input type="checkbox" data-field="curve" id="curve"> إظهار الخط المنحني</label>
+            <div class="seg" data-field="deco" data-show="cutout">
+              <button type="button" data-value="curve">خط منحني</button>
+              <button type="button" data-value="corner">قطعة خضراء فوق</button>
+            </div>
+            <label class="check" data-show="cutout"><input type="checkbox" data-field="cutCorner" id="cutCorner"> قطعة خضراء تحت فيها الشعار</label>
+            <label class="check" data-show="text"><input type="checkbox" data-field="wedge" id="wedge"> قطعة خضراء في الزاوية</label>
+            <p class="hint">اتجاه الانحناءة. وتقدر تسحبه من وسط انحناءته في المعاينة.</p>
+            <div class="dirs seg" data-field="curveDir" aria-label="اتجاه الانحناءة">
+              <button type="button" data-value="">الأصلي</button>
+              <button type="button" data-value="0" aria-label="الانحناءة تحت"><svg viewBox="0 0 40 50"><path d="M2 2 L12 12 C16 16 24 16 28 12 L38 2"/></svg></button>
+              <button type="button" data-value="90" aria-label="الانحناءة يسار"><svg viewBox="0 0 40 50"><path d="M38 2 L12 28 C8 32 8 40 12 44 L18 50"/></svg></button>
+              <button type="button" data-value="180" aria-label="الانحناءة فوق"><svg viewBox="0 0 40 50"><path d="M2 48 L12 38 C16 34 24 34 28 38 L38 48"/></svg></button>
+              <button type="button" data-value="-90" aria-label="الانحناءة يمين"><svg viewBox="0 0 40 50"><path d="M2 2 L28 28 C32 32 32 40 28 44 L22 50"/></svg></button>
+            </div>
+            <button type="button" class="link" id="curveReset">رجّع الخط لمكانه</button>
+          </div>
+        </details>
+
+        <details class="fold">
+          <summary>الخط والنص</summary>
+          <div class="fold-body">
+            <label class="range">حجم العنوان <input type="range" min="0.7" max="1.4" step="0.01" data-field="headScale" id="headScale"></label>
+            <div class="seg" data-field="headWeight">
+              <button type="button" data-value="400">خفيف</button>
+              <button type="button" data-value="600">متوسط</button>
+              <button type="button" data-value="800">عريض</button>
+            </div>
+            <div class="seg" data-field="align" data-show="text photo panel blade">
+              <button type="button" data-value="right">يمين</button>
+              <button type="button" data-value="center">في الوسط</button>
+            </div>
+            <label class="range" data-show="text photo panel offer blade quiz daraya">حجم الرقم <input type="range" min="0.6" max="1.4" step="0.01" data-field="numScale" id="numScale"></label>
+            <div class="seg" data-field="numPos" data-show="photo">
+              <button type="button" data-value="top">الرقم مع العنوان</button>
+              <button type="button" data-value="bottom">الرقم تحت</button>
+            </div>
+            <div class="seg" data-field="bulletStyle" data-show="daraya">
+              <button type="button" data-value="numbered">خيارات مرقّمة</button>
+              <button type="button" data-value="outline">بدون ترقيم</button>
+            </div>
+            <label class="check" data-show="daraya"><input type="checkbox" data-field="chipStroke" id="chipStroke"> إطار حول الخيارات</label>
+          </div>
+        </details>
+
+        <details class="fold" data-show="photo panel cutout offer blade quiz">
+          <summary>الصورة</summary>
+          <div class="fold-body">
+            <div data-show="photo panel blade quiz">
+              <label class="range">تحريك يمين ويسار <input type="range" min="0" max="1" step="0.01" data-crop="fx" id="fx"></label>
+              <label class="range">تحريك فوق وتحت <input type="range" min="0" max="1" step="0.01" data-crop="fy" id="fy"></label>
+              <label class="range">تكبير <input type="range" min="1" max="2.5" step="0.01" data-crop="zoom" id="zoom"></label>
+            </div>
+            <label class="range" data-show="photo blade">تغميق الصورة عشان يبين النص <input type="range" min="0" max="0.9" step="0.01" data-field="shade" id="shade"></label>
+            <label class="range" data-show="cutout offer">حجم الصورة <input type="range" min="0.5" max="1.3" step="0.01" data-field="cutScale" id="cutScale"></label>
+            <label class="range" id="logoSize" hidden>حجم الشعار <input type="range" min="0.5" max="1.8" step="0.01" data-field="logoScale" id="logoScale"></label>
+          </div>
+        </details>
+
+        <details class="fold" data-show="text photo panel offer blade">
+          <summary>الزر</summary>
+          <div class="fold-body">
+            <div class="seg" data-field="ctaColor">
+              <button type="button" data-value="green">أخضر فاتح</button>
+              <button type="button" data-value="dark">أخضر غامق</button>
+            </div>
+            <div class="seg" data-field="ctaStyle">
+              <button type="button" data-value="fill">معبّى</button>
+              <button type="button" data-value="outline">إطار فقط</button>
+            </div>
+          </div>
+        </details>
       </div>
-      <label class="check" data-show="text photo"><input type="checkbox" data-field="curve"> الخط المنحني</label>
-      <label class="check" data-show="text"><input type="checkbox" data-field="wedge"> قطعة خضراء في الزاوية</label>
     </div>
+
+    <footer class="pane-nav">
+      <button type="button" class="ghost" id="prevStep">السابق</button>
+      <button type="button" class="primary" id="nextStep">التالي</button>
+    </footer>
   </section>
 </main>
 </div>

@@ -1,14 +1,3 @@
-const TEMPLATE_LIST = [
-  { id: 'text', name: 'نص فقط' },
-  { id: 'photo', name: 'صورة كاملة' },
-  { id: 'panel', name: 'صورة ولوحة' },
-  { id: 'cutout', name: 'شخص أو مبنى' },
-  { id: 'offer', name: 'عرض منتج' },
-  { id: 'blade', name: 'قطعة خضراء' },
-  { id: 'quiz', name: 'سؤال الجمعة' },
-  { id: 'daraya', name: 'لنكن على دراية' },
-];
-
 const DARAYA_SAMPLE = {
   kicker: 'جاوب واربح', number: '50', unit: 'د.ك', headline: '',
   question: 'استخدام نفس كلمة المرور لأكثر من حساب يزيد من خطر اختراق حساباتك؟',
@@ -29,6 +18,36 @@ const QUIZ_SAMPLE = {
   headline: 'قال النبي ﷺ: "إنما الأعمال..."', options: 'بالاجتهاد\nبالنيات\nبالنتائج',
 };
 
+// Starting points chosen by purpose. Each fills the design with a real example so people see
+// what they will get; anything they have already typed is kept when they switch.
+const RECIPES = [
+  { id: 'news', name: 'خبر أو جائزة', hint: 'صورة فوق ونص تحتها', template: 'panel',
+    set: { kicker: 'تقديراً لإنجاز جديد', headline: 'بيت التمويل الكويتي يحصد جائزة «أفضل بنك إسلامي» لعام 2026' } },
+  { id: 'person', name: 'شخصية أو إنجاز', hint: 'صورة شخص مفرّغة', template: 'cutout',
+    set: { combo: 'dark', deco: 'curve', cutCorner: true, headline: 'بيت التمويل الكويتي..\nالأول في الكويت ضمن\nقائمة فوربس لعام 2026' } },
+  { id: 'promo', name: 'إعلان بصورة', hint: 'صورة كاملة وعرض', template: 'photo',
+    set: { headWeight: '400', numPos: 'top', headline: 'تجهّز لموسم البر', numPrefix: 'بـ', number: '0%', unit: 'أرباح', sub: 'على مجموعة مختارة من المعدّات البريّة' } },
+  { id: 'offer', name: 'عرض أو خصم', hint: 'منتج ورقم كبير', template: 'offer',
+    set: { combo: 'white', numLabel: 'خصم', number: '15%', headline: 'عند الدفع ببطاقات بيت التمويل الكويتي' } },
+  { id: 'occasion', name: 'مناسبة أو تهنئة', hint: 'صورة وقطعة خضراء', template: 'blade',
+    set: { bladePos: 'tr', headline: 'كل عام\nوالكويت بخير' } },
+  { id: 'text', name: 'إعلان نصي', hint: 'بدون صورة', template: 'text',
+    set: { combo: 'dark', curve: true, headline: 'بيت التمويل الكويتي\nيحصد جائزة جديدة' } },
+  { id: 'quiz', name: 'سؤال الجمعة', hint: 'سؤال وجائزة', template: 'quiz', set: null },
+  { id: 'daraya', name: 'لنكن على دراية', hint: 'الحملة التوعوية', template: 'daraya', set: null },
+];
+
+// Words the person writes. Switching designs replaces only the ones they have not touched.
+const CONTENT_FIELDS = ['kicker', 'headline', 'sub', 'numPrefix', 'numLabel', 'number', 'unit', 'infoTitle', 'infoText', 'cta', 'question', 'options'];
+const touched = new Set();
+
+// What the main text field is called in each design.
+const HEADLINE_LABEL = { quiz: 'السؤال', daraya: 'عنوان كبير (اختياري)' };
+const PHOTO_LABEL = {
+  cutout: ['ارفع صورة الشخص أو المبنى', 'تكون PNG بدون خلفية عشان تطلع مفرّغة'],
+  offer: ['ارفع صورة المنتج', 'تكون PNG بدون خلفية عشان تطلع مفرّغة'],
+};
+
 const BLADE_LIST = [
   { id: 'tr', name: 'فوق يمين' },
   { id: 'bottom', name: 'تحت' },
@@ -43,7 +62,7 @@ const POST_ONLY = new Set(['quiz', 'daraya']);
 const FORMAT_NAMES = { post: 'البوست', story: 'الستوري', square: 'المربع' };
 
 const state = {
-  template: 'text', format: 'post', combo: 'dark', align: 'right',
+  recipe: 'text', template: 'text', format: 'post', combo: 'dark', align: 'right',
   kicker: '', headline: 'بيت التمويل الكويتي\nيحصد جائزة جديدة', sub: '',
   headScale: 1, headWeight: '600',
   numPrefix: '', numLabel: '', number: '', unit: '', numScale: 1, numPos: 'top',
@@ -157,7 +176,12 @@ function syncUI() {
   document.querySelectorAll('.seg[data-field], .swatches[data-field], .positions[data-field], .pills[data-field]').forEach((g) => {
     g.querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', String(String(state[g.dataset.field]) === b.dataset.value)));
   });
-  document.querySelectorAll('#templates .tpl').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.id === state.template)));
+  document.querySelectorAll('#recipes .recipe').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.id === state.recipe)));
+  document.getElementById('headlineLabel').textContent = HEADLINE_LABEL[state.template] || 'العنوان';
+  const [pl, ph] = PHOTO_LABEL[state.template] || ['ارفع الصورة', 'اسحبها هنا أو اضغط للاختيار'];
+  if (!state.photo) document.getElementById('photoLabel').textContent = pl;
+  document.getElementById('photoHint').textContent = state.photo ? 'اضغط أو اسحب صورة ثانية لتغييرها' : ph;
+  document.getElementById('undo').disabled = history.length < 2;
   document.querySelectorAll('input[data-field], textarea[data-field]').forEach((el) => {
     if (el.type === 'checkbox') el.checked = !!state[el.dataset.field];
     else if (document.activeElement !== el) el.value = state[el.dataset.field];
@@ -174,33 +198,107 @@ function syncUI() {
 
 function update() { syncUI(); render(); }
 
-function buildTemplates() {
-  const wrap = document.getElementById('templates');
-  for (const t of TEMPLATE_LIST) {
+function recipeSample(r) {
+  if (r.id === 'quiz') return QUIZ_SAMPLE;
+  if (r.id === 'daraya') return DARAYA_SAMPLE;
+  return r.set;
+}
+
+function applyRecipe(r) {
+  const sample = recipeSample(r);
+  Object.assign(state, DEFAULTS[r.template], { recipe: r.id, template: r.template, offsets: { post: {}, story: {}, square: {} } });
+  for (const f of CONTENT_FIELDS) if (!touched.has(f)) state[f] = sample[f] ?? '';
+  for (const [k, v] of Object.entries(sample)) if (!CONTENT_FIELDS.includes(k)) state[k] = v;
+}
+
+function buildRecipes() {
+  const wrap = document.getElementById('recipes');
+  for (const r of RECIPES) {
     const b = document.createElement('button');
     b.type = 'button';
-    b.className = 'tpl';
-    b.dataset.id = t.id;
+    b.className = 'recipe';
+    b.dataset.id = r.id;
     const c = document.createElement('canvas');
-    renderPost(c, {
-      ...state, ...DEFAULTS[t.id], template: t.id, format: 'post', photo: null, logo: null,
-      kicker: t.id === 'panel' || t.id === 'cutout' ? 'تقديراً لإنجاز جديد' : '',
-      headline: t.id === 'offer' ? 'على جميع المنتجات' : 'بيت التمويل الكويتي\nيحصد جائزة جديدة',
-      number: t.id === 'offer' ? '15%' : '', numLabel: t.id === 'offer' ? 'خصم' : '',
-      ...(t.id === 'quiz' ? QUIZ_SAMPLE : {}),
-      ...(t.id === 'daraya' ? DARAYA_SAMPLE : {}),
-    }, 0.2);
-    const label = document.createElement('span');
-    label.textContent = t.name;
-    b.append(c, label);
+    const sample = recipeSample(r);
+    renderPost(c, { ...state, ...DEFAULTS[r.template], ...sample, template: r.template, format: 'post', photo: null, logo: null }, 0.25);
+    const text = document.createElement('span');
+    text.innerHTML = '<strong></strong><small></small>';
+    text.querySelector('strong').textContent = r.name;
+    text.querySelector('small').textContent = r.hint;
+    b.append(c, text);
     b.addEventListener('click', () => {
-      Object.assign(state, DEFAULTS[t.id], { template: t.id, offsets: { post: {}, story: {}, square: {} } });
-      if (t.id === 'quiz' && !state.options.trim()) Object.assign(state, QUIZ_SAMPLE);
-      if (t.id === 'daraya' && !state.question.trim()) Object.assign(state, DARAYA_SAMPLE);
+      applyRecipe(r);
+      commit();
       update();
+      showStep(2);
     });
     wrap.append(b);
   }
+}
+
+/* ---------- steps ---------- */
+
+let step = 1;
+const NEXT_LABEL = { 1: 'التالي: اكتب المحتوى', 2: 'التالي: لمسات اختيارية', 3: 'جاهز؟ حمّل التصميم' };
+
+function showStep(n) {
+  step = n;
+  document.querySelectorAll('.stepper [data-step]').forEach((b) => {
+    const on = Number(b.dataset.step) === n;
+    b.setAttribute('aria-selected', String(on));
+    b.classList.toggle('done', Number(b.dataset.step) < n);
+  });
+  document.querySelectorAll('.pane').forEach((p) => { p.hidden = Number(p.dataset.pane) !== n; });
+  document.getElementById('prevStep').hidden = n === 1;
+  document.getElementById('nextStep').textContent = NEXT_LABEL[n];
+  document.querySelector('.panes').scrollTop = 0;
+}
+
+/* ---------- undo ---------- */
+
+const history = [];
+const snapshot = () => ({ ...state, offsets: JSON.parse(JSON.stringify(state.offsets)), crops: JSON.parse(JSON.stringify(state.crops)) });
+
+// Records the current design as an undo point (typing is grouped into one point per pause).
+function commit() {
+  history.push(snapshot());
+  if (history.length > 60) history.shift();
+  document.getElementById('undo').disabled = history.length < 2;
+}
+let typingTimer;
+const commitSoon = () => { clearTimeout(typingTimer); typingTimer = setTimeout(commit, 600); };
+
+function undo() {
+  if (history.length < 2) return;
+  history.pop();
+  Object.assign(state, history[history.length - 1]);
+  state.offsets = JSON.parse(JSON.stringify(state.offsets));
+  state.crops = JSON.parse(JSON.stringify(state.crops));
+  update();
+  toast('تم التراجع');
+}
+
+/* ---------- tap a block to edit it ---------- */
+
+function fieldFor(id) {
+  const t = state.template;
+  if (id === 'image') return 'photo';
+  if (id === 'logo') return 'logo';
+  if (id === 'top') return t === 'quiz' ? 'number' : t === 'daraya' ? (state.headline ? 'headline' : 'number') : 'headline';
+  if (id === 'bottom') return t === 'quiz' ? 'headline' : t === 'daraya' ? 'question' : t === 'photo' ? (state.infoTitle ? 'infoTitle' : 'cta') : 'cta';
+  return null;
+}
+
+function editBlock(id) {
+  const f = fieldFor(id);
+  if (!f) return;
+  showStep(2);
+  const el = document.getElementById(f);
+  if (!el) return;
+  const target = el.closest('.field, .drop, .group') || el;
+  target.scrollIntoView({ block: 'center', behavior: 'smooth' });
+  target.classList.remove('flash'); void target.offsetWidth; target.classList.add('flash');
+  if (el.type !== 'file') el.focus({ preventScroll: true });
 }
 
 function loadImage(src) {
@@ -267,22 +365,26 @@ function bindInputs() {
       if (!b) return;
       state[g.dataset.field] = b.dataset.value;
       update();
+      commit();
     });
   });
   document.querySelectorAll('input[data-field], textarea[data-field]').forEach((el) => {
     el.addEventListener('input', () => {
       const f = el.dataset.field;
       state[f] = el.type === 'checkbox' ? el.checked : el.type === 'range' ? parseFloat(el.value) : el.value;
+      if (CONTENT_FIELDS.includes(f)) touched.add(f);
       render();
+      commitSoon();
     });
   });
   document.querySelectorAll('input[data-crop]').forEach((el) => {
     el.addEventListener('input', () => {
       state.crops[state.format] = { ...crop(), [el.dataset.crop]: parseFloat(el.value) };
       render();
+      commitSoon();
     });
   });
-  bindImage('photo', 'photoLabel', 'اختر صورة', (img) => {
+  bindImage('photo', 'photoLabel', 'ارفع الصورة', (img) => {
     state.photo = img; state.crops = {}; state.cutScale = 1;
     if (state.template === 'quiz') state.quizBg = 'custom';
   });
@@ -292,8 +394,33 @@ function bindInputs() {
     document.getElementById('logo').value = '';
     document.getElementById('logoLabel').textContent = 'شعار جهة شريكة';
     update();
+    commit();
   });
-  document.getElementById('resetPos').addEventListener('click', () => { state.offsets[state.format] = {}; render(); });
+  document.getElementById('resetPos').addEventListener('click', () => { state.offsets[state.format] = {}; render(); commit(); });
+  document.getElementById('undo').addEventListener('click', undo);
+  document.addEventListener('keydown', (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z' && !e.target.matches('input, textarea')) { e.preventDefault(); undo(); }
+  });
+  document.querySelectorAll('.stepper [data-step]').forEach((b) => b.addEventListener('click', () => showStep(Number(b.dataset.step))));
+  document.getElementById('prevStep').addEventListener('click', () => showStep(step - 1));
+  document.getElementById('nextStep').addEventListener('click', () => {
+    if (step < 3) showStep(step + 1);
+    else save(POST_ONLY.has(state.template) ? ['post'] : [state.format]);
+  });
+  const app = document.querySelector('.app');
+  document.querySelector('.controls').addEventListener('focusin', (e) => { if (e.target.matches('input[type=text], textarea')) app.classList.add('typing'); });
+  document.querySelector('.controls').addEventListener('focusout', () => app.classList.remove('typing'));
+  for (const [zone, input] of [['photoDrop', 'photo'], ['logoDrop', 'logo']]) {
+    const z = document.getElementById(zone), inp = document.getElementById(input);
+    z.addEventListener('dragover', (e) => { e.preventDefault(); z.classList.add('over'); });
+    z.addEventListener('dragleave', () => z.classList.remove('over'));
+    z.addEventListener('drop', (e) => {
+      e.preventDefault(); z.classList.remove('over');
+      if (!e.dataTransfer.files.length) return;
+      inp.files = e.dataTransfer.files;
+      inp.dispatchEvent(new Event('change'));
+    });
+  }
   const gridBtn = document.getElementById('gridToggle');
   gridBtn.addEventListener('click', () => {
     showGrid = !showGrid;
@@ -332,7 +459,7 @@ function bindDrag() {
     const p = toCanvas(e), b = hit(p);
     if (!b) return;
     const o = state.offsets[state.format][b.id] || { dx: 0, dy: 0 };
-    drag = { id: b.id, start: p, o: { ...o }, base: { x: b.x - o.dx, y: b.y - o.dy, w: b.w, h: b.h } };
+    drag = { id: b.id, start: p, moved: false, o: { ...o }, base: { x: b.x - o.dx, y: b.y - o.dy, w: b.w, h: b.h } };
     hover = b.id;
     canvas.setPointerCapture(e.pointerId);
     canvas.classList.add('dragging');
@@ -346,14 +473,18 @@ function bindDrag() {
       if (id !== hover) { hover = id; render(); }
       return;
     }
+    if (Math.hypot(p.x - drag.start.x, p.y - drag.start.y) > 8) drag.moved = true;
+    if (!drag.moved) return;
     state.offsets[state.format][drag.id] = snapped(drag.id, drag.base, drag.o.dx + p.x - drag.start.x, drag.o.dy + p.y - drag.start.y);
     render();
   });
   const end = () => {
     if (!drag) return;
+    const { id, moved } = drag;
     drag = null;
     canvas.classList.remove('dragging');
     render();
+    if (moved) commit(); else editBlock(id);
   };
   canvas.addEventListener('pointerup', end);
   canvas.addEventListener('pointercancel', end);
@@ -368,8 +499,9 @@ function bindImage(id, labelId, emptyText, apply) {
     const img = new Image();
     img.onload = () => {
       apply(img);
-      document.getElementById(labelId).textContent = 'تم ✓ اضغط للتغيير';
+      document.getElementById(labelId).textContent = id === 'photo' ? 'تم رفع الصورة ✓' : 'تم رفع الشعار ✓';
       update();
+      commit();
     };
     img.onerror = () => { document.getElementById(labelId).textContent = emptyText; };
     img.src = URL.createObjectURL(file);
@@ -426,10 +558,12 @@ async function loadFonts() {
 }
 
 Promise.all([loadFonts(), loadQuizBackgrounds(), loadDaraya()]).then(() => {
-  buildTemplates();
+  buildRecipes();
   buildQuizBackgrounds();
   buildBladePositions();
   bindInputs();
   bindDrag();
   update();
+  showStep(1);
+  commit();
 });
